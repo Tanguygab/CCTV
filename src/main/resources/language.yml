@@ -63,9 +63,6 @@ computers:
   change-no-perms: "&cYou can only edit your own computers!"
   only-owner-can-change-owner: "&cOnly the owner of this computer can change the owner!"
   not-allowed: "&cYou aren't allowed to open this computer!"
-  no-group-set: "&cThat block already has no group assigned to it!"
-  create-look-at-stair: "&cYou have to look at a %block% to create a computer!"
-  not-stair: "&cThis block is not a %block%"
 guis:
   camera:
     settings: "&eSettings"

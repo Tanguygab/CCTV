@@ -126,8 +126,5 @@ public class LanguageFile extends YamlConfigurationFile {
     public final String COMPUTER_CHANGE_NO_PERMS = get("computers.change-no-perms", "&cYou can only edit your own computers!");
     public final String COMPUTER_ONLY_OWNER_CAN_CHANGE_OWNER = get("computers.only-owner-can-change-owner", "&cOnly the owner of this computer can change the owner!");
     public final String COMPUTER_NOT_ALLOWED = get("computers.not-allowed", "&cYou aren't allowed to open this computer!");
-    public final String COMPUTER_NO_GROUP_SET = get("computers.no-group-set", "&cThat block already has no group assigned to it!");
-    public final String COMPUTER_CREATE_LOOK_AT_STAIR = get("computers.create-look-at-stair", "&cYou have to look at a %block% to create a computer!");
-    public final String COMPUTER_NOT_STAIR = get("computers.not-stair", "&cThis block is not a %block%");
 
 }

@@ -352,7 +352,7 @@ public class cctv implements CommandExecutor {
                     player.sendMessage(ChatColor.RED + "Players inventory isn't the same as the saved inventory!");
                     break;
                   }
-                  player.sendMessage(Arguments.player_not_found);
+                  player.sendMessage(lang.PLAYER_NOT_FOUND);
                   break;
                 case 1097519758:
                   if (!str2.equals("restore"))
@@ -383,7 +383,7 @@ public class cctv implements CommandExecutor {
                     player.sendMessage(ChatColor.GREEN + "Players inventory is now restored to normal!");
                     break;
                   }
-                  player.sendMessage(Arguments.player_not_found);
+                  player.sendMessage(lang.PLAYER_NOT_FOUND);
                   break;
               }
               return false;
