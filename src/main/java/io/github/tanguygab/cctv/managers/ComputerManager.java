@@ -65,6 +65,9 @@ public class ComputerManager extends Manager<Computer> {
         player.sendMessage(Arguments.computer_delete);
     }
 
+    public boolean exists(Location loc) {
+        return get(loc) != null;
+    }
     public Computer get(Location loc) {
         for (Computer computer : values()) {
             if (computer.getLocation().equals(loc)) return computer;

@@ -16,30 +16,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 public class computerfunctions {
-  
-  public static void createComputer(String id, Location loc, String owner) {
 
-  }
-  
-  public static boolean computerExist(String id) {
-    return CCTV.get().getComputers().exists(id);
-  }
-  
-  public static boolean computerExistOnLocation(Location loc) {
-    if (ComputerRecord.computers.isEmpty())
-      return false; 
-    Optional<ComputerRecord.computerRec> computer = ComputerRecord.computers.stream().filter(c -> c.loc.equals(loc)).findFirst();
-    return computer.isPresent();
-  }
-  
-  public static Computer getComputerRecord(String id) {
-    return CCTV.get().getComputers().get(id);
-  }
-
-  
-  public static void deleteComputer(Player player, String id) {
-
-  }
   
   public static void addPlayer(Player player, String name, String computer) {
     LanguageFile lang = CCTV.get().getLang();

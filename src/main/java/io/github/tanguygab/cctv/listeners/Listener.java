@@ -2,12 +2,12 @@ package io.github.tanguygab.cctv.listeners;
 
 import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.config.LanguageFile;
-import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.managers.ComputerManager;
 import io.github.tanguygab.cctv.managers.ViewerManager;
 import io.github.tanguygab.cctv.old.functions.computerfunctions;
 import io.github.tanguygab.cctv.old.functions.viewfunctions;
 import io.github.tanguygab.cctv.entities.Computer;
+import io.github.tanguygab.cctv.utils.NPCUtils;
 import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
@@ -21,27 +21,24 @@ import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
+import java.util.UUID;
 
 public class Listener implements org.bukkit.event.Listener {
 
     private final LanguageFile lang;
-    private final CameraManager cm;
     private final ComputerManager cpm;
     private final ViewerManager vm;
 
     public Listener() {
         lang = CCTV.get().getLang();
-        cm = CCTV.get().getCameras();
         cpm = CCTV.get().getComputers();
         vm = CCTV.get().getViewers();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST,ignoreCancelled = true)
     public void on(PlayerInteractEvent e) {
-
+        InteractEvent.on(e);
     }
-
-
 
     @EventHandler(priority = EventPriority.HIGHEST,ignoreCancelled = true)
     public void on(BlockBreakEvent e) {
@@ -55,8 +52,6 @@ public class Listener implements org.bukkit.event.Listener {
         if (p.getGameMode() != GameMode.CREATIVE) p.getInventory().addItem(Utils.getComputer());
         e.setCancelled(true);
         cpm.delete(rec.getId(),p);
-
-
     }
 
     @EventHandler(priority = EventPriority.HIGHEST,ignoreCancelled = true)
@@ -88,16 +83,6 @@ public class Listener implements org.bukkit.event.Listener {
         e.setCancelled(true);
     }
 
-
-    @EventHandler(priority = EventPriority.HIGHEST,ignoreCancelled = true)
-    public void on(PlayerToggleSneakEvent e) {
-        Player player = e.getPlayer();
-        if (!vm.exists(player)) return;
-
-        player.sendTitle("", lang.CAMERA_DISCONNECTING, 0, 15, 0);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(CCTV.get(), () -> cm.unviewCamera(player),  CCTV.get().TIME_TO_DISCONNECT * 20L);
-    }
-
     @EventHandler(ignoreCancelled = true)
     public void on(AsyncPlayerChatEvent e) {
         Player player = e.getPlayer();
@@ -127,5 +112,17 @@ public class Listener implements org.bukkit.event.Listener {
         player.sendMessage(lang.PLAYER_ADDED);
     }
 
+    @EventHandler
+    public void on(PlayerJoinEvent event) {
+        Player joined = event.getPlayer();
+        joined.discoverRecipe(Utils.cameraKey);
+        joined.discoverRecipe(Utils.computerKey);
+
+        vm.values().forEach(player->{
+            Player p = Bukkit.getServer().getPlayer(UUID.fromString(player.getId()));
+            joined.hidePlayer(CCTV.get(),p);
+            NPCUtils.spawnForTarget(joined,p);
+        });
+    }
 
 }
