@@ -408,7 +408,7 @@ public class cctv implements CommandExecutor {
                     return true;
                   }
                   if (!computerfunctions.computerExist(args[2])) {
-                    player.sendMessage(Arguments.computer_not_exist);
+                    player.sendMessage(lang.COMPUTER_NOT_FOUND);
                     return true;
                   }
                   computerfunctions.TeleportToComputer(args[2], player);
@@ -470,7 +470,7 @@ public class cctv implements CommandExecutor {
                     computerfunctions.setLastClickedComputerForPlayer(player, pc.loc);
                     camerafunctions.getCCTVFromComputer(player, pc.loc);
                   } else {
-                    player.sendMessage(Arguments.computer_not_exist);
+                    player.sendMessage(lang.COMPUTER_NOT_FOUND);
                   }
                   return true;
                 case 1430430609:

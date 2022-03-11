@@ -6,7 +6,6 @@ import java.util.UUID;
 import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.config.LanguageFile;
 import io.github.tanguygab.cctv.old.library.Search;
-import io.github.tanguygab.cctv.old.library.Arguments;
 import io.github.tanguygab.cctv.old.records.LastClickedRecord;
 import io.github.tanguygab.cctv.entities.Computer;
 import org.bukkit.Bukkit;
@@ -33,7 +32,7 @@ public class computerfunctions {
               if (loc.equals(rec.loc)) {
                 if (!rec.allowedPlayers.contains(player.getUniqueId().toString()) &&
                   !player.hasPermission("cctv.addplayer.other")) {
-                  player.sendMessage(Arguments.computer_change_no_perms);
+                  player.sendMessage(lang.COMPUTER_CHANGE_NO_PERMS);
                   return;
                 } 
                 if (rec.allowedPlayers.contains(off.getUniqueId().toString())) {
@@ -45,13 +44,13 @@ public class computerfunctions {
                 return;
               } 
             } 
-            player.sendMessage(Arguments.computer_not_exist);
+            player.sendMessage(lang.COMPUTER_NOT_FOUND);
           } 
         } else {
           for (Computer rec : CCTV.get().getComputers().values()) {
             if (rec.getId().equals(computer)) {
               if (!rec.isAllowedPlayers(player) && !player.hasPermission("cctv.addplayer.other")) {
-                player.sendMessage(Arguments.computer_change_no_perms);
+                player.sendMessage(lang.COMPUTER_CHANGE_NO_PERMS);
                 return;
               } 
               if (rec.isAllowedPlayers(off)) {
@@ -63,7 +62,7 @@ public class computerfunctions {
               return;
             } 
           } 
-          player.sendMessage(Arguments.computer_not_found);
+          player.sendMessage(lang.COMPUTER_NOT_FOUND);
         }  
       b++;
     } 
@@ -85,7 +84,7 @@ public class computerfunctions {
               if (loc.equals(rec.loc)) {
                 if (!rec.allowedPlayers.contains(player.getUniqueId().toString()) &&
                   !player.hasPermission("cctv.removeplayer.other")) {
-                  player.sendMessage(Arguments.computer_change_no_perms);
+                  player.sendMessage(lang.COMPUTER_CHANGE_NO_PERMS);
                   return;
                 } 
                 if (rec.allowedPlayers.contains(off.getUniqueId().toString())) {
@@ -101,14 +100,14 @@ public class computerfunctions {
                 return;
               } 
             } 
-            player.sendMessage(Arguments.computer_not_exist);
+            player.sendMessage(lang.COMPUTER_NOT_FOUND);
           } 
         } else {
           for (ComputerRecord.computerRec rec : ComputerRecord.computers) {
             if (rec.id.equals(computer)) {
               if (!rec.allowedPlayers.contains(player.getUniqueId().toString()) &&
                 !player.hasPermission("cctv.removeplayer.other")) {
-                player.sendMessage(Arguments.computer_change_no_perms);
+                player.sendMessage(lang.COMPUTER_CHANGE_NO_PERMS);
                 return;
               } 
               if (rec.allowedPlayers.contains(off.getUniqueId().toString())) {
@@ -124,7 +123,7 @@ public class computerfunctions {
               return;
             } 
           } 
-          player.sendMessage(Arguments.computer_not_found);
+          player.sendMessage(lang.COMPUTER_NOT_FOUND);
         }  
       b++;
     } 
@@ -141,6 +140,7 @@ public class computerfunctions {
   }
   
   public static void setOwner(Player player, String computer, String name) {
+    LanguageFile lang = CCTV.get().getLang();
     byte b;
     int i;
     OfflinePlayer[] arrayOfOfflinePlayer;
@@ -154,32 +154,32 @@ public class computerfunctions {
               if (loc.equals(rec.loc)) {
                 if (rec.owner.equals(player.getUniqueId().toString()) || player.hasPermission("cctv.computer.other")) {
                   rec.owner = off.getUniqueId().toString();
-                  player.sendMessage(Arguments.computer_owner_set);
+                  player.sendMessage(lang.getComputerOwnerChanged(off.getName()));
                 } else {
-                  player.sendMessage(Arguments.computer_only_owner_change_owner_no_perm);
+                  player.sendMessage(lang.COMPUTER_ONLY_OWNER_CAN_CHANGE_OWNER);
                 } 
                 return;
               } 
             } 
           } 
-          player.sendMessage(Arguments.computer_not_exist);
+          player.sendMessage(lang.COMPUTER_NOT_FOUND);
         } else {
           for (ComputerRecord.computerRec rec : ComputerRecord.computers) {
             if (rec.id.equals(computer)) {
               if (rec.owner.equals(player.getUniqueId().toString()) || player.hasPermission("cctv.computer.other")) {
                 rec.owner = off.getUniqueId().toString();
-                player.sendMessage(Arguments.computer_owner_set);
+                player.sendMessage(lang.getComputerOwnerChanged(off.getName()));
               } else {
-                player.sendMessage(Arguments.computer_only_owner_change_owner_no_perm);
+                player.sendMessage(lang.COMPUTER_ONLY_OWNER_CAN_CHANGE_OWNER);
               } 
               return;
             } 
           } 
-          player.sendMessage(Arguments.computer_not_found);
+          player.sendMessage(lang.COMPUTER_NOT_FOUND);
         }  
       b++;
     } 
-    player.sendMessage(Arguments.player_not_found);
+    player.sendMessage(lang.PLAYER_NOT_FOUND);
   }
   
   public static void list(Player p, int page, Search s, String search) {

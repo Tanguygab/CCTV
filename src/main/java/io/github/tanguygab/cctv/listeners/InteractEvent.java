@@ -6,7 +6,6 @@ import io.github.tanguygab.cctv.managers.ComputerManager;
 import io.github.tanguygab.cctv.old.functions.camerafunctions;
 import io.github.tanguygab.cctv.old.functions.computerfunctions;
 import io.github.tanguygab.cctv.old.functions.viewfunctions;
-import io.github.tanguygab.cctv.old.library.Arguments;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -35,7 +34,7 @@ public class InteractEvent {
                 if (computerfunctions.canPlayerAccessComputer(p, computer.getId())) {
                     computerfunctions.setLastClickedComputerForPlayer(p, loc);
                     camerafunctions.getCCTVFromComputer(p, loc);
-                } else p.sendMessage(Arguments.computer_not_allowed);
+                } else p.sendMessage(CCTV.get().getLang().COMPUTER_NOT_ALLOWED);
                 return;
             }
         }

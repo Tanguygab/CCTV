@@ -2,7 +2,6 @@ package io.github.tanguygab.cctv.managers;
 
 import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.old.functions.computerfunctions;
-import io.github.tanguygab.cctv.old.library.Arguments;
 import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -59,11 +58,11 @@ public class ComputerManager extends Manager<Computer> {
     public void delete(String name, Player player) {
         Computer computer = get(name);
         if (computer == null) {
-            player.sendMessage(Arguments.computer_not_found);
+            player.sendMessage(lang.COMPUTER_NOT_FOUND);
             return;
         }
         map.remove(name);
-        player.sendMessage(Arguments.computer_delete);
+        player.sendMessage(lang.COMPUTER_DELETE);
     }
 
     public boolean exists(Location loc) {
@@ -93,8 +92,8 @@ public class ComputerManager extends Manager<Computer> {
     public void create(String id, Player p, Location loc) {
         Computer computer = create(id,p.getUniqueId().toString(),loc, null, new ArrayList<>());
         if (computer != null) {
-            p.sendMessage(Arguments.computer_create);
-            p.sendMessage(Arguments.computer_id.replaceAll("%ComputerID%", computer.getId()));
-        } else p.sendMessage(Arguments.computer_exist);
+            p.sendMessage(lang.COMPUTER_CREATE);
+            p.sendMessage(lang.getComputerID(computer.getId()));
+        } else p.sendMessage(lang.COMPUTER_ALREADY_EXISTS);
     }
 }

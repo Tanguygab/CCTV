@@ -61,10 +61,10 @@ computers:
   id: "&eComputer ID: %computerID%"
   owner-changed: "&6Computer owner is set to &a%player%&6!"
   change-no-perms: "&cYou can only edit your own computers!"
-  only-owner-change-owner-no-perm: "&cOnly the owner of this computer can change the owner!"
+  only-owner-can-change-owner: "&cOnly the owner of this computer can change the owner!"
   not-allowed: "&cYou aren't allowed to open this computer!"
   no-group-set: "&cThat block already has no group assigned to it!"
-  create-look-at-stair: "&cYou should be looking at a %block% to create a Computer!"
+  create-look-at-stair: "&cYou have to look at a %block% to create a computer!"
   not-stair: "&cThis block is not a %block%"
 guis:
   camera:

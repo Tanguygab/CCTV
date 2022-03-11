@@ -4,29 +4,6 @@ import org.bukkit.ChatColor;
 
 public class Arguments {
 
-  
-  public static String computer_not_allowed = ChatColor.RED + "You aren't allowed to see these camera's on this Computer!";
-  
-  public static String computer_create = ChatColor.GREEN + "Computer has been created!";
-
-  public static String computer_exist = ChatColor.RED + "This block already is a Computer!";
-  
-  public static String computer_not_exist = ChatColor.RED + "This computer does not exist!";
-  
-  public static String computer_delete = ChatColor.RED + "Computer has been deleted!";
-  
-  public static String computer_not_found = ChatColor.RED + "Computer has not been found!";
-  
-  public static String computer_change_no_perms = ChatColor.RED + "You may not edit other people's Computer!";
-  
-  public static String computer_only_owner_change_owner_no_perm = ChatColor.RED + "Only the owner of this computer can change the owner!";
-  
-  public static String computer_owner_set = ChatColor.GREEN + "Owner has been set!";
-
-  public static String computer_id = ChatColor.YELLOW + "Computer ID: %ComputerID%";
-
-
-  
   public static String gui_camera_settings = "&eSETTINGS";
   
   public static String gui_camera_delete = "&eDelete Camera %CameraID%";

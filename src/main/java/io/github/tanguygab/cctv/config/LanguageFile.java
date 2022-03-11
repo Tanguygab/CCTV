@@ -111,5 +111,23 @@ public class LanguageFile extends YamlConfigurationFile {
     public final String GROUP_ASSIGNED_TO_COMPUTER = get("groups.assigned-to-computer","&aGroup assigned to this PC!");
     public final String GROUP_REMOVED_FROM_COMPUTER = get("groups.removed-from-computer","&aGroup removed from this computer!");
 
+    public final String COMPUTER_CREATE = get("computers.create", "&aComputer created!");
+    public final String COMPUTER_DELETE = get("computers.delete", "&cComputer deleted!");
+    public final String COMPUTER_ALREADY_EXISTS = get("computers.already-exists", "&cThis block already is a computer!");
+    public final String COMPUTER_NOT_FOUND = get("computers.not-found", "&cThis computer doesn't exist!");
+    private final String COMPUTER_ID = get("computers.id", "&eComputer ID: %computerID%");
+    public String getComputerID(String id) {
+        return COMPUTER_ID.replace("%computerID%",id);
+    }
+    private final String COMPUTER_OWNER_CHANGED = get("computers.owner-changed", "&6Computer owner is set to &a%player%&6!");
+    public String getComputerOwnerChanged(String player) {
+        return COMPUTER_OWNER_CHANGED.replace("%player%",player);
+    }
+    public final String COMPUTER_CHANGE_NO_PERMS = get("computers.change-no-perms", "&cYou can only edit your own computers!");
+    public final String COMPUTER_ONLY_OWNER_CAN_CHANGE_OWNER = get("computers.only-owner-can-change-owner", "&cOnly the owner of this computer can change the owner!");
+    public final String COMPUTER_NOT_ALLOWED = get("computers.not-allowed", "&cYou aren't allowed to open this computer!");
+    public final String COMPUTER_NO_GROUP_SET = get("computers.no-group-set", "&cThat block already has no group assigned to it!");
+    public final String COMPUTER_CREATE_LOOK_AT_STAIR = get("computers.create-look-at-stair", "&cYou have to look at a %block% to create a computer!");
+    public final String COMPUTER_NOT_STAIR = get("computers.not-stair", "&cThis block is not a %block%");
 
 }
