@@ -1,6 +1,7 @@
 package io.github.tanguygab.cctv.managers;
 
 import io.github.tanguygab.cctv.entities.Computer;
+import io.github.tanguygab.cctv.old.functions.computerfunctions;
 import io.github.tanguygab.cctv.old.library.Arguments;
 import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.Bukkit;
@@ -73,6 +74,9 @@ public class ComputerManager extends Manager<Computer> {
             if (computer.getLocation().equals(loc)) return computer;
         }
         return null;
+    }
+    public Computer getLast(Player p) {
+        return get(computerfunctions.getLastClickedComputerFromPlayer(p));
     }
 
     private Computer create(String id, String owner, Location loc, String group, List<String> allowedPlayers) {

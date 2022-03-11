@@ -16,7 +16,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 
@@ -59,11 +58,6 @@ public class Listener implements org.bukkit.event.Listener {
         ItemStack item = e.getItemInHand();
         if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().contains("Computer"))
             cpm.create(null,e.getPlayer(), e.getBlock().getLocation());
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void on(InventoryClickEvent e) {
-        InvClickEvent.on(e);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST,ignoreCancelled = true)

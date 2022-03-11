@@ -86,7 +86,8 @@ public class Utils {
 
     public static ItemStack getItem(ItemStack item, String name) {
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(name);
+        if (meta == null) return item;
+        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&',name));
         item.setItemMeta(meta);
         return item;
     }
