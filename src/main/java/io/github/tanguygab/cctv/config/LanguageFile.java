@@ -127,4 +127,32 @@ public class LanguageFile extends YamlConfigurationFile {
     public final String COMPUTER_ONLY_OWNER_CAN_CHANGE_OWNER = get("computers.only-owner-can-change-owner", "&cOnly the owner of this computer can change the owner!");
     public final String COMPUTER_NOT_ALLOWED = get("computers.not-allowed", "&cYou aren't allowed to open this computer!");
 
+    public final String GUI_CAMERA_SETTINGS = get("gui.camera.settings", "&eSettings");
+    public final String GUI_CAMERA_DELETE = get("gui.camera.delete", "&eDelete camera %cameraID%");
+    public String getGuiCameraDelete(String id) {
+        return GUI_CAMERA_DELETE.replace("%cameraID%",id);
+    }
+    public final String GUI_CAMERA_DELETE_ITEM_CANCEL = get("gui.camera.delete-item-cancel", "&cCancel");
+    public final String GUI_CAMERA_DELETE_ITEM_DELETE = get("gui.camera.delete-item-delete", "&2Delete");
+    public final String GUI_COMPUTER_DEFAULT = get("gui.computer.default", "&eCCTV (page: %page%)");
+    public String getGuiComputerDefault(String page) {
+        return GUI_COMPUTER_DEFAULT.replace("%page%",page);
+    }
+    public final String GUI_COMPUTER_OPTIONS_ITEM = get("gui.computer.options-item", "&eOptions");
+    public final String GUI_COMPUTER_SET_GROUP = get("gui.computer.set-group", "&eSet camera group (page: %page%)");
+    public String getGuiComputerSetGroup(String page) {
+        return GUI_COMPUTER_SET_GROUP.replace("%page%",page);
+    }
+    public final String GUI_COMPUTER_REMOVE_PLAYER = get("gui.computer.remove-player", "&cRemove player (page: %page%)");
+    public String getGuiComputerRemovePlayer(String page) {
+        return GUI_COMPUTER_REMOVE_PLAYER.replace("%page%",page);
+    }
+    public final String GUI_COMPUTER_DEFAULT_ITEM_OPTION = get("gui.computer.default-item.option", "&6Options");
+    public final String GUI_COMPUTER_DEFAULT_ITEM_NEXT_PAGE = get("gui.computer.default-item.next-page", "&8Next Page");
+    public final String GUI_COMPUTER_DEFAULT_ITEM_PREVIOUS_PAGE = get("gui.computer.default-item.previous-page", "&8Previous Page");
+    public final String GUI_COMPUTER_DEFAULT_ITEM_EXIT = get("gui.computer.default-item.exit", "&4Exit");
+    public final String GUI_COMPUTER_DEFAULT_ITEM_BACK = get("gui.computer.default-item.back", "&8Back");
+    public final String GUI_COMPUTER_OPTIONS_SET_CAMERA_GROUP = get("gui.computer.options.set-camera-group", "&aSet camera group");
+    public final String GUI_COMPUTER_OPTIONS_ADD_PLAYER = get("gui.computer.options.add-player", "&aAdd player");
+    public final String GUI_COMPUTER_OPTIONS_REMOVE_PLAYER = get("gui.computer.options.remove-player", "&cRemove player");
 }

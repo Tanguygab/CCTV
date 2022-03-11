@@ -4,38 +4,6 @@ import org.bukkit.ChatColor;
 
 public class Arguments {
 
-  public static String gui_camera_settings = "&eSETTINGS";
-  
-  public static String gui_camera_delete = "&eDelete Camera %CameraID%";
-  
-  public static String gui_computer_default = "&eCCTV (page: %page%)";
-  
-  public static String gui_computer_options = "&eOPTIONS";
-  
-  public static String gui_computer_setgroup = "&eSet CameraGroup (page: %page%)";
-  
-  public static String gui_computer_removeplayer = "&cRemove Player (page: %page%)";
-  
-  public static String gui_computer_default_item_option = "&6Options";
-  
-  public static String gui_computer_default_item_next_page = "&8Next Page";
-  
-  public static String gui_computer_default_item_prev_page = "&8Previous Page";
-  
-  public static String gui_computer_default_item_exit = "&4Exit";
-  
-  public static String gui_computer_default_item_back = "&8Back";
-  
-  public static String gui_computer_options_item_setcameragroup = "&aSet CameraGroup";
-  
-  public static String gui_computer_options_item_addplayer = "&aAdd Player";
-  
-  public static String gui_computer_options_item_removeplayer = "&cRemove Player";
-  
-  public static String gui_camera_delete_item_cancel = "&cCancel";
-  
-  public static String gui_camera_delete_item_delete = "&2Delete";
-  
   public static String item_camera_view_option = "&6Options";
   
   public static String item_camera_view_rotate_left = "&6Rotate Left";

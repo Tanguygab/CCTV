@@ -9,7 +9,6 @@ import io.github.tanguygab.cctv.managers.ComputerManager;
 import io.github.tanguygab.cctv.managers.ViewerManager;
 import io.github.tanguygab.cctv.old.functions.camerafunctions;
 import io.github.tanguygab.cctv.old.functions.viewfunctions;
-import io.github.tanguygab.cctv.old.library.Arguments;
 import io.github.tanguygab.cctv.utils.Heads;
 import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.Bukkit;
@@ -54,7 +53,7 @@ public class InvClickEvent implements Listener {
 
         if (vm.exists(p)) {
             e.setCancelled(true);
-            if (title.matches(Arguments.gui_camera_settings.replaceAll("\\(", "\\\\(").replaceAll("\\)", "\\\\)"))) {
+            if (title.matches(lang.GUI_CAMERA_SETTINGS.replaceAll("\\(", "\\\\(").replaceAll("\\)", "\\\\)"))) {
                 if (e.getClickedInventory() == e.getView().getTopInventory())
                     viewfunctions.settingFunctions(p, item);
                 return;
@@ -66,11 +65,11 @@ public class InvClickEvent implements Listener {
         Computer computer = cpm.getLast(p);
         String itemName = item.getItemMeta().getDisplayName();
         e.setCancelled(true);
-        if (title.matches(quote(Arguments.gui_computer_default).replaceAll("%page%", "*\\\\d+"))) onMain(p,title,itemName,computer);
-        if (title.matches(quote(Arguments.gui_computer_options))) onOptions(p,itemName,computer);
-        if (title.matches(quote(Arguments.gui_computer_setgroup).replaceAll("%page%", "*\\\\d+"))) onSetGroup(p,title,itemName,computer);
-        if (title.matches(quote(Arguments.gui_computer_removeplayer).replaceAll("%page%", "*\\\\d+"))) onRemovePlayer(p,title,itemName,computer);
-        if (title.matches(quote(Arguments.gui_camera_delete).replaceAll("%CameraID%", "*.+"))) {
+        if (title.matches(quote(lang.GUI_COMPUTER_DEFAULT).replaceAll("%page%", "*\\\\d+"))) onMain(p,title,itemName,computer);
+        if (title.matches(quote(lang.GUI_COMPUTER_OPTIONS_ITEM))) onOptions(p,itemName,computer);
+        if (title.matches(quote(lang.GUI_COMPUTER_SET_GROUP).replaceAll("%page%", "*\\\\d+"))) onSetGroup(p,title,itemName,computer);
+        if (title.matches(quote(lang.GUI_COMPUTER_REMOVE_PLAYER).replaceAll("%page%", "*\\\\d+"))) onRemovePlayer(p,title,itemName,computer);
+        if (title.matches(quote(lang.GUI_CAMERA_DELETE).replaceAll("%CameraID%", "*.+"))) {
             onCameraDelete(p,title, e.getSlot());
         }
     }
@@ -80,13 +79,13 @@ public class InvClickEvent implements Listener {
             p.closeInventory();
             return;
         }
-        if (item.equals(Arguments.gui_computer_default_item_option)) {
+        if (item.equals(lang.GUI_COMPUTER_DEFAULT_ITEM_OPTION)) {
             if (Utils.canUse(computer.getOwner(),p,"computer.other")) {
                 optionsInv(p);
             } else p.sendMessage(lang.NO_PERMISSIONS);
             return;
         }
-        if (item.equals(Arguments.gui_computer_default_item_exit)) {
+        if (item.equals(lang.GUI_COMPUTER_DEFAULT_ITEM_EXIT)) {
             p.closeInventory();
             return;
         }
@@ -97,8 +96,8 @@ public class InvClickEvent implements Listener {
             return;
         }
 
-        if (item.equals(Arguments.gui_computer_default_item_next_page)) {
-            String pageMatch = getMatcher(Arguments.gui_computer_default.replaceAll("%page%", "*\\(\\\\d+\\)"),title,"gui_computer_default");
+        if (item.equals(lang.GUI_COMPUTER_DEFAULT_ITEM_NEXT_PAGE)) {
+            String pageMatch = getMatcher(lang.GUI_COMPUTER_DEFAULT.replaceAll("%page%", "*\\(\\\\d+\\)"),title,"gui_computer_default");
             if (pageMatch == null) return;
             int currentpage = Integer.parseInt(pageMatch);
             double maxpages = (computer.getCameraGroup() != null ? computer.getCameraGroup().getCameras().size() : 0) / 48.0D;
@@ -107,8 +106,8 @@ public class InvClickEvent implements Listener {
             return;
         }
 
-        if (item.equals(Arguments.gui_computer_default_item_prev_page)) {
-            String pageMatch = getMatcher(Arguments.gui_computer_default.replaceAll("%page%", "*\\(\\\\d+\\)"),title,"gui_computer_default");
+        if (item.equals(lang.GUI_COMPUTER_DEFAULT_ITEM_PREVIOUS_PAGE)) {
+            String pageMatch = getMatcher(lang.GUI_COMPUTER_DEFAULT.replaceAll("%page%", "*\\(\\\\d+\\)"),title,"gui_computer_default");
             if (pageMatch == null) return;
             int currentpage = Integer.parseInt(pageMatch);
             if (currentpage == 1) return;
@@ -116,22 +115,22 @@ public class InvClickEvent implements Listener {
         }
     }
     public void onOptions(Player p, String item, Computer computer) {
-        if (item.equals(Arguments.gui_computer_options_item_setcameragroup)) {
+        if (item.equals(lang.GUI_COMPUTER_OPTIONS_SET_CAMERA_GROUP)) {
             setCameraGroup(p,1);
             return;
         }
-        if (item.equals(Arguments.gui_computer_options_item_addplayer)) {
+        if (item.equals(lang.GUI_COMPUTER_OPTIONS_ADD_PLAYER)) {
             CCTV.get().chatInput.add(p);
             p.closeInventory();
             p.sendMessage(Arguments.chat_set_name_to_add);
             p.sendMessage(Arguments.chat_type_exit);
             return;
         }
-        if (item.equals(Arguments.gui_computer_options_item_removeplayer)) {
+        if (item.equals(lang.GUI_COMPUTER_OPTIONS_REMOVE_PLAYER)) {
             removePlayer(p,1,computer);
             return;
         }
-        if (item.equals(Arguments.gui_computer_default_item_back)) {
+        if (item.equals(lang.GUI_COMPUTER_DEFAULT_ITEM_BACK)) {
             camerafunctions.getCCTVFromComputer(p, computer.getLocation());
         }
     }
@@ -149,12 +148,12 @@ public class InvClickEvent implements Listener {
             p.sendMessage(ChatColor.YELLOW + "Set to: " + camGroup.getId());
             return;
         }
-        if (item.equals(Arguments.gui_computer_default_item_back)) {
+        if (item.equals(lang.GUI_COMPUTER_DEFAULT_ITEM_BACK)) {
             optionsInv(p);
             return;
         }
-        if (item.equals(Arguments.gui_computer_default_item_next_page)) {
-            String pageMatch = getMatcher(Arguments.gui_computer_setgroup.replaceAll("%page%", "*\\(\\\\d+\\)"),title,"gui_computer_setgroup");
+        if (item.equals(lang.GUI_COMPUTER_DEFAULT_ITEM_NEXT_PAGE)) {
+            String pageMatch = getMatcher(lang.GUI_COMPUTER_SET_GROUP.replaceAll("%page%", "*\\(\\\\d+\\)"),title,"gui_computer_setgroup");
             if (pageMatch == null) return;
             int currentpage = Integer.parseInt(pageMatch);
             double maxpages = groups.size() / 48.0D;
@@ -162,8 +161,8 @@ public class InvClickEvent implements Listener {
             setCameraGroup(p, currentpage + 1);
             return;
         }
-        if (item.equals(Arguments.gui_computer_default_item_prev_page)) {
-            String pageMatch = getMatcher(Arguments.gui_computer_setgroup.replaceAll("%page%", "*\\(\\\\d+\\)"),title,"gui_computer_setgroup");
+        if (item.equals(lang.GUI_COMPUTER_DEFAULT_ITEM_PREVIOUS_PAGE)) {
+            String pageMatch = getMatcher(lang.GUI_COMPUTER_SET_GROUP.replaceAll("%page%", "*\\(\\\\d+\\)"),title,"gui_computer_setgroup");
             if (pageMatch == null) return;
             int currentpage = Integer.parseInt(pageMatch);
             if (currentpage == 1) return;
@@ -171,12 +170,12 @@ public class InvClickEvent implements Listener {
         }
     }
     public void onRemovePlayer(Player p, String title, String item, Computer computer) {
-        if (item.equals(Arguments.gui_computer_default_item_back)) {
+        if (item.equals(lang.GUI_COMPUTER_DEFAULT_ITEM_BACK)) {
             optionsInv(p);
             return;
         }
-        if (item.equals(Arguments.gui_computer_default_item_next_page)) {
-            String pageMatch = getMatcher(Arguments.gui_computer_setgroup.replaceAll("%page%", "*\\(\\\\d+\\)"),title,"gui_computer_removeplayer");
+        if (item.equals(lang.GUI_COMPUTER_DEFAULT_ITEM_NEXT_PAGE)) {
+            String pageMatch = getMatcher(lang.GUI_COMPUTER_SET_GROUP.replaceAll("%page%", "*\\(\\\\d+\\)"),title,"gui_computer_removeplayer");
             if (pageMatch == null) return;
             int currentpage = Integer.parseInt(pageMatch);
             double maxpages = computer.getAllowedPlayers().size() / 48.0D;
@@ -184,8 +183,8 @@ public class InvClickEvent implements Listener {
             removePlayer(p,currentpage + 1,computer);
             return;
         }
-        if (item.equals(Arguments.gui_computer_default_item_prev_page)) {
-            String pageMatch = getMatcher(Arguments.gui_computer_setgroup.replaceAll("%page%", "*\\(\\\\d+\\)"),title,"gui_computer_removeplayer");
+        if (item.equals(lang.GUI_COMPUTER_DEFAULT_ITEM_PREVIOUS_PAGE)) {
+            String pageMatch = getMatcher(lang.GUI_COMPUTER_SET_GROUP.replaceAll("%page%", "*\\(\\\\d+\\)"),title,"gui_computer_removeplayer");
             if (pageMatch == null) return;
             int currentpage = Integer.parseInt(pageMatch);
             if (currentpage == 1) return;
@@ -208,7 +207,7 @@ public class InvClickEvent implements Listener {
     public void onCameraDelete(Player p, String title, int slot) {
         if (slot == 5) {
             p.closeInventory();
-            String name = getMatcher(Arguments.gui_camera_delete.replaceAll("%CameraID%", "*\\(.+\\)"),title,"gui_computer_removeplayer");
+            String name = getMatcher(lang.GUI_CAMERA_DELETE.replaceAll("%CameraID%", "*\\(.+\\)"),title,"gui_computer_removeplayer");
             CCTV.get().getCameras().delete(name, p);
             return;
         }
@@ -229,25 +228,25 @@ public class InvClickEvent implements Listener {
     }
 
     private void optionsInv(Player p) {
-        Inventory inv = Bukkit.createInventory(null, InventoryType.HOPPER, Arguments.gui_computer_options);
+        Inventory inv = Bukkit.createInventory(null, InventoryType.HOPPER, lang.GUI_COMPUTER_OPTIONS_ITEM);
 
-        inv.setItem(0, Utils.getItem(Heads.CHEST,Arguments.gui_computer_options_item_setcameragroup));
-        inv.setItem(1, Utils.getItem(Heads.GREEN_PLUS,Arguments.gui_computer_options_item_addplayer));
-        inv.setItem(2, Utils.getItem(Heads.RED_MIN,Arguments.gui_computer_options_item_removeplayer));
-        inv.setItem(4, Utils.getItem(Heads.ARROW_BACK,Arguments.gui_computer_default_item_back));
+        inv.setItem(0, Utils.getItem(Heads.CHEST,lang.GUI_COMPUTER_OPTIONS_SET_CAMERA_GROUP));
+        inv.setItem(1, Utils.getItem(Heads.GREEN_PLUS,lang.GUI_COMPUTER_OPTIONS_ADD_PLAYER));
+        inv.setItem(2, Utils.getItem(Heads.RED_MIN,lang.GUI_COMPUTER_OPTIONS_REMOVE_PLAYER));
+        inv.setItem(4, Utils.getItem(Heads.ARROW_BACK,lang.GUI_COMPUTER_DEFAULT_ITEM_BACK));
 
         p.openInventory(inv);
     }
     public void setCameraGroup(Player p, int page) {
-        Inventory inv = Bukkit.createInventory(null, 54, Arguments.gui_computer_setgroup.replaceAll("%page%", page+""));
+        Inventory inv = Bukkit.createInventory(null, 54, lang.GUI_COMPUTER_SET_GROUP.replaceAll("%page%", page+""));
 
         ItemStack holder = Utils.getItem(Material.BLACK_STAINED_GLASS_PANE," ");
         inv.setItem(0, holder);
         inv.setItem(9, holder);
         inv.setItem(18, holder);
-        inv.setItem(27, Utils.getItem(Heads.ARROW_RIGHT_IRON,Arguments.gui_computer_default_item_next_page));
-        inv.setItem(36, Utils.getItem(Heads.ARROW_LEFT_IRON,Arguments.gui_computer_default_item_prev_page));
-        inv.setItem(45, Utils.getItem(Heads.ARROW_BACK,Arguments.gui_computer_default_item_back));
+        inv.setItem(27, Utils.getItem(Heads.ARROW_RIGHT_IRON,lang.GUI_COMPUTER_DEFAULT_ITEM_NEXT_PAGE));
+        inv.setItem(36, Utils.getItem(Heads.ARROW_LEFT_IRON,lang.GUI_COMPUTER_DEFAULT_ITEM_PREVIOUS_PAGE));
+        inv.setItem(45, Utils.getItem(Heads.ARROW_BACK,lang.GUI_COMPUTER_DEFAULT_ITEM_BACK));
         List<CameraGroup> groups = new ArrayList<>();
         for (String name : cgm.get(p))
             if (cgm.exists(name)) groups.add(cgm.get(name));
@@ -258,15 +257,15 @@ public class InvClickEvent implements Listener {
         p.openInventory(inv);
     }
     public void removePlayer(Player p, int page, Computer computer) {
-        Inventory inv = Bukkit.createInventory(null, 54, Arguments.gui_computer_removeplayer.replaceAll("%page%", page+""));
+        Inventory inv = Bukkit.createInventory(null, 54, lang.GUI_COMPUTER_REMOVE_PLAYER.replaceAll("%page%", page+""));
 
         ItemStack holder = Utils.getItem(Material.BLACK_STAINED_GLASS_PANE," ");
         inv.setItem(0, holder);
         inv.setItem(9, holder);
         inv.setItem(18, holder);
-        inv.setItem(27, Utils.getItem(Heads.ARROW_RIGHT_IRON,Arguments.gui_computer_default_item_next_page));
-        inv.setItem(36, Utils.getItem(Heads.ARROW_LEFT_IRON,Arguments.gui_computer_default_item_prev_page));
-        inv.setItem(45, Utils.getItem(Heads.ARROW_BACK,Arguments.gui_computer_default_item_back));
+        inv.setItem(27, Utils.getItem(Heads.ARROW_RIGHT_IRON,lang.GUI_COMPUTER_DEFAULT_ITEM_NEXT_PAGE));
+        inv.setItem(36, Utils.getItem(Heads.ARROW_LEFT_IRON,lang.GUI_COMPUTER_DEFAULT_ITEM_PREVIOUS_PAGE));
+        inv.setItem(45, Utils.getItem(Heads.ARROW_BACK,lang.GUI_COMPUTER_DEFAULT_ITEM_BACK));
 
         for (int a = (page - 1) * 48; a < 48 * page && a < computer.getAllowedPlayers().size(); a++) {
             OfflinePlayer off = Bukkit.getOfflinePlayer(UUID.fromString(computer.getAllowedPlayers().get(a)));
@@ -279,16 +278,16 @@ public class InvClickEvent implements Listener {
 
         p.openInventory(inv);
     }
-    public static void openComputer(Player player, int page, Computer computer) {
-        Inventory inv = Bukkit.createInventory(null, 54, Arguments.gui_computer_default.replaceAll("%page%", page+""));
+    public void openComputer(Player player, int page, Computer computer) {
+        Inventory inv = Bukkit.createInventory(null, 54, lang.GUI_COMPUTER_DEFAULT.replaceAll("%page%", page+""));
 
         ItemStack holder = Utils.getItem(Material.BLACK_STAINED_GLASS_PANE," ");
         inv.setItem(9, holder);
         inv.setItem(18, holder);
-        inv.setItem(0, Utils.getItem(Heads.OPTIONS,Arguments.gui_computer_default_item_option));
-        inv.setItem(27, Utils.getItem(Heads.ARROW_RIGHT_IRON,Arguments.gui_computer_default_item_next_page));
-        inv.setItem(36, Utils.getItem(Heads.ARROW_LEFT,Arguments.gui_computer_default_item_prev_page));
-        inv.setItem(45, Utils.getItem(Heads.EXIT,Arguments.gui_computer_default_item_exit));
+        inv.setItem(0, Utils.getItem(Heads.OPTIONS,lang.GUI_COMPUTER_DEFAULT_ITEM_OPTION));
+        inv.setItem(27, Utils.getItem(Heads.ARROW_RIGHT_IRON,lang.GUI_COMPUTER_DEFAULT_ITEM_NEXT_PAGE));
+        inv.setItem(36, Utils.getItem(Heads.ARROW_LEFT,lang.GUI_COMPUTER_DEFAULT_ITEM_PREVIOUS_PAGE));
+        inv.setItem(45, Utils.getItem(Heads.EXIT,lang.GUI_COMPUTER_DEFAULT_ITEM_EXIT));
 
         CameraGroup group = computer.getCameraGroup();
         if (group == null)

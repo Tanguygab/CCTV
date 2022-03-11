@@ -6,7 +6,6 @@ import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.managers.ViewerManager;
 import io.github.tanguygab.cctv.old.functions.camerafunctions;
 import io.github.tanguygab.cctv.old.functions.viewfunctions;
-import io.github.tanguygab.cctv.old.library.Arguments;
 import io.github.tanguygab.cctv.utils.Utils;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -113,9 +112,9 @@ public class ViewersEvents implements Listener {
         List<String> cameras = cm.get(p);
         if (!cameras.contains(name)) return;
 
-        Inventory inv = Bukkit.createInventory(null, InventoryType.HOPPER, Arguments.gui_camera_delete.replaceAll("%CameraID%", as.getCustomName().substring(4)));
-        inv.setItem(1, Utils.getItem(Material.RED_WOOL,Arguments.gui_camera_delete_item_cancel));
-        inv.setItem(3, Utils.getItem(Material.LIME_WOOL,Arguments.gui_camera_delete_item_delete));
+        Inventory inv = Bukkit.createInventory(null, InventoryType.HOPPER, lang.getGuiCameraDelete(as.getCustomName().substring(4)));
+        inv.setItem(1, Utils.getItem(Material.RED_WOOL,lang.GUI_CAMERA_DELETE_ITEM_CANCEL));
+        inv.setItem(3, Utils.getItem(Material.LIME_WOOL,lang.GUI_CAMERA_DELETE_ITEM_DELETE));
         p.openInventory(inv);
     }
 }

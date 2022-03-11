@@ -27,6 +27,7 @@ import org.bukkit.potion.PotionEffectType;
 
 public class viewfunctions {
   public static void switchFunctions(final Player player, ItemStack item) {
+    LanguageFile lang = CCTV.get().getLang();
     if (item.getItemMeta().getDisplayName().equals(Arguments.item_camera_view_rotate_left)) {
       move(player, -18);
     } else if (item.getItemMeta().getDisplayName().equals(Arguments.item_camera_view_rotate_right)) {
@@ -36,7 +37,7 @@ public class viewfunctions {
     } else if (item.getItemMeta().getDisplayName().equals(Arguments.item_camera_view_group_next)) {
       switchRight(player);
     } else if (item.getItemMeta().getDisplayName().equals(Arguments.item_camera_view_option)) {
-      Inventory inv = Bukkit.createInventory(null, 9, Arguments.gui_camera_settings);
+      Inventory inv = Bukkit.createInventory(null, 9, lang.GUI_CAMERA_SETTINGS);
       if (CCTV.get().CISIWP || player.hasPermission("cctv.view.nightvision")) {
         ItemStack nightvision = (player.hasPotionEffect(PotionEffectType.NIGHT_VISION) ? Heads.NIGHT_VISION_ON : Heads.NIGHT_VISION_OFF).get();
         ItemMeta nightvisionM = nightvision.getItemMeta();

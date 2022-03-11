@@ -63,7 +63,7 @@ computers:
   change-no-perms: "&cYou can only edit your own computers!"
   only-owner-can-change-owner: "&cOnly the owner of this computer can change the owner!"
   not-allowed: "&cYou aren't allowed to open this computer!"
-guis:
+gui:
   camera:
     settings: "&eSettings"
     delete: "&eDelete camera %cameraID%"
@@ -72,8 +72,8 @@ guis:
   computer:
     default: "&eCCTV (page: %page%)"
     options-item: "&eOptions"
-    setgroup: "&eSet camera group (page: %page%)"
-    removeplayer: "&cRemove player (page: %page%)"
+    set-group: "&eSet camera group (page: %page%)"
+    remove-player: "&cRemove player (page: %page%)"
     default-item:
       option: "&6Options"
       next-page: "&8Next Page"
@@ -81,9 +81,9 @@ guis:
       exit: "&4Exit"
       back: "&8Back"
     options:
-      setcameragroup: "&aSet camera group"
-      addplayer: "&aAdd player"
-      removeplayer: "&cRemove player"
+      set-camera-group: "&aSet camera group"
+      add-player: "&aAdd player"
+      remove-player: "&cRemove player"
 camera-view:
   option: "&eOptions"
   rotate-left: "&6Rotate Left"
