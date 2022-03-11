@@ -12,7 +12,7 @@ import io.github.tanguygab.cctv.managers.CameraGroupManager;
 import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.managers.ComputerManager;
 import io.github.tanguygab.cctv.managers.ViewerManager;
-import io.github.tanguygab.cctv.utils.*;
+import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -108,11 +108,9 @@ public class CCTV extends JavaPlugin {
         cameraGroupManager.unload();
         computerManager.unload();
 
-        CameraUtils.cameras.forEach((str,cam) -> cam.getArmorStand().remove());
-
-        for (Player players : Bukkit.getOnlinePlayers()) {
-            CameraUtils.unviewCamera(players);
-            players.closeInventory();
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            cameraManager.unviewCamera(p);
+            p.closeInventory();
         }
         getLogger().info("CCTV Plugin has been succesfully Disabled!");
     }
@@ -145,8 +143,8 @@ public class CCTV extends JavaPlugin {
     }
 
     private void loadConfig() {
-        Material mat = Material.getMaterial(CCTV.get().getConfiguration().getString("computer_block","NETHER_BRICK_STAIRS"));
-        ComputerUtils.COMPUTER_MATERIAL = mat == null ? Material.NETHER_BRICK_STAIRS : mat;
+        Material mat = Material.getMaterial(config.getString("computer_block","NETHER_BRICK_STAIRS"));
+        ComputerManager.COMPUTER_MATERIAL = mat == null ? Material.NETHER_BRICK_STAIRS : mat;
 
         CISIWP = config.getBoolean("camera_inventory_show_item_without_permissions");
         CAMERA_HEAD_RADIUS = config.getDouble("camera_head_radius",0.35D);

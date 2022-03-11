@@ -2,12 +2,11 @@ package io.github.tanguygab.cctv.listeners;
 
 import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.config.LanguageFile;
+import io.github.tanguygab.cctv.managers.ComputerManager;
 import io.github.tanguygab.cctv.old.functions.computerfunctions;
 import io.github.tanguygab.cctv.old.functions.viewfunctions;
 import io.github.tanguygab.cctv.old.records.ChatRecord;
 import io.github.tanguygab.cctv.entities.Computer;
-import io.github.tanguygab.cctv.utils.CameraUtils;
-import io.github.tanguygab.cctv.utils.ComputerUtils;
 import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
@@ -31,16 +30,17 @@ public class Listener implements org.bukkit.event.Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST,ignoreCancelled = true)
     public void on(BlockBreakEvent e) {
-        if (!e.getBlock().getType().equals(ComputerUtils.getComputerMaterial())) return;
+        if (!e.getBlock().getType().equals(ComputerManager.COMPUTER_MATERIAL)) return;
         Player p = e.getPlayer();
-        Computer rec = computerfunctions.getComputerRecordFromLocation(e.getBlock().getLocation());
+        ComputerManager cpm = CCTV.get().getComputers();
+        Computer rec = cpm.get(e.getBlock().getLocation());
         if (rec == null) return;
         if (!rec.getOwner().equals(p.getUniqueId().toString()) && !p.hasPermission("cctv.computer.other")) return;
         e.getBlock().setType(Material.AIR);
 
         if (p.getGameMode() != GameMode.CREATIVE) p.getInventory().addItem(Utils.getComputer());
         e.setCancelled(true);
-        computerfunctions.deleteComputer(p, rec.getId());
+        cpm.delete(rec.getId(),p);
 
 
     }
@@ -49,7 +49,7 @@ public class Listener implements org.bukkit.event.Listener {
     public void on(BlockPlaceEvent e) {
         ItemStack item = e.getItemInHand();
         if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().contains("Computer"))
-            computerfunctions.createComputer(e.getPlayer(), "", e.getBlock().getLocation());
+            CCTV.get().getComputers().create(null,e.getPlayer(), e.getBlock().getLocation());
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -81,7 +81,7 @@ public class Listener implements org.bukkit.event.Listener {
         if (!CCTV.get().getViewers().exists(player)) return;
 
         player.sendTitle("", CCTV.get().getLang().CAMERA_DISCONNECTING, 0, 15, 0);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(CCTV.get(), () -> CameraUtils.unviewCamera(player),  CCTV.get().TIME_TO_DISCONNECT * 20L);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(CCTV.get(), () -> CCTV.get().getCameras().unviewCamera(player),  CCTV.get().TIME_TO_DISCONNECT * 20L);
     }
 
     @EventHandler(ignoreCancelled = true)

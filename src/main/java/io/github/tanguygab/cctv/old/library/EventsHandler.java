@@ -3,6 +3,7 @@ package io.github.tanguygab.cctv.old.library;
 import java.util.UUID;
 
 import io.github.tanguygab.cctv.CCTV;
+import io.github.tanguygab.cctv.managers.ComputerManager;
 import io.github.tanguygab.cctv.old.events.ChatEvent;
 import io.github.tanguygab.cctv.old.events.InteractEvent;
 import io.github.tanguygab.cctv.old.events.MoveEvent;
@@ -14,7 +15,6 @@ import io.github.tanguygab.cctv.old.events.PlayerQuitGameEvent;
 import io.github.tanguygab.cctv.old.events.PlayerSneakEvent;
 import io.github.tanguygab.cctv.old.functions.computerfunctions;
 import io.github.tanguygab.cctv.old.functions.viewfunctions;
-import io.github.tanguygab.cctv.utils.ComputerUtils;
 import io.github.tanguygab.cctv.utils.NPCUtils;
 import io.github.tanguygab.cctv.utils.Utils;
 import net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata;
@@ -197,12 +197,12 @@ public class EventsHandler implements Listener {
   @EventHandler
   public void onBlockExplosionEvent(BlockExplodeEvent e) {
     if (e.blockList().stream().anyMatch(b -> computerfunctions.computerExistOnLocation(b.getLocation())))
-      e.blockList().removeIf(b -> b.getType().equals(ComputerUtils.getComputerMaterial()));
+      e.blockList().removeIf(b -> b.getType().equals(ComputerManager.COMPUTER_MATERIAL));
   }
   
   @EventHandler
   public void onEntityExplosionEvent(EntityExplodeEvent e) {
     if (e.blockList().stream().anyMatch(b -> computerfunctions.computerExistOnLocation(b.getLocation())))
-      e.blockList().removeIf(b -> b.getType().equals(ComputerUtils.getComputerMaterial()));
+      e.blockList().removeIf(b -> b.getType().equals(ComputerManager.COMPUTER_MATERIAL));
   }
 }

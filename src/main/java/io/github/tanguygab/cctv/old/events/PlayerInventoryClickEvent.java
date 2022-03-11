@@ -6,13 +6,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import io.github.tanguygab.cctv.CCTV;
+import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.old.functions.camerafunctions;
 import io.github.tanguygab.cctv.old.functions.computerfunctions;
 import io.github.tanguygab.cctv.old.functions.groupfunctions;
 import io.github.tanguygab.cctv.old.functions.viewfunctions;
 import io.github.tanguygab.cctv.old.library.Arguments;
 import io.github.tanguygab.cctv.old.records.ChatRecord;
-import io.github.tanguygab.cctv.utils.CameraUtils;
 import io.github.tanguygab.cctv.utils.Heads;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -46,13 +46,13 @@ public class PlayerInventoryClickEvent {
         return; 
       event.setCancelled(true);
       ItemStack item = event.getCurrentItem();
-      ComputerRecord.computerRec pc = computerfunctions.getComputerRecordFromLocation(computerfunctions.getLastClickedComputerFromPlayer(player));
+      Computer pc = CCTV.get().getComputers().get(computerfunctions.getLastClickedComputerFromPlayer(player));
       if (item.getItemMeta().getDisplayName().equals(Arguments.gui_computer_default_item_option)) {
         if (pc == null) {
           player.closeInventory();
           return;
         } 
-        if (pc.owner.equals(player.getUniqueId().toString()) || player.hasPermission("cctv.computer.other")) {
+        if (pc.getOwner().equals(player.getUniqueId().toString()) || player.hasPermission("cctv.computer.other")) {
           player.openInventory(optionsInv(player));
         } else {
           player.sendMessage(Arguments.no_perms);
@@ -64,7 +64,7 @@ public class PlayerInventoryClickEvent {
         } 
         if (ChatColor.stripColor(item.getItemMeta().getDisplayName()).startsWith("Camera:")) {
           String CameraName = ChatColor.stripColor(item.getItemMeta().getDisplayName()).substring(8);
-          CameraUtils.viewCamera(CameraName, player, (computerfunctions.getComputerRecordFromLocation(computerfunctions.getLastClickedComputerFromPlayer(player))).cameraGroup);
+          CCTV.get().getCameras().viewCamera(CameraName, player, (computerfunctions.getComputerRecordFromLocation(computerfunctions.getLastClickedComputerFromPlayer(player))).cameraGroup);
           player.closeInventory();
           return;
         } 

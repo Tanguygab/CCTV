@@ -18,7 +18,7 @@ camera:
   create: "&aCamera created!"
   delete: "&cCamera deleted!"
   already-exists: "&cThis camera already exists!"
-  not-found: "&cCamera has not been found!"
+  not-found: "&cThis camera doesn't exist."
   connecting: "&aConnecting..."
   disconnecting: "&cDisconnecting..."
   enabled: "&aCamera &2%cameraID%&a is now &2enabled&a!"

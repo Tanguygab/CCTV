@@ -1,13 +1,12 @@
 package io.github.tanguygab.cctv.old.events;
 
 import io.github.tanguygab.cctv.CCTV;
+import io.github.tanguygab.cctv.managers.ComputerManager;
 import io.github.tanguygab.cctv.old.functions.camerafunctions;
 import io.github.tanguygab.cctv.old.functions.computerfunctions;
 import io.github.tanguygab.cctv.old.functions.viewfunctions;
 import io.github.tanguygab.cctv.old.library.Arguments;
 import io.github.tanguygab.cctv.entities.Computer;
-import io.github.tanguygab.cctv.utils.CameraUtils;
-import io.github.tanguygab.cctv.utils.ComputerUtils;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -28,54 +27,54 @@ public class InteractEvent {
       Location loc = event.getClickedBlock().getLocation();
       String str;
       switch ((str = event.getBlockFace().toString().toLowerCase()).hashCode()) {
-        case 3739:
+        case 3739 -> {
           if (!str.equals("up"))
-            break; 
+            break;
           loc.setX(loc.getX() + 0.5D);
           loc.setZ(loc.getZ() + 0.5D);
           loc.setY(loc.getY() - 0.47D);
           loc.setYaw(player.getLocation().getYaw() + 180.0F);
-          break;
-        case 3089570:
+        }
+        case 3089570 -> {
           if (!str.equals("down"))
-            break; 
+            break;
           loc.setX(loc.getX() + 0.5D);
           loc.setZ(loc.getZ() + 0.5D);
           loc.setY(loc.getY() - 2.03D);
           loc.setYaw(player.getLocation().getYaw() + 180.0F);
-          break;
-        case 3105789:
+        }
+        case 3105789 -> {
           if (!str.equals("east"))
-            break; 
+            break;
           loc.setX(loc.getX() + 1.29D);
           loc.setZ(loc.getZ() + 0.5D);
           loc.setY(loc.getY() - 1.24D);
           loc.setYaw(270.0F);
-          break;
-        case 3645871:
+        }
+        case 3645871 -> {
           if (!str.equals("west"))
-            break; 
+            break;
           loc.setX(loc.getX() - 0.29D);
           loc.setZ(loc.getZ() + 0.5D);
           loc.setY(loc.getY() - 1.24D);
           loc.setYaw(90.0F);
-          break;
-        case 105007365:
+        }
+        case 105007365 -> {
           if (!str.equals("north"))
-            break; 
+            break;
           loc.setX(loc.getX() + 0.5D);
           loc.setZ(loc.getZ() - 0.29D);
           loc.setY(loc.getY() - 1.24D);
           loc.setYaw(180.0F);
-          break;
-        case 109627853:
+        }
+        case 109627853 -> {
           if (!str.equals("south"))
-            break; 
+            break;
           loc.setX(loc.getX() + 0.5D);
           loc.setZ(loc.getZ() + 1.29D);
           loc.setY(loc.getY() - 1.24D);
           loc.setYaw(0.0F);
-          break;
+        }
       }
       CCTV.get().getCameras().create(null, loc, player);
       event.setCancelled(true);
@@ -90,7 +89,7 @@ public class InteractEvent {
       return;
     } 
     if (act.equals(Action.RIGHT_CLICK_BLOCK)) {
-      if (!event.getClickedBlock().getType().equals(ComputerUtils.getComputerMaterial()))
+      if (!event.getClickedBlock().getType().equals(ComputerManager.COMPUTER_MATERIAL))
         return; 
       if (event.getHand().equals(EquipmentSlot.OFF_HAND))
         return; 

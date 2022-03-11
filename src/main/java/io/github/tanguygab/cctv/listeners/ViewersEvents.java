@@ -3,7 +3,6 @@ package io.github.tanguygab.cctv.listeners;
 import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.old.functions.camerafunctions;
 import io.github.tanguygab.cctv.entities.Viewer;
-import io.github.tanguygab.cctv.utils.CameraUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -39,6 +38,6 @@ public class ViewersEvents implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void on(PlayerQuitEvent e) {
-        CameraUtils.unviewCamera(e.getPlayer());
+        CCTV.get().getCameras().unviewCamera(e.getPlayer());
     }
 }

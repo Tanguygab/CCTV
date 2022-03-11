@@ -6,14 +6,13 @@ import java.text.SimpleDateFormat;
 import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.entities.Camera;
 import io.github.tanguygab.cctv.managers.CameraManager;
+import io.github.tanguygab.cctv.managers.ComputerManager;
 import io.github.tanguygab.cctv.old.functions.camerafunctions;
 import io.github.tanguygab.cctv.old.functions.computerfunctions;
 import io.github.tanguygab.cctv.old.functions.groupfunctions;
 import io.github.tanguygab.cctv.old.library.Search;
 import io.github.tanguygab.cctv.old.library.Arguments;
 import io.github.tanguygab.cctv.old.records.InventoryRecord;
-import io.github.tanguygab.cctv.utils.CameraUtils;
-import io.github.tanguygab.cctv.utils.ComputerUtils;
 import io.github.tanguygab.cctv.utils.Heads;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -91,7 +90,7 @@ public class cctv implements CommandExecutor {
                   if (args[2] != null && args[2].length() >= 1) {
                     cm.delete(args[2], player);
                   } else {
-                    Camera camera = CameraUtils.getCameraFromLocation(player.getLocation());
+                    Camera camera = cm.get(player.getLocation());
                     cm.delete(camera == null ? null : camera.getId(), player);
                   }
                   return true;
@@ -440,11 +439,11 @@ public class cctv implements CommandExecutor {
                     player.sendMessage(Arguments.no_perms);
                     return true;
                   }
-                  computer = new ItemStack(ComputerUtils.getComputerMaterial());
+                  computer = new ItemStack(ComputerManager.COMPUTER_MATERIAL);
                   computerMeta = computer.getItemMeta();
                   computerMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&9Computer"));
                   computer.setItemMeta(computerMeta);
-                  player.getInventory().addItem(new ItemStack[] { computer });
+                  player.getInventory().addItem(computer);
                   return true;
                 case 3322014:
                   if (!str5.equals("list"))
@@ -455,7 +454,7 @@ public class cctv implements CommandExecutor {
                   }
                   if (args.length > 2 && !args[2].equals("") && !args[2].matches("[0-9]+"))
                     player.sendMessage(ChatColor.RED + args[2] + " isn't a number!");
-                  computerfunctions.list(player, (args.length < 3) ? 1 : (args[2].equals("") ? 1 : Integer.valueOf(args[2]).intValue()), Search.all, "");
+                  computerfunctions.list(player, (args.length < 3) ? 1 : (args[2].equals("") ? 1 : Integer.valueOf(args[2])), Search.all, "");
                   return true;
                 case 3417674:
                   if (!str5.equals("open"))

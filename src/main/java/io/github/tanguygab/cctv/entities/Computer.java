@@ -21,7 +21,7 @@ public class Computer extends ID {
         this.allowedPlayers = allowedPlayers;
     }
 
-    public Location getLoc() {
+    public Location getLocation() {
         return loc;
     }
 

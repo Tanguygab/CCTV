@@ -5,6 +5,7 @@ import io.github.tanguygab.cctv.old.library.Arguments;
 import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
@@ -13,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 
 public class ComputerManager extends Manager<Computer> {
+
+    public static Material COMPUTER_MATERIAL;
     
     public ComputerManager() {
         super("computers.yml");
@@ -40,7 +43,7 @@ public class ComputerManager extends Manager<Computer> {
     @Override
     public void unload() {
         map.forEach((id, computer)->{
-            Location loc = computer.getLoc();
+            Location loc = computer.getLocation();
             file.set(id+".owner", computer.getOwner());
             file.set(id + ".world", loc.getWorld());
             file.set(id + ".x", loc.getX());
@@ -62,21 +65,29 @@ public class ComputerManager extends Manager<Computer> {
         player.sendMessage(Arguments.computer_delete);
     }
 
-    private boolean create(String id, String owner, Location loc, String group, List<String> allowedPlayers) {
+    public Computer get(Location loc) {
         for (Computer computer : values()) {
-            if (loc.equals(computer.getLoc()) || computer.getId().equals(id))
-                return false;
+            if (computer.getLocation().equals(loc)) return computer;
+        }
+        return null;
+    }
+
+    private Computer create(String id, String owner, Location loc, String group, List<String> allowedPlayers) {
+        for (Computer computer : values()) {
+            if (loc.equals(computer.getLocation()) || computer.getId().equals(id))
+                return null;
         }
         id = id == null || id.equals("") ? Utils.getRandomNumber(9999, "computer")+"" : id;
         Computer computer = new Computer(id,loc,owner,group,allowedPlayers);
         map.put(id,computer);
-        return true;
+        return computer;
     }
 
     public void create(String id, Player p, Location loc) {
-        if (create(id,p.getUniqueId().toString(),loc, null, new ArrayList<>())) {
+        Computer computer = create(id,p.getUniqueId().toString(),loc, null, new ArrayList<>());
+        if (computer != null) {
             p.sendMessage(Arguments.computer_create);
-            p.sendMessage(Arguments.computer_id.replaceAll("%ComputerID%", id));
+            p.sendMessage(Arguments.computer_id.replaceAll("%ComputerID%", computer.getId()));
         } else p.sendMessage(Arguments.computer_exist);
     }
 }

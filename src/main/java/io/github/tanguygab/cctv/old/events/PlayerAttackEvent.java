@@ -1,6 +1,5 @@
 package io.github.tanguygab.cctv.old.events;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.github.tanguygab.cctv.CCTV;
@@ -8,7 +7,6 @@ import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.managers.ViewerManager;
 import io.github.tanguygab.cctv.old.functions.viewfunctions;
 import io.github.tanguygab.cctv.old.library.Arguments;
-import io.github.tanguygab.cctv.utils.CameraUtils;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -46,7 +44,7 @@ public class PlayerAttackEvent {
       }
 
       if (ChatColor.stripColor(event.getEntity().getCustomName()).startsWith("CAM-") && cm.exists(event.getEntity().getCustomName().substring(4))) {
-        List<String> cameras = cm.getCamerasFromPlayer(damager);
+        List<String> cameras = cm.get(damager);
         if (cameras.contains(event.getEntity().getCustomName().substring(4))) {
           if (vm.exists(damager))
             return; 

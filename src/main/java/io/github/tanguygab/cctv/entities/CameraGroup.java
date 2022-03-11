@@ -1,6 +1,6 @@
 package io.github.tanguygab.cctv.entities;
 
-import io.github.tanguygab.cctv.utils.CameraUtils;
+import io.github.tanguygab.cctv.CCTV;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ public class CameraGroup extends ID {
 
         this.cameras = new ArrayList<>();
         cameras.forEach(str->{
-            Camera cam = CameraUtils.cameras.get(str);
+            Camera cam = CCTV.get().getCameras().get(str);
             if (cam != null) this.cameras.add(cam);
         });
     }

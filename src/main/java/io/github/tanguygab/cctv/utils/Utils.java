@@ -23,7 +23,7 @@ public class Utils {
     private static final Random random = new Random();
 
     public static ItemStack getComputer() {
-        ItemStack computer = new ItemStack(ComputerUtils.getComputerMaterial());
+        ItemStack computer = new ItemStack(ComputerManager.COMPUTER_MATERIAL);
         ItemMeta computerMeta = computer.getItemMeta();
         computerMeta.setDisplayName(ChatColor.BLUE+"Computer");
         computer.setItemMeta(computerMeta);

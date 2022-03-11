@@ -99,7 +99,7 @@ public class camerafunctions {
       armorstand.setSilent(true);
       armorstand.getEquipment().setHelmet(Heads.CAMERA_1.get());
       armorstand.setHeadPose(new EulerAngle(Math.toRadians(loc.getPitch()), 0.0D, 0.0D));
-      cam.setLoc(loc);
+      cam.setLocation(loc);
       for (Viewer p : CCTV.get().getViewers().values()) {
         if (p.getCamera() == cam) {
           Player target = Bukkit.getServer().getPlayer(UUID.fromString(p.getId()));

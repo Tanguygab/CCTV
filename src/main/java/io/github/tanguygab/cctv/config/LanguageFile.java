@@ -43,7 +43,7 @@ public class LanguageFile extends YamlConfigurationFile {
     public final String CAMERA_CREATE = get("camera.create","&aCamera created!");
     public final String CAMERA_DELETE = get("camera.delete","&cCamera deleted!");
     public final String CAMERA_ALREADY_EXISTS = get("camera.already-exists","&cThis camera already exists!");
-    public final String CAMERA_NOT_FOUND = get("camera.not-found","&cCamera has not been found!");
+    public final String CAMERA_NOT_FOUND = get("camera.not-found","&cThis camera doesn't exist.");
     public final String CAMERA_CONNECTING = get("camera.connecting","&aConnecting...");
     public final String CAMERA_DISCONNECTING = get("camera.disconnecting","&cDisconnecting...");
     private final String CAMERA_ENABLED = get("camera.enabled","&aCamera &2%cameraID%&a is now &2enabled&a!");

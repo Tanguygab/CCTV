@@ -12,7 +12,6 @@ import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.managers.CameraGroupManager;
 import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.managers.ComputerManager;
-import io.github.tanguygab.cctv.old.functions.camerafunctions;
 import io.github.tanguygab.cctv.old.functions.computerfunctions;
 import io.github.tanguygab.cctv.old.functions.groupfunctions;
 import io.github.tanguygab.cctv.old.records.CameraGroupRecord;
@@ -324,7 +323,7 @@ public class cctvTabcompleter implements TabCompleter {
     if (args0.equals("camera")) {
       CameraManager cm = CCTV.get().getCameras();
       if (sender instanceof Player) {
-        list = cm.getCamerasFromPlayer((Player) sender);
+        list = cm.get((Player) sender);
       } else {
         for (Camera rec : cm.values())
           list.add(rec.getId());

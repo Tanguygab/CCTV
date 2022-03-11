@@ -9,7 +9,6 @@ import io.github.tanguygab.cctv.old.library.Search;
 import io.github.tanguygab.cctv.old.library.Arguments;
 import io.github.tanguygab.cctv.old.records.LastClickedRecord;
 import io.github.tanguygab.cctv.entities.Computer;
-import io.github.tanguygab.cctv.utils.ComputerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -23,11 +22,7 @@ public class computerfunctions {
   }
   
   public static boolean computerExist(String id) {
-    for (ComputerRecord.computerRec rec : ComputerRecord.computers) {
-      if (rec.id.equals(id))
-        return true; 
-    } 
-    return false;
+    return CCTV.get().getComputers().exists(id);
   }
   
   public static boolean computerExistOnLocation(Location loc) {
@@ -37,17 +32,10 @@ public class computerfunctions {
     return computer.isPresent();
   }
   
-  public static ComputerRecord.computerRec getComputerRecord(String id) {
-    for (ComputerRecord.computerRec rec : ComputerRecord.computers) {
-      if (rec.id.equals(id))
-        return rec; 
-    } 
-    return null;
+  public static Computer getComputerRecord(String id) {
+    return CCTV.get().getComputers().get(id);
   }
-  
-  public static void createComputer(Player player, String name, Location loc) {
 
-  }
   
   public static void deleteComputer(Player player, String id) {
 
@@ -83,7 +71,7 @@ public class computerfunctions {
             player.sendMessage(Arguments.computer_not_exist);
           } 
         } else {
-          for (Computer rec : ComputerUtils.computers.values()) {
+          for (Computer rec : CCTV.get().getComputers().values()) {
             if (rec.getId().equals(computer)) {
               if (!rec.isAllowedPlayers(player) && !player.hasPermission("cctv.addplayer.other")) {
                 player.sendMessage(Arguments.computer_change_no_perms);

@@ -3,8 +3,12 @@ package io.github.tanguygab.cctv.managers;
 import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.config.LanguageFile;
 import io.github.tanguygab.cctv.entities.Camera;
-import io.github.tanguygab.cctv.utils.CameraUtils;
+import io.github.tanguygab.cctv.entities.CameraGroup;
+import io.github.tanguygab.cctv.entities.Viewer;
+import io.github.tanguygab.cctv.old.functions.camerafunctions;
+import io.github.tanguygab.cctv.old.functions.cooldownfunctions;
 import io.github.tanguygab.cctv.utils.Heads;
+import io.github.tanguygab.cctv.utils.NPCUtils;
 import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
@@ -13,6 +17,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.permissions.PermissionAttachmentInfo;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.EulerAngle;
 
 import java.util.ArrayList;
@@ -58,6 +64,7 @@ public class CameraManager extends Manager<Camera> {
     @Override
     public void unload() {
         map.forEach((id, cam)->{
+            cam.getArmorStand().remove();
             file.set(id + ".owner", cam.getOwner());
             file.set(id + ".enabled", cam.isEnabled());
             file.set(id + ".shown", cam.isShown());
@@ -123,28 +130,85 @@ public class CameraManager extends Manager<Camera> {
 
 
     public void unviewCamera(Player player) {
-        CameraUtils.unviewCamera(player);
+        if (player == null) return;
+
+        ViewerManager vm = CCTV.get().getViewers();
+        Viewer p = vm.get(player);
+        if (p == null) return;
+        NPCUtils.despawn(player,p.getNpc());
+        vm.delete(player);
     }
 
-    public List<String> getCamerasFromPlayer(OfflinePlayer p) {
+    public List<String> get(Player p) {
         List<String> cameras = new ArrayList<>();
-        for (Camera camera : CameraUtils.cameras.values()) {
-            if (camera.getOwner().equals(p.getUniqueId().toString()) || p.getPlayer().hasPermission("cctv.camera.other"))
+        for (Camera camera : values()) {
+            if (camera.getOwner().equals(p.getUniqueId().toString()) || p.hasPermission("cctv.camera.other"))
                 cameras.add(camera.getId());
         }
         return cameras;
     }
+    public Camera get(Location loc) {
+        for (Camera cam : values()) {
+            if (cam.getLocation().equals(loc)) return cam;
+        }
+        return null;
+    }
 
     private static final Pattern cameraPattern = Pattern.compile("cctv\\.camera\\.limit\\.(\\d+)");
-    public boolean canPlaceCamera(OfflinePlayer player) {
+    public boolean canPlaceCamera(Player player) {
         int max = -1;
-        int amount = getCamerasFromPlayer(player).size();
+        int amount = get(player).size();
 
-        for (PermissionAttachmentInfo perm : player.getPlayer().getEffectivePermissions()) {
+        for (PermissionAttachmentInfo perm : player.getEffectivePermissions()) {
             Matcher m = cameraPattern.matcher(perm.getPermission());
             if (m.matches())
                 max = Math.max(max, Integer.parseInt(m.group(1)));
         }
-        return player.isOp() || (player.getPlayer().hasPermission("cctv.camera.limit." + (amount + 1)) || ((max == -1 || amount < max)));
+        return player.isOp() || (player.hasPermission("cctv.camera.limit." + (amount + 1)) || ((max == -1 || amount < max)));
+    }
+
+    public void renameCamera(String id, String rename, Player player) {
+        LanguageFile lang = CCTV.get().getLang();
+        if (!exists(id)) {
+            player.sendMessage(lang.CAMERA_NOT_FOUND);
+            return;
+        }
+        if (exists(rename)) {
+            player.sendMessage(lang.CAMERA_ALREADY_EXISTS);
+            return;
+        }
+        Camera cam = map.get(id);
+        cam.setId(rename);
+        player.sendMessage(lang.getCameraRenamed(rename));
+    }
+
+    public void viewCamera(Player player, String id, CameraGroup group) {
+        LanguageFile lang = CCTV.get().getLang();
+        Camera cam = get(id);
+        if (cam == null) {
+            player.sendMessage(lang.CAMERA_NOT_FOUND);
+            return;
+        }
+        if (cooldownfunctions.isCooldownActive(player)) return;
+        if (!cam.isEnabled()) {
+            if (!player.hasPermission("cctv.camera.view.override") && !player.hasPermission("cctv.admin")) {
+                player.sendTitle(lang.CAMERA_OFFLINE, "",0, 15, 0);
+                return;
+            }
+            player.sendMessage(lang.CAMERA_OFFLINE_OVERRIDE);
+        }
+        player.sendTitle("", lang.CAMERA_CONNECTING, 0, 15, 0);
+        cooldownfunctions.addCoolDown(player, CCTV.get().TIME_TO_CONNECT);
+
+        ViewerManager vm = CCTV.get().getViewers();
+        Bukkit.getScheduler().scheduleSyncDelayedTask(CCTV.get(),  () -> {
+            vm.createPlayer(player, cam, group);
+            NPCUtils.spawn(player, player.getLocation());
+            camerafunctions.teleportToCamera(id, player);
+            PotionEffect invisibility = new PotionEffect(PotionEffectType.INVISIBILITY, 60000000, 0, false, false);
+            player.addPotionEffect(invisibility);
+            if (group != null && vm.exists(player))
+                vm.get(player).setGroup(group);
+        }, CCTV.get().TIME_TO_CONNECT * 20L);
     }
 }

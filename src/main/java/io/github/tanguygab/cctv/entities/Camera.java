@@ -30,7 +30,7 @@ public class Camera extends ID {
     public Location getLocation() {
         return loc;
     }
-    public void setLoc(Location loc) {
+    public void setLocation(Location loc) {
         this.loc = loc;
     }
 
