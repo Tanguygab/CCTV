@@ -8,10 +8,7 @@ import io.github.tanguygab.cctv.managers.CameraGroupManager;
 import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.managers.ComputerManager;
 import io.github.tanguygab.cctv.old.library.Arguments;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.NamespacedKey;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -84,5 +81,19 @@ public class Utils {
                 return off;
         }
         return null;
+    }
+
+
+    public static ItemStack getItem(ItemStack item, String name) {
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(name);
+        item.setItemMeta(meta);
+        return item;
+    }
+    public static ItemStack getItem(Heads head, String name) {
+        return getItem(head.get(),name);
+    }
+    public static ItemStack getItem(Material mat, String name) {
+        return getItem(new ItemStack(mat),name);
     }
 }

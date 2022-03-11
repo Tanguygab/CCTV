@@ -6,6 +6,7 @@ import io.github.tanguygab.cctv.entities.CameraGroup;
 import io.github.tanguygab.cctv.entities.Viewer;
 import io.github.tanguygab.cctv.old.library.Arguments;
 import io.github.tanguygab.cctv.utils.Heads;
+import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -83,23 +84,17 @@ public class ViewerManager extends Manager<Viewer> {
         PlayerInventory inv = p.getInventory();
         inv.clear();
         if (CCTV.get().CISIWP || p.hasPermission("cctv.view.zoom") || p.hasPermission("cctv.view.nightvision") || p.hasPermission("cctv.view.spot"))
-            inv.setItem(0, getItem(Heads.OPTIONS,Arguments.item_camera_view_option));
+            inv.setItem(0, Utils.getItem(Heads.OPTIONS,Arguments.item_camera_view_option));
         if (CCTV.get().CISIWP || p.hasPermission("cctv.view.move")) {
             inv.setItem(3, Heads.MOVE_LEFT.get());
             inv.setItem(group != null && group.getCameras().size() > 1 ? 4 : 5, Heads.MOVE_RIGHT.get());
         }
         if ((CCTV.get().CISIWP || p.hasPermission("cctv.view.switch")) && group != null && group.getCameras().size() > 1) {
-            inv.setItem(6, getItem(Heads.ARROW_LEFT,Arguments.item_camera_view_group_prev));
-            inv.setItem(7, getItem(Heads.ARROW_RIGHT,Arguments.item_camera_view_group_next));
+            inv.setItem(6, Utils.getItem(Heads.ARROW_LEFT,Arguments.item_camera_view_group_prev));
+            inv.setItem(7, Utils.getItem(Heads.ARROW_RIGHT,Arguments.item_camera_view_group_next));
         }
-        inv.setItem(8, getItem(Heads.EXIT,Arguments.item_camera_view_exit));
+        inv.setItem(8, Utils.getItem(Heads.EXIT,Arguments.item_camera_view_exit));
     }
 
-    private ItemStack getItem(Heads head, String name) {
-        ItemStack item = head.get();
-        ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(name);
-        item.setItemMeta(meta);
-        return item;
-    }
+
 }

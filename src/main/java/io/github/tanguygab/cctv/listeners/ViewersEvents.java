@@ -5,14 +5,27 @@ import io.github.tanguygab.cctv.config.LanguageFile;
 import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.managers.ViewerManager;
 import io.github.tanguygab.cctv.old.functions.camerafunctions;
+import io.github.tanguygab.cctv.old.functions.viewfunctions;
+import io.github.tanguygab.cctv.old.library.Arguments;
+import io.github.tanguygab.cctv.utils.Utils;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryInteractEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.List;
 
 public class ViewersEvents implements Listener {
 
@@ -26,13 +39,13 @@ public class ViewersEvents implements Listener {
         vm = CCTV.get().getViewers();
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST,ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true)
     public void on(AsyncPlayerChatEvent e) {
         if (vm.exists(e.getPlayer()) && !CCTV.get().getConfiguration().getBoolean("allowed_to_chat",false))
             e.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST,ignoreCancelled = true)
+    @EventHandler
     public void on(PlayerMoveEvent e) {
         Player p = e.getPlayer();
         if (!vm.exists(p)) return;
@@ -42,7 +55,7 @@ public class ViewersEvents implements Listener {
         camerafunctions.teleportToCamera(vm.get(p).getCamera().getId(), p);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST,ignoreCancelled = true)
+    @EventHandler
     public void on(PlayerToggleSneakEvent e) {
         Player player = e.getPlayer();
         if (!vm.exists(player)) return;
@@ -51,7 +64,7 @@ public class ViewersEvents implements Listener {
         Bukkit.getScheduler().scheduleSyncDelayedTask(CCTV.get(), () -> cm.unviewCamera(player),  CCTV.get().TIME_TO_DISCONNECT * 20L);
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler
     public void on(PlayerQuitEvent e) {
         cm.unviewCamera(e.getPlayer());
     }
@@ -67,8 +80,46 @@ public class ViewersEvents implements Listener {
         if (vm.exists(e.getPlayer())) e.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST,ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void on(EntityDamageByEntityEvent e) {
+        if (e.getEntity() instanceof Player p) {
+            if (vm.exists(p)) {
+                e.setCancelled(true);
+                return;
+            }
+        }
+        if (!(e.getDamager() instanceof Player p)) {
+            if (e.getEntity() instanceof ArmorStand as && cm.values().stream().anyMatch(cam -> cam.getArmorStand() == as))
+                e.setCancelled(true);
+            return;
+        }
 
+        if (vm.exists(p)) {
+            if (!p.getInventory().getItemInMainHand().getType().equals(Material.AIR)) {
+                ItemStack item = p.getInventory().getItemInMainHand();
+                viewfunctions.switchFunctions(p, item);
+            }
+            e.setCancelled(true);
+            return;
+        }
+
+        if (!(e.getEntity() instanceof ArmorStand as)) return;
+        if (as.getCustomName() == null) return;
+        String name = ChatColor.stripColor(as.getCustomName());
+        if (!name.startsWith("CAM-") || !cm.exists(name)) return;
+
+        if (cm.values().stream().noneMatch(cam -> cam.getArmorStand() == as)) {
+            as.remove();
+            p.sendMessage(lang.CAMERA_DELETED_BECAUSE_BUGGED);
+            return;
+        }
+
+        List<String> cameras = cm.get(p);
+        if (!cameras.contains(name)) return;
+
+        Inventory inv = Bukkit.createInventory(null, InventoryType.HOPPER, Arguments.gui_camera_delete.replaceAll("%CameraID%", as.getCustomName().substring(4)));
+        inv.setItem(1, Utils.getItem(Material.RED_WOOL,Arguments.gui_camera_delete_item_cancel));
+        inv.setItem(3, Utils.getItem(Material.LIME_WOOL,Arguments.gui_camera_delete_item_delete));
+        p.openInventory(inv);
     }
 }
