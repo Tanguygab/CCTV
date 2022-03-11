@@ -83,7 +83,7 @@ public class InvClickEvent implements Listener {
         if (item.equals(Arguments.gui_computer_default_item_option)) {
             if (Utils.canUse(computer.getOwner(),p,"computer.other")) {
                 optionsInv(p);
-            } else p.sendMessage(Arguments.no_perms);
+            } else p.sendMessage(lang.NO_PERMISSIONS);
             return;
         }
         if (item.equals(Arguments.gui_computer_default_item_exit)) {

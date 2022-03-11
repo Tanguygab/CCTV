@@ -202,7 +202,7 @@ public class camerafunctions {
     });
     int maxpages = (int)Math.ceil(list.size() / 8.0D);
     if (page > maxpages && page == 1) {
-      player.sendMessage(Arguments.list_no_result.replaceAll("%search%", s.toString()).replaceAll("%value%", search));
+      player.sendMessage(lang.getListNoResult(s.toString(),search));
       return;
     } 
     if (page > maxpages || page < 1) {

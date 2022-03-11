@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 import io.github.tanguygab.cctv.CCTV;
+import io.github.tanguygab.cctv.config.LanguageFile;
 import io.github.tanguygab.cctv.entities.Camera;
 import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.managers.ComputerManager;
@@ -28,6 +29,7 @@ public class cctv implements CommandExecutor {
   public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {.
     if (sender instanceof Player) {
       Player player = (Player)sender;
+      LanguageFile lang = CCTV.get().getLang();
       if (player.hasPermission("cctv.help")) {
         if (args.length == 0) {
           player.sendMessage(ChatColor.GOLD +""+ ChatColor.BOLD + "Subcommands for /cctv" + ChatColor.YELLOW + "\n" + "player" + "\n" + "camera" + "\n" + "group" + "\n" + "computer");
@@ -58,7 +60,7 @@ public class cctv implements CommandExecutor {
                   if (!str3.equals("teleport"))
                     break;
                   if (!player.hasPermission("cctv.camera.teleport")) {
-                    player.sendMessage(Arguments.no_perms);
+                    player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
                   if (args[2].length() <= 2) {
@@ -68,14 +70,14 @@ public class cctv implements CommandExecutor {
                   if (cm.exists(args[2])) {
                     camerafunctions.teleportToCamera(args[2], player);
                   } else {
-                    player.sendMessage(Arguments.camera_not_found);
+                    player.sendMessage(lang.CAMERA_NOT_FOUND);
                   }
                   return true;
                 case -1352294148:
                   if (!str3.equals("create"))
                     break;
                   if (!player.hasPermission("cctv.camera.create")) {
-                    player.sendMessage(Arguments.no_perms);
+                    player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
                   cm.create(args[2], player.getLocation(), player);
@@ -84,7 +86,7 @@ public class cctv implements CommandExecutor {
                   if (!str3.equals("delete"))
                     break;
                   if (!player.hasPermission("cctv.camera.delete") && !player.hasPermission("cctv.camera.other")) {
-                    player.sendMessage(Arguments.no_perms);
+                    player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
                   if (args[2] != null && args[2].length() >= 1) {
@@ -98,11 +100,11 @@ public class cctv implements CommandExecutor {
                   if (!str3.equals("enable"))
                     break;
                   if (!player.hasPermission("cctv.camera.enable")) {
-                    player.sendMessage(Arguments.no_perms);
+                    player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
                   if (args.length > 2 && !cm.exists(args[2])) {
-                    player.sendMessage(Arguments.camera_not_found);
+                    player.sendMessage(lang.CAMERA_NOT_FOUND);
                     return true;
                   }
                   camerafunctions.enable(args[2], player);
@@ -111,7 +113,7 @@ public class cctv implements CommandExecutor {
                   if (!str3.equals("rename"))
                     break;
                   if (!player.hasPermission("cctv.camera.rename") && !player.hasPermission("cctv.camera.other")) {
-                    player.sendMessage(Arguments.no_perms);
+                    player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
                   if (args.length <= 3) {
@@ -124,7 +126,7 @@ public class cctv implements CommandExecutor {
                   if (!str3.equals("return"))
                     break;
                   if (!player.hasPermission("cctv.camera.return")) {
-                    player.sendMessage(Arguments.no_perms);
+                    player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
                   camerafunctions.unviewPlayer(player);
@@ -133,7 +135,7 @@ public class cctv implements CommandExecutor {
                   if (!str3.equals("search"))
                     break;
                   if (!player.hasPermission("cctv.camera.search")) {
-                    player.sendMessage(Arguments.no_perms);
+                    player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
                   if (args.length < 4) {
@@ -146,7 +148,7 @@ public class cctv implements CommandExecutor {
                       player.sendMessage(ChatColor.RED + args[(args[2].equalsIgnoreCase("all") || args[2].equalsIgnoreCase("personal")) ? 3 : 4] + " isn't a number!");
                       return false;
                     }
-                  player.sendMessage(Arguments.list_search.replaceAll("%search%", args[2].toLowerCase()).replaceAll("%value%", (args.length >= 5) ? args[3] : ""));
+                  player.sendMessage(lang.getListSearch(args[2].toLowerCase(), (args.length >= 5) ? args[3] : ""));
                   page = (args.length < ((args[2].equalsIgnoreCase("all") || args[2].equalsIgnoreCase("personal")) ? 4 : 5)) ? 1 : Integer.valueOf(args[(args[2].equalsIgnoreCase("all") || args[2].equalsIgnoreCase("personal")) ? 3 : 4]).intValue();
                   camerafunctions.list(player, page, Search.valueOf(args[2].toLowerCase()), (args.length >= 4) ? args[3] : "");
                   return true;
@@ -154,7 +156,7 @@ public class cctv implements CommandExecutor {
                   if (!str3.equals("connected"))
                     break;
                   if (!player.hasPermission("cctv.camera.connected")) {
-                    player.sendMessage(Arguments.no_perms);
+                    player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
                   if (args[2] != null && args[2].length() >= 1) {
@@ -167,7 +169,7 @@ public class cctv implements CommandExecutor {
                   if (!str3.equals("movehere"))
                     break;
                   if (!player.hasPermission("cctv.camera.movehere") && !player.hasPermission("cctv.camera.other")) {
-                    player.sendMessage(Arguments.no_perms);
+                    player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
                   if (args[2] != null && args[2].length() >= 1) {
@@ -180,7 +182,7 @@ public class cctv implements CommandExecutor {
                   if (!str3.equals("get"))
                     break;
                   if (!player.hasPermission("cctv.camera.get")) {
-                    player.sendMessage(Arguments.no_perms);
+                    player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
                   cam = Heads.CAMERA_1.get();
@@ -191,13 +193,13 @@ public class cctv implements CommandExecutor {
                   if (!str3.equals("hide"))
                     break;
                   if (!player.hasPermission("cctv.camera.hide")) {
-                    player.sendMessage(Arguments.no_perms);
+                    player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
                   if (args.length < 2)
                     player.sendMessage(Arguments.wrong_syntax);
                   if (args.length >= 2 && !cm.exists(args[2])) {
-                    player.sendMessage(Arguments.camera_not_found);
+                    player.sendMessage(lang.CAMERA_NOT_FOUND);
                     return true;
                   }
                   camerafunctions.showHideCamera(args[2], player, false);
@@ -206,7 +208,7 @@ public class cctv implements CommandExecutor {
                   if (!str3.equals("list"))
                     break;
                   if (!player.hasPermission("cctv.camera.list") && !player.hasPermission("cctv.camera.other")) {
-                    player.sendMessage(Arguments.no_perms);
+                    player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
                   if (args.length > 2 && !args[2].equals("") && !args[2].matches("[0-9]+"))
@@ -217,13 +219,13 @@ public class cctv implements CommandExecutor {
                   if (!str3.equals("show"))
                     break;
                   if (!player.hasPermission("cctv.camera.hide")) {
-                    player.sendMessage(Arguments.no_perms);
+                    player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
                   if (args.length < 3)
                     player.sendMessage(Arguments.wrong_syntax);
                   if (args.length >= 2 && !cm.exists(args[2])) {
-                    player.sendMessage(Arguments.camera_not_found);
+                    player.sendMessage(lang.CAMERA_NOT_FOUND);
                     return true;
                   }
                   camerafunctions.showHideCamera(args[2], player, true);
@@ -232,7 +234,7 @@ public class cctv implements CommandExecutor {
                   if (!str3.equals("view"))
                     break;
                   if (!player.hasPermission("cctv.camera.view") && !player.hasPermission("cctv.camera.other")) {
-                    player.sendMessage(Arguments.no_perms);
+                    player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
                   if (!CCTV.get().getViewers().exists(player)) {
@@ -245,11 +247,11 @@ public class cctv implements CommandExecutor {
                   if (!str3.equals("setowner"))
                     break;
                   if (!player.hasPermission("cctv.camera.setowner") && !player.hasPermission("cctv.camera.other")) {
-                    player.sendMessage(Arguments.no_perms);
+                    player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
                   if (args.length > 2 && !cm.exists(args[2])) {
-                    player.sendMessage(Arguments.camera_not_found);
+                    player.sendMessage(lang.CAMERA_NOT_FOUND);
                     return true;
                   }
                   if (args.length <= 3) {
@@ -266,11 +268,11 @@ public class cctv implements CommandExecutor {
                   if (!str3.equals("disable"))
                     break;
                   if (!player.hasPermission("cctv.camera.disable")) {
-                    player.sendMessage(Arguments.no_perms);
+                    player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
                   if (args.length > 2 && !cm.exists(args[2])) {
-                    player.sendMessage(Arguments.camera_not_found);
+                    player.sendMessage(lang.CAMERA_NOT_FOUND);
                     return true;
                   }
                   camerafunctions.disable(args[2], player);
@@ -292,7 +294,7 @@ public class cctv implements CommandExecutor {
                   if (!str2.equals("info"))
                     break;
                   if (!player.hasPermission("cctv.player.info")) {
-                    player.sendMessage(Arguments.no_perms);
+                    player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
                   if (inventoryfunctions.inventoryExist(args[2])) {
@@ -322,7 +324,7 @@ public class cctv implements CommandExecutor {
                   if (!str2.equals("compare"))
                     break;
                   if (!player.hasPermission("cctv.player.compare")) {
-                    player.sendMessage(Arguments.no_perms);
+                    player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
                   if (Bukkit.getPlayer(args[2]) != null) {
@@ -356,7 +358,7 @@ public class cctv implements CommandExecutor {
                   if (!str2.equals("restore"))
                     break;
                   if (!player.hasPermission("cctv.player.restore")) {
-                    player.sendMessage(Arguments.no_perms);
+                    player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
                   if (Bukkit.getPlayer(args[2]) != null) {
@@ -402,7 +404,7 @@ public class cctv implements CommandExecutor {
                   if (!str5.equals("teleport"))
                     break;
                   if (!player.hasPermission("cctv.computer.teleport")) {
-                    player.sendMessage(Arguments.no_perms);
+                    player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
                   if (!computerfunctions.computerExist(args[2])) {
@@ -415,7 +417,7 @@ public class cctv implements CommandExecutor {
                   if (!str5.equals("search"))
                     break;
                   if (!player.hasPermission("cctv.computer.search")) {
-                    player.sendMessage(Arguments.no_perms);
+                    player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
                   if (args.length < 4) {
@@ -428,7 +430,7 @@ public class cctv implements CommandExecutor {
                       player.sendMessage(ChatColor.RED + args[(args[2].equalsIgnoreCase("all") || args[2].equalsIgnoreCase("personal")) ? 3 : 4] + " isn't a number!");
                       return false;
                     }
-                  player.sendMessage(Arguments.list_search.replaceAll("%search%", args[2].toLowerCase()).replaceAll("%value%", (args.length >= 5) ? args[3] : ""));
+                  player.sendMessage(lang.getListSearch(args[2].toLowerCase(), (args.length >= 5) ? args[3] : ""));
                   i = (args.length < ((args[2].equalsIgnoreCase("all") || args[2].equalsIgnoreCase("personal")) ? 4 : 5)) ? 1 : Integer.valueOf(args[(args[2].equalsIgnoreCase("all") || args[2].equalsIgnoreCase("personal")) ? 3 : 4]).intValue();
                   computerfunctions.list(player, i, Search.valueOf(args[2].toLowerCase()), (args.length >= 4) ? args[3] : "");
                   return true;
@@ -436,7 +438,7 @@ public class cctv implements CommandExecutor {
                   if (!str5.equals("get"))
                     break;
                   if (!player.hasPermission("cctv.computer.create")) {
-                    player.sendMessage(Arguments.no_perms);
+                    player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
                   computer = new ItemStack(ComputerManager.COMPUTER_MATERIAL);
@@ -449,7 +451,7 @@ public class cctv implements CommandExecutor {
                   if (!str5.equals("list"))
                     break;
                   if (!player.hasPermission("cctv.computer.list")) {
-                    player.sendMessage(Arguments.no_perms);
+                    player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
                   if (args.length > 2 && !args[2].equals("") && !args[2].matches("[0-9]+"))
@@ -460,7 +462,7 @@ public class cctv implements CommandExecutor {
                   if (!str5.equals("open"))
                     break;
                   if (!player.hasPermission("cctv.computer.open")) {
-                    player.sendMessage(Arguments.no_perms);
+                    player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
                   if (computerfunctions.computerExist(args[2])) {
@@ -475,7 +477,7 @@ public class cctv implements CommandExecutor {
                   if (!str5.equals("setowner"))
                     break;
                   if (!player.hasPermission("cctv.computer.setowner")) {
-                    player.sendMessage(Arguments.no_perms);
+                    player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
                   if (args.length == 3)
@@ -498,7 +500,7 @@ public class cctv implements CommandExecutor {
                   if (!str4.equals("create"))
                     break;
                   if (!player.hasPermission("cctv.group.create")) {
-                    player.sendMessage(Arguments.no_perms);
+                    player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
                   groupfunctions.CreateGroup(player, args[2]);
@@ -507,7 +509,7 @@ public class cctv implements CommandExecutor {
                   if (!str4.equals("delete"))
                     break;
                   if (!player.hasPermission("cctv.group.delete") && !player.hasPermission("cctv.group.other")) {
-                    player.sendMessage(Arguments.no_perms);
+                    player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
                   if (args[2] != null && args[2].length() >= 1) {
@@ -520,7 +522,7 @@ public class cctv implements CommandExecutor {
                   if (!str4.equals("rename"))
                     break;
                   if (!player.hasPermission("cctv.group.rename") && !player.hasPermission("cctv.group.other")) {
-                    player.sendMessage(Arguments.no_perms);
+                    player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
                   if (args.length <= 3) {
@@ -533,7 +535,7 @@ public class cctv implements CommandExecutor {
                   if (!str4.equals("search"))
                     break;
                   if (!player.hasPermission("cctv.group.search")) {
-                    player.sendMessage(Arguments.no_perms);
+                    player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
                   if (args.length < 4) {
@@ -546,7 +548,7 @@ public class cctv implements CommandExecutor {
                       player.sendMessage(ChatColor.RED + args[(args[2].equalsIgnoreCase("all") || args[2].equalsIgnoreCase("personal")) ? 3 : 4] + " isn't a number!");
                       return false;
                     }
-                  player.sendMessage(Arguments.list_search.replaceAll("%search%", args[2].toLowerCase()).replaceAll("%value%", (args.length >= 5) ? args[3] : ""));
+                  player.sendMessage(lang.getListSearch(args[2].toLowerCase(), (args.length >= 5) ? args[3] : ""));
                   bool = (args.length < ((args[2].equalsIgnoreCase("all") || args[2].equalsIgnoreCase("personal")) ? 4 : 5)) ? 1 : Integer.parseInt(args[(args[2].equalsIgnoreCase("all") || args[2].equalsIgnoreCase("personal")) ? 3 : 4]);
                   groupfunctions.list(player, bool, Search.valueOf(args[2].toLowerCase()), (args.length >= 4) ? args[3] : "");
                   return true;
@@ -554,7 +556,7 @@ public class cctv implements CommandExecutor {
                   if (!str4.equals("removecamera"))
                     break;
                   if (!player.hasPermission("cctv.group.removecamera") && !player.hasPermission("cctv.group.other")) {
-                    player.sendMessage(Arguments.no_perms);
+                    player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
                   if (args.length <= 3) {
@@ -567,7 +569,7 @@ public class cctv implements CommandExecutor {
                   if (!str4.equals("info"))
                     break;
                   if (!player.hasPermission("cctv.group.info")) {
-                    player.sendMessage(Arguments.no_perms);
+                    player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
                   if (args.length <= 2) {
@@ -580,7 +582,7 @@ public class cctv implements CommandExecutor {
                   if (!str4.equals("list"))
                     break;
                   if (!player.hasPermission("cctv.group.list")) {
-                    player.sendMessage(Arguments.no_perms);
+                    player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
                   if (args.length > 2 && !args[2].equals("") && !args[2].matches("[0-9]+"))
@@ -591,7 +593,7 @@ public class cctv implements CommandExecutor {
                   if (!str4.equals("addcamera"))
                     break;
                   if (!player.hasPermission("cctv.group.addcamera") && !player.hasPermission("cctv.group.other")) {
-                    player.sendMessage(Arguments.no_perms);
+                    player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
                   if (args.length <= 3) {
@@ -604,7 +606,7 @@ public class cctv implements CommandExecutor {
                   if (!str4.equals("setowner"))
                     break;
                   if (!player.hasPermission("cctv.group.setowner") && !player.hasPermission("cctv.group.other")) {
-                    player.sendMessage(Arguments.no_perms);
+                    player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
                   if (args.length <= 3) {
@@ -621,7 +623,7 @@ public class cctv implements CommandExecutor {
           return true;
         } 
       } else {
-        player.sendMessage(ChatColor.RED + Arguments.no_perms);
+        player.sendMessage(ChatColor.RED + lang.NO_PERMISSIONS);
       } 
     } 
     return false;

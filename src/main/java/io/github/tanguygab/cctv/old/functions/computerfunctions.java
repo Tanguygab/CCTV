@@ -203,7 +203,7 @@ public class computerfunctions {
     });
     int maxpages = (int)Math.ceil(list.size() / 8.0D);
     if (page > maxpages && page == 1) {
-      p.sendMessage(Arguments.list_no_result.replaceAll("%search%", s.toString()).replaceAll("%value%", search));
+      p.sendMessage(lang.getListNoResult(s.toString(),search));
       return;
     } 
     if (page > maxpages || page < 1) {
@@ -211,13 +211,13 @@ public class computerfunctions {
       return;
     } 
     for (int a = (page - 1) * 8; a < 8 * page && a < list.size(); a++) {
-      ComputerRecord.computerRec rec = list.get(a);
+      Computer rec = list.get(a);
       String name = "none";
       if (!rec.owner.equals("none")) {
         OfflinePlayer off = Bukkit.getOfflinePlayer(UUID.fromString(rec.owner));
         name = off.getName();
       } 
-      p.sendMessage(((s == Search.all || s == Search.player || s == Search.name) ? Arguments.list_admin : Arguments.list).replaceAll("%Player%", name).replaceAll("%ID%", rec.id));
+      p.sendMessage(((s == Search.all || s == Search.player || s == Search.name) ? lang.getListAdmin(name,rec.getId()) : lang.getList(rec.getId())));
     } 
     p.sendMessage(ChatColor.YELLOW + "===== " + ChatColor.GOLD + page + ChatColor.YELLOW + "/" + ChatColor.GOLD + maxpages + ChatColor.YELLOW + " =====");
   }
