@@ -31,9 +31,8 @@ public class cooldownfunctions {
     } 
     CooldownRecord.cooldownRec rec = getCooldownRecordFromPlayer(player);
     Calendar cal = Calendar.getInstance();
-    cal.add(13, cooldown);
-    Date date = cal.getTime();
-    rec.cooldown = date;
+    cal.add(Calendar.SECOND, cooldown);
+    rec.cooldown = cal.getTime();
   }
   
   public static boolean isCooldownActive(Player player) {
@@ -47,9 +46,3 @@ public class cooldownfunctions {
     return false;
   }
 }
-
-
-/* Location:              C:\Users\tangu\OneDrive\Desktop\CCTV-V6.8.jar!\me\cctv\functions\cooldownfunctions.class
- * Java compiler version: 8 (52.0)
- * JD-Core Version:       1.1.3
- */

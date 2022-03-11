@@ -2,10 +2,11 @@ package io.github.tanguygab.cctv.listeners;
 
 import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.config.LanguageFile;
+import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.managers.ComputerManager;
+import io.github.tanguygab.cctv.managers.ViewerManager;
 import io.github.tanguygab.cctv.old.functions.computerfunctions;
 import io.github.tanguygab.cctv.old.functions.viewfunctions;
-import io.github.tanguygab.cctv.old.records.ChatRecord;
 import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.*;
@@ -19,7 +20,21 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
+
 public class Listener implements org.bukkit.event.Listener {
+
+    private final LanguageFile lang;
+    private final CameraManager cm;
+    private final ComputerManager cpm;
+    private final ViewerManager vm;
+
+    public Listener() {
+        lang = CCTV.get().getLang();
+        cm = CCTV.get().getCameras();
+        cpm = CCTV.get().getComputers();
+        vm = CCTV.get().getViewers();
+    }
 
     @EventHandler(priority = EventPriority.HIGHEST,ignoreCancelled = true)
     public void on(PlayerInteractEvent e) {
@@ -32,7 +47,6 @@ public class Listener implements org.bukkit.event.Listener {
     public void on(BlockBreakEvent e) {
         if (!e.getBlock().getType().equals(ComputerManager.COMPUTER_MATERIAL)) return;
         Player p = e.getPlayer();
-        ComputerManager cpm = CCTV.get().getComputers();
         Computer rec = cpm.get(e.getBlock().getLocation());
         if (rec == null) return;
         if (!rec.getOwner().equals(p.getUniqueId().toString()) && !p.hasPermission("cctv.computer.other")) return;
@@ -49,12 +63,12 @@ public class Listener implements org.bukkit.event.Listener {
     public void on(BlockPlaceEvent e) {
         ItemStack item = e.getItemInHand();
         if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().contains("Computer"))
-            CCTV.get().getComputers().create(null,e.getPlayer(), e.getBlock().getLocation());
+            cpm.create(null,e.getPlayer(), e.getBlock().getLocation());
     }
 
     @EventHandler(ignoreCancelled = true)
     public void on(InventoryClickEvent e) {
-        io.github.tanguygab.cctv.listeners.InventoryClickEvent.on(e);
+        InvClickEvent.on(e);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST,ignoreCancelled = true)
@@ -63,67 +77,54 @@ public class Listener implements org.bukkit.event.Listener {
         String customName = as.getCustomName();
         if (customName != null && ChatColor.stripColor(customName).startsWith("CAM-")) e.setCancelled(true);
         Player player = e.getPlayer();
-        if (!CCTV.get().getViewers().exists(player)) return;
+        if (!vm.exists(player)) return;
 
         ItemStack item = player.getInventory().getItemInMainHand();
         Material mat = item.getType();
-        if (mat == Material.PLAYER_HEAD || mat == Material.ENDER_PEARL || mat == Material.ENDER_EYE) {
-            viewfunctions.switchFunctions(player, item);
-            e.setCancelled(true);
-        }
 
+        if (mat != Material.PLAYER_HEAD && mat != Material.ENDER_PEARL && mat != Material.ENDER_EYE) return;
+
+        viewfunctions.switchFunctions(player, item);
+        e.setCancelled(true);
     }
 
 
     @EventHandler(priority = EventPriority.HIGHEST,ignoreCancelled = true)
     public void on(PlayerToggleSneakEvent e) {
         Player player = e.getPlayer();
-        if (!CCTV.get().getViewers().exists(player)) return;
+        if (!vm.exists(player)) return;
 
-        player.sendTitle("", CCTV.get().getLang().CAMERA_DISCONNECTING, 0, 15, 0);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(CCTV.get(), () -> CCTV.get().getCameras().unviewCamera(player),  CCTV.get().TIME_TO_DISCONNECT * 20L);
+        player.sendTitle("", lang.CAMERA_DISCONNECTING, 0, 15, 0);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(CCTV.get(), () -> cm.unviewCamera(player),  CCTV.get().TIME_TO_DISCONNECT * 20L);
     }
 
     @EventHandler(ignoreCancelled = true)
     public void on(AsyncPlayerChatEvent e) {
-        LanguageFile lang = CCTV.get().getLang();
-
         Player player = e.getPlayer();
         String message = e.getMessage();
 
-        ChatRecord.ChatRec chat = null;
-        for (ChatRecord.ChatRec chat2 : ChatRecord.chats) {
-            if (chat2.uuid.equals(player.getUniqueId().toString())) {
-                if (chat2.chat) return;
-                chat = chat2;
-            }
-        }
-        if (chat == null) return;
+        List<Player> chatInput = CCTV.get().chatInput;
+        if (!chatInput.contains(player)) return;
         e.setCancelled(true);
+        chatInput.remove(player);
 
         if (message.equals("exit")) {
             player.sendMessage(ChatColor.RED + "You have stopped adding players to the computer!");
-            chat.chat = true;
             return;
         }
-        for (OfflinePlayer off : Bukkit.getServer().getOfflinePlayers()) {
-            if (off == null || off.getName() == null || !off.getName().equalsIgnoreCase(message)) continue;
-            Computer pc = computerfunctions.getComputerRecordFromLocation(computerfunctions.getLastClickedComputerFromPlayer(player));
-            String uuid = off.getUniqueId().toString();
-            if (pc.isAllowedPlayers(off) || pc.getOwner().equals(uuid)) {
-                player.sendMessage(lang.PLAYER_ALREADY_ADDED);
-                chat.chat = true;
-                return;
-            }
-            pc.getAllowedPlayers().add(uuid);
-            player.sendMessage(lang.PLAYER_ADDED);
-            chat.chat = true;
+        OfflinePlayer off = Utils.getOfflinePlayer(message);
+        if (off == null) {
+            player.sendMessage(lang.PLAYER_NOT_FOUND);
             return;
         }
-        player.sendMessage(lang.PLAYER_NOT_FOUND);
-        chat.chat = true;
-
-
+        Computer pc = cpm.get(computerfunctions.getLastClickedComputerFromPlayer(player));
+        String uuid = off.getUniqueId().toString();
+        if (pc.isAllowedPlayers(off) || pc.getOwner().equals(uuid)) {
+            player.sendMessage(lang.PLAYER_ALREADY_ADDED);
+            return;
+        }
+        pc.getAllowedPlayers().add(uuid);
+        player.sendMessage(lang.PLAYER_ADDED);
     }
 
 

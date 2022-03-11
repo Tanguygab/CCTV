@@ -8,8 +8,10 @@ import io.github.tanguygab.cctv.managers.CameraGroupManager;
 import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.managers.ComputerManager;
 import io.github.tanguygab.cctv.old.library.Arguments;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -74,5 +76,13 @@ public class Utils {
 
     public static boolean canUse(String id, Player p, String permission) {
         return id.equals(p.getUniqueId().toString()) || p.hasPermission("cctv."+permission);
+    }
+
+    public static OfflinePlayer getOfflinePlayer(String player) {
+        for (OfflinePlayer off : Bukkit.getServer().getOfflinePlayers()) {
+            if (player.equalsIgnoreCase(off.getName()))
+                return off;
+        }
+        return null;
     }
 }

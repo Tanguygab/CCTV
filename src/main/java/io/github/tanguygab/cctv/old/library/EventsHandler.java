@@ -4,12 +4,9 @@ import java.util.UUID;
 
 import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.managers.ComputerManager;
-import io.github.tanguygab.cctv.old.events.ChatEvent;
 import io.github.tanguygab.cctv.old.events.InteractEvent;
 import io.github.tanguygab.cctv.old.events.MoveEvent;
 import io.github.tanguygab.cctv.old.events.PlayerAttackEvent;
-import io.github.tanguygab.cctv.old.events.PlayerBlockBreakEvent;
-import io.github.tanguygab.cctv.old.events.PlayerBlockPlaceEvent;
 import io.github.tanguygab.cctv.old.events.PlayerInventoryClickEvent;
 import io.github.tanguygab.cctv.old.events.PlayerQuitGameEvent;
 import io.github.tanguygab.cctv.old.events.PlayerSneakEvent;
@@ -29,16 +26,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryInteractEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -51,10 +45,6 @@ import org.bukkit.inventory.ItemStack;
 public class EventsHandler implements Listener {
   InteractEvent interact;
   
-  PlayerBlockPlaceEvent blockplace;
-  
-  PlayerBlockBreakEvent blockbreak;
-  
   PlayerAttackEvent playerattack;
   
   PlayerQuitGameEvent playerquitgame;
@@ -65,18 +55,13 @@ public class EventsHandler implements Listener {
   
   MoveEvent playermove;
   
-  ChatEvent chat;
-  
   public EventsHandler() {
     this.interact = new InteractEvent();
-    this.blockplace = new PlayerBlockPlaceEvent();
-    this.blockbreak = new PlayerBlockBreakEvent();
     this.playerattack = new PlayerAttackEvent();
     this.playerquitgame = new PlayerQuitGameEvent();
     this.playersneak = new PlayerSneakEvent();
     playerinventoryclick = new PlayerInventoryClickEvent();
     this.playermove = new MoveEvent();
-    this.chat = new ChatEvent();
   }
   
   @EventHandler(priority = EventPriority.HIGHEST)
@@ -100,17 +85,7 @@ public class EventsHandler implements Listener {
   public void onInteractEvent(PlayerInteractEvent event) {
     this.interact.onInteractEvent(event);
   }
-  
-  @EventHandler
-  public void onBlockPlaceEvent(BlockPlaceEvent event) {
-    this.blockplace.onBlockPlaceEvent(event);
-  }
-  
-  @EventHandler
-  public void onBlockBreakEvent(BlockBreakEvent event) {
-    this.blockbreak.onBlockBreakEvent(event);
-  }
-  
+
   @EventHandler(priority = EventPriority.MONITOR)
   public void onPlayerAttackEvent(EntityDamageByEntityEvent event) {
     this.playerattack.onPlayerAttackEvent(event);
@@ -176,12 +151,7 @@ public class EventsHandler implements Listener {
   public void onMoveEvent(PlayerMoveEvent event) {
     this.playermove.onMoveEvent(event);
   }
-  
-  @EventHandler
-  public void onChat(AsyncPlayerChatEvent event) {
-    this.chat.onChat(event);
-  }
-  
+
   @EventHandler
   public void onPistonMove(BlockPistonExtendEvent e) {
     if (e.getBlocks().stream().anyMatch(b -> computerfunctions.computerExistOnLocation(b.getLocation())))

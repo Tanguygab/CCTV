@@ -12,7 +12,6 @@ import io.github.tanguygab.cctv.old.functions.computerfunctions;
 import io.github.tanguygab.cctv.old.functions.groupfunctions;
 import io.github.tanguygab.cctv.old.functions.viewfunctions;
 import io.github.tanguygab.cctv.old.library.Arguments;
-import io.github.tanguygab.cctv.old.records.ChatRecord;
 import io.github.tanguygab.cctv.utils.Heads;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -102,19 +101,8 @@ public class PlayerInventoryClickEvent {
         player.openInventory(setCameraGroup(player, 1));
       } else {
         if (item.getItemMeta().getDisplayName().equals(Arguments.gui_computer_options_item_addplayer)) {
-          for (ChatRecord.ChatRec chatRec : ChatRecord.chats) {
-            if (chatRec.uuid.equals(player.getUniqueId().toString())) {
-              chatRec.chat = false;
-              player.closeInventory();
-              player.sendMessage(Arguments.chat_set_name_to_add);
-              player.sendMessage(Arguments.chat_type_exit);
-              return;
-            } 
-          } 
-          ChatRecord.ChatRec chat = new ChatRecord.ChatRec();
-          ChatRecord.chats.add(chat);
-          chat.uuid = player.getUniqueId().toString();
-          chat.chat = false;
+
+          CCTV.get().chatInput.add(player);
           player.closeInventory();
           player.sendMessage(Arguments.chat_set_name_to_add);
           player.sendMessage(Arguments.chat_type_exit);

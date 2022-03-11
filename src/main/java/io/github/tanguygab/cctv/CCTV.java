@@ -22,6 +22,7 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CCTV extends JavaPlugin {
@@ -65,6 +66,8 @@ public class CCTV extends JavaPlugin {
     public int TIME_TO_CONNECT;
     public int TIME_TO_DISCONNECT;
     public int TIME_FOR_SPOT;
+
+    public final List<Player> chatInput = new ArrayList<>();
 
     @Override
     public void onEnable() {
