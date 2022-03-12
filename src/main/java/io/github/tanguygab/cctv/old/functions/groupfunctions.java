@@ -7,91 +7,14 @@ import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.config.LanguageFile;
 import io.github.tanguygab.cctv.entities.Camera;
 import io.github.tanguygab.cctv.entities.CameraGroup;
-import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.managers.CameraGroupManager;
-import io.github.tanguygab.cctv.managers.ComputerManager;
 import io.github.tanguygab.cctv.old.Search;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 public class groupfunctions {
-
-  public static void addGroupToComputer(Player player, String group) {
-    LanguageFile lang = CCTV.get().getLang();
-    if (player.getTargetBlock(null, 200).getType().equals(ComputerManager.COMPUTER_MATERIAL)) {
-      Location loc = player.getTargetBlock(null, 200).getLocation();
-      for (Computer rec : CCTV.get().getComputers().values()) {
-        if (loc.equals(rec.getLocation())) {
-          if (CCTV.get().getCameraGroups().exists(group)) {
-            CameraGroup grec = CCTV.get().getCameraGroups().get(group);
-            rec.setCameraGroup(grec);
-            player.sendMessage(lang.GROUP_ASSIGNED_TO_COMPUTER);
-            player.sendMessage(Arguments.computer_id.replaceAll("%ComputerID%", rec.getId()));
-            player.sendMessage(lang.getGroupID(grec.getId()));
-            return;
-          }
-          player.sendMessage(lang.GROUP_NOT_FOUND);
-          return;
-        }
-      }
-      player.sendMessage(Arguments.computer_not_exist);
-    }
-  }
-
-  public static void deleteGroupFromComputer(Player player) {
-    LanguageFile lang = CCTV.get().getLang();
-    if (player.getTargetBlock(null, 200).getType().equals(ComputerManager.COMPUTER_MATERIAL)) {
-      Location loc = player.getTargetBlock(null, 200).getLocation();
-      for (Computer rec : CCTV.get().getComputers().values()) {
-        if (loc.equals(rec.getLocation())) {
-          if (rec.getCameraGroup() != null) {
-            rec.setCameraGroup(null);
-            player.sendMessage(lang.GROUP_REMOVED_FROM_COMPUTER);
-          } else {
-            player.sendMessage(Arguments.computer_no_group_set);
-          } 
-          return;
-        } 
-      } 
-      player.sendMessage(Arguments.computer_not_exist);
-    } 
-  }
-
-  public static void setGroupOwner(Player player, String group, String target) {
-    LanguageFile lang = CCTV.get().getLang();
-    byte b;
-    int i;
-    OfflinePlayer[] arrayOfOfflinePlayer;
-    for (i = (arrayOfOfflinePlayer = Bukkit.getOfflinePlayers()).length, b = 0; b < i; ) {
-      OfflinePlayer off = arrayOfOfflinePlayer[b];
-      if (off != null && off.getName() != null && off.getName().equalsIgnoreCase(target))
-        if (CCTV.get().getCameraGroups().exists(group)) {
-          CameraGroup rec = CCTV.get().getCameraGroups().get(group);
-          if (rec.getOwner().equals(player.getUniqueId().toString()) || player.hasPermission("cctv.group.other")) {
-            OfflinePlayer owner = Bukkit.getOfflinePlayer(target);
-            if (owner.hasPlayedBefore() || owner.isOnline()) {
-              if (!rec.getOwner().equals(owner.getUniqueId().toString())) {
-                rec.setOwner(owner.getUniqueId().toString());
-                player.sendMessage(lang.getGroupOwnerChanged(owner.getName()));
-                return;
-              }
-              player.sendMessage(lang.GROUP_PLAYER_ALREADY_OWNER);
-            } else {
-              player.sendMessage(lang.PLAYER_NOT_FOUND);
-            }
-          } else {
-            player.sendMessage(lang.GROUP_CHANGE_NO_PERMS);
-          } 
-        } else {
-          player.sendMessage(lang.GROUP_NOT_FOUND);
-        }  
-      b++;
-    } 
-    player.sendMessage(lang.PLAYER_NOT_FOUND);
-  }
   
   public static void list(Player player, int page, Search s, String search) {
     LanguageFile lang = CCTV.get().getLang();
@@ -147,23 +70,5 @@ public class groupfunctions {
       player.sendMessage(lang.GROUP_NOT_FOUND);
     } 
   }
-  
-  public static ArrayList<String> getGroupsFromPlayer(Player player) {
 
-  }
-  
-  public static void rename(String id, String rename, Player player) {
-    LanguageFile lang = CCTV.get().getLang();
-    if (CCTV.get().getCameraGroups().exists(id)) {
-      if (CCTV.get().getCameraGroups().exists(rename)) {
-        player.sendMessage(lang.GROUP_ALREADY_EXISTS);
-        return;
-      } 
-      CameraGroup group = CCTV.get().getCameraGroups().get(id);
-      group.setId(rename);
-      player.sendMessage(lang.getGroupRenamed(rename));
-    } else {
-      player.sendMessage(lang.GROUP_NOT_FOUND);
-    } 
-  }
 }

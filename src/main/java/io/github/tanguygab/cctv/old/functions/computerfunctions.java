@@ -1,6 +1,7 @@
 package io.github.tanguygab.cctv.old.functions;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import io.github.tanguygab.cctv.CCTV;
@@ -60,19 +61,16 @@ public class computerfunctions {
   
   public static void list(Player p, int page, Search s, String search) {
     LanguageFile lang = CCTV.get().getLang();
-    ArrayList<ComputerRecord.computerRec> list = new ArrayList<>();
-    ComputerRecord.computers.stream().filter(c -> !(s != Search.all && (s != Search.personal || !c.owner.equals(p.getUniqueId().toString())) && (s != Search.name || !c.id.toLowerCase().startsWith(search.toLowerCase())) && (s != Search.player || c.owner.equals("none") || !Bukkit.getOfflinePlayer(UUID.fromString(c.owner)).getName().startsWith(search)))).forEach(c -> {
-        
-        });
+    List<Computer> list = CCTV.get().getComputers().values().stream().filter(c -> !(s != Search.all && (s != Search.personal || !c.getOwner().equals(p.getUniqueId().toString())) && (s != Search.name || !c.getId().toLowerCase().startsWith(search.toLowerCase())) && (s != Search.player || c.getOwner().equals("none") || !Bukkit.getOfflinePlayer(UUID.fromString(c.getOwner())).getName().startsWith(search)))).toList();
     list.sort((c1, c2) -> {
       String name1 = "none";
       String name2 = "none";
-      if (!c1.owner.equals("none")) {
-        OfflinePlayer off1 = Bukkit.getOfflinePlayer(UUID.fromString(c1.owner));
+      if (!c1.getOwner().equals("none")) {
+        OfflinePlayer off1 = Bukkit.getOfflinePlayer(UUID.fromString(c1.getOwner()));
         name1 = off1.getName();
       }
-      if (!c2.owner.equals("none")) {
-        OfflinePlayer off2 = Bukkit.getOfflinePlayer(UUID.fromString(c2.owner));
+      if (!c2.getOwner().equals("none")) {
+        OfflinePlayer off2 = Bukkit.getOfflinePlayer(UUID.fromString(c2.getOwner()));
         name2 = off2.getName();
       }
       return name2.compareTo(name1);
@@ -89,8 +87,8 @@ public class computerfunctions {
     for (int a = (page - 1) * 8; a < 8 * page && a < list.size(); a++) {
       Computer rec = list.get(a);
       String name = "none";
-      if (!rec.owner.equals("none")) {
-        OfflinePlayer off = Bukkit.getOfflinePlayer(UUID.fromString(rec.owner));
+      if (!rec.getOwner().equals("none")) {
+        OfflinePlayer off = Bukkit.getOfflinePlayer(UUID.fromString(rec.getOwner()));
         name = off.getName();
       } 
       p.sendMessage(((s == Search.all || s == Search.player || s == Search.name) ? lang.getListAdmin(name,rec.getId()) : lang.getList(rec.getId())));
@@ -99,12 +97,12 @@ public class computerfunctions {
   }
   
   public static void TeleportToComputer(String Computer, Player player) {
-    ComputerRecord.computerRec record = getComputerRecord(Computer);
-    Location locc = record.loc.clone();
-    locc.setY(locc.getY() + 1.0D);
-    locc.setX(locc.getX() + 0.5D);
-    locc.setZ(locc.getZ() + 0.5D);
-    player.teleport(locc);
+    Computer record = CCTV.get().getComputers().get(Computer);
+    Location loc = record.getLocation().clone();
+    loc.setY(loc.getY() + 1.0D);
+    loc.setX(loc.getX() + 0.5D);
+    loc.setZ(loc.getZ() + 0.5D);
+    player.teleport(loc);
   }
 }
 

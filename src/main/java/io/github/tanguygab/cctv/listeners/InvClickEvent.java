@@ -84,7 +84,7 @@ public class InvClickEvent implements Listener {
             return;
         }
         if (item.equals(lang.GUI_COMPUTER_DEFAULT_ITEM_OPTION)) {
-            if (Utils.canUse(computer.getOwner(),p,"computer.other")) {
+            if (computer.getOwner().equals(p.getUniqueId().toString()) || p.hasPermission("cctv.computer.other")) {
                 openInvOptions(p);
             } else p.sendMessage(lang.COMPUTER_CHANGE_NO_PERMS);
             return;

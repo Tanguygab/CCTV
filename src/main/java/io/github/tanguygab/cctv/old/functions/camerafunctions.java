@@ -107,7 +107,7 @@ public class camerafunctions {
         cam.setEnabled(false);
         p.sendMessage(lang.getCameraDisabled(cam.getId()));
       } else {
-        p.sendMessage(lang.ONLY_OWNER);
+        p.sendMessage(lang.CAMERA_CHANGE_NO_PERMS);
       } 
     } else {
       p.sendMessage(lang.CAMERA_NOT_FOUND);
@@ -127,7 +127,7 @@ public class camerafunctions {
         cam.setEnabled(true);
         player.sendMessage(lang.getCameraEnabled(cam.getId()));
       } else {
-        player.sendMessage(lang.ONLY_OWNER);
+        player.sendMessage(lang.CAMERA_CHANGE_NO_PERMS);
       } 
     } else {
       player.sendMessage(lang.CAMERA_NOT_FOUND);

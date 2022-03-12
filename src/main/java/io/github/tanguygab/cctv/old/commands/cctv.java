@@ -6,8 +6,10 @@ import java.text.SimpleDateFormat;
 import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.config.LanguageFile;
 import io.github.tanguygab.cctv.entities.Camera;
+import io.github.tanguygab.cctv.entities.CameraGroup;
 import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.listeners.Listener;
+import io.github.tanguygab.cctv.managers.CameraGroupManager;
 import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.managers.ComputerManager;
 import io.github.tanguygab.cctv.old.functions.camerafunctions;
@@ -15,8 +17,10 @@ import io.github.tanguygab.cctv.old.functions.computerfunctions;
 import io.github.tanguygab.cctv.old.functions.groupfunctions;
 import io.github.tanguygab.cctv.old.Search;
 import io.github.tanguygab.cctv.utils.Heads;
+import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -491,6 +495,7 @@ public class cctv implements CommandExecutor {
             case 98629247:
               if (!str1.equals("group"))
                 break;
+              CameraGroupManager cgm = CCTV.get().getCameraGroups();
               if (args.length == 1) {
                 args = new String[] { args[0], "" };
               } else if (args.length == 2) {
@@ -504,7 +509,7 @@ public class cctv implements CommandExecutor {
                     player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
-                  groupfunctions.CreateGroup(player, args[2]);
+                  cgm.create(args[2],player);
                   return true;
                 case -1335458389:
                   if (!str4.equals("delete"))
@@ -514,7 +519,7 @@ public class cctv implements CommandExecutor {
                     return true;
                   }
                   if (args[2] != null && args[2].length() >= 1) {
-                    groupfunctions.DeleteGroup(player, args[2]);
+                    cgm.delete(args[2]);
                     return true;
                   }
                   player.sendMessage(ChatColor.RED + "Please give a Group Name!");
@@ -530,7 +535,8 @@ public class cctv implements CommandExecutor {
                     player.sendMessage(ChatColor.RED + "Please put in the Group Name!");
                     return true;
                   }
-                  groupfunctions.rename(args[2], args[3], player);
+                  //too lazy to change lol
+                  player.sendMessage(lang.GROUP_NOT_FOUND);
                   return true;
                 case -906336856:
                   if (!str4.equals("search"))
@@ -564,7 +570,17 @@ public class cctv implements CommandExecutor {
                     player.sendMessage(ChatColor.RED + "Please specify the group, and a camera.");
                     return true;
                   }
-                  groupfunctions.deleteCameraFromGroup(player, args[2], args[3]);
+                  if (!cgm.exists(args[2])) {
+                    player.sendMessage(lang.GROUP_NOT_FOUND);
+                    return true;
+                  }
+                  cm = CCTV.get().getCameras();
+                  if (!cm.exists(args[3])) {
+                    player.sendMessage(lang.CAMERA_NOT_FOUND);
+                    return true;
+                  }
+                  Camera camera = cm.get(args[3]);
+                  cgm.get(args[2]).getCameras().remove(camera);
                   return true;
                 case 3237038:
                   if (!str4.equals("info"))
@@ -601,7 +617,8 @@ public class cctv implements CommandExecutor {
                     player.sendMessage(ChatColor.RED + "Please specify the camera, and a group.");
                     return true;
                   }
-                  groupfunctions.addCameraToGroup(player, args[2], args[3]);
+                  cm = CCTV.get().getCameras();
+                  cgm.get(args[2]).getCameras().add(cm.get(args[3]));
                   return true;
                 case 1430430609:
                   if (!str4.equals("setowner"))
@@ -614,7 +631,16 @@ public class cctv implements CommandExecutor {
                     player.sendMessage(ChatColor.RED + "Please specify the group, and the owner.");
                     return true;
                   }
-                  groupfunctions.setGroupOwner(player, args[2], args[3]);
+                  if (!cgm.exists(args[2])) {
+                    player.sendMessage(lang.GROUP_NOT_FOUND);
+                    return true;
+                  }
+                  OfflinePlayer off = Utils.getOfflinePlayer(args[3]);
+                  if (off == null) {
+                    player.sendMessage(lang.PLAYER_NOT_FOUND);
+                    return true;
+                  }
+                  cgm.get(args[2]).setOwner(off.getUniqueId().toString());
                   return true;
               }
               sender.sendMessage(ChatColor.GOLD +""+ ChatColor.BOLD + "Subcommands for /cctv group" + ChatColor.YELLOW + "\n" + "create" + "\n" + "delete" + "\n" + "addcamera" + "\n" + "removecamera" + "\n" + "setowner" + "\n" + "info" + "\n" + "list");

@@ -4,6 +4,7 @@ import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.entities.Camera;
 import io.github.tanguygab.cctv.entities.CameraGroup;
 import io.github.tanguygab.cctv.entities.Computer;
+import io.github.tanguygab.cctv.entities.ID;
 import io.github.tanguygab.cctv.managers.CameraGroupManager;
 import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.managers.ComputerManager;
@@ -12,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.List;
 import java.util.Random;
 
 public class Utils {
@@ -61,10 +63,6 @@ public class Utils {
         return number;
     }
 
-    public static boolean canUse(String id, Player p, String permission) {
-        return id.equals(p.getUniqueId().toString()) || p.hasPermission("cctv."+permission);
-    }
-
     public static OfflinePlayer getOfflinePlayer(String player) {
         for (OfflinePlayer off : Bukkit.getServer().getOfflinePlayers()) {
             if (player.equalsIgnoreCase(off.getName()))
@@ -73,6 +71,9 @@ public class Utils {
         return null;
     }
 
+    public static List<String> list(List<?> list) {
+        return list.stream().map(el->el instanceof ID id ? id.getId() : el+"").toList();
+    }
 
     public static ItemStack getItem(ItemStack item, String name) {
         ItemMeta meta = item.getItemMeta();

@@ -27,7 +27,6 @@ public class LanguageFile extends YamlConfigurationFile {
     public final String PLAYER_REMOVED = get("player-removed","&cPlayer has been removed!");
     public final String PLAYER_NOT_IN_LIST = get("player-not-in-list","&cThis player isn't in this list!");
     public final String TOO_MANY_PAGES = get("to-many-pages","&cThere aren't that many pages!");
-    public final String ONLY_OWNER = get("only-owner","&cYou can only edit your own cameras!");
     private final String LIST = get("list.list","&6- &7%ID%");
     public String getList(String id) {
         return LIST.replace("%ID%",id);
@@ -101,7 +100,6 @@ public class LanguageFile extends YamlConfigurationFile {
         return GROUP_OWNER_CHANGED.replace("%player%",player);
     }
     public final String GROUP_PLAYER_ALREADY_OWNER = get("groups.player-already-owner","&cThis player is already the owner of that group!");
-    public final String GROUP_CHANGE_NO_PERMS = get("groups.change-no-perms","&cYou can only edit your own groups!");
     private final String GROUP_RENAMED = get("groups.renamed","&aGroup renamed to '%groupID%'!");
     public String getGroupRenamed(String id) {
         return GROUP_RENAMED.replace("%groupID%",id);
@@ -109,8 +107,7 @@ public class LanguageFile extends YamlConfigurationFile {
     public final String GROUP_NO_CAMERAS_ADDED = get("groups.no-cameras-added","&cThis group doesn't have any cameras!");
     public final String GROUP_CAMERA_ALREADY_ADDED = get("groups.camera-already-added","&cThis camera has already been added to that group!");
     public final String GROUP_CAMERA_ADDED = get("groups.camera-added","&aCamera added to the group!");
-    public final String GROUP_GROUP_OR_CAMERA_NOT_FOUND = get("groups.group-or-camera-not-found","&cThat camera or group does not exist!");
-    public final String GROUP_DELETE_CAMERA = get("groups.delete-camera","&aThis camera has been deleted!");
+    public final String GROUP_REMOVE_CAMERA = get("groups.remove-camera","&aCamera removed from this group!");
     public final String GROUP_DOES_NOT_CONTAIN_CAMERA = get("groups.does-not-contain-camera","&cThis group does not contain a camera with that ID!");
     public final String GROUP_ASSIGNED_TO_COMPUTER = get("groups.assigned-to-computer","&aGroup assigned to this PC!");
     public final String GROUP_REMOVED_FROM_COMPUTER = get("groups.removed-from-computer","&aGroup removed from this computer!");
@@ -131,6 +128,7 @@ public class LanguageFile extends YamlConfigurationFile {
     public final String COMPUTER_ONLY_OWNER_CAN_CHANGE_OWNER = get("computers.only-owner-can-change-owner", "&cOnly the owner of this computer can change the owner!");
     public final String COMPUTER_NOT_ALLOWED = get("computers.not-allowed", "&cYou aren't allowed to open this computer!");
     public final String COMPUTER_ITEM_NAME = get("computers.item-name", "&9Computer");
+    public final String COMPUTER_NO_GROUP = get("computers.no-group","&cNo group assigned to this computer!");
 
     public final String GUI_CAMERA_SETTINGS = get("gui.camera.settings", "&eSettings");
     public final String GUI_CAMERA_DELETE = get("gui.camera.delete", "&eDelete camera %cameraID%");

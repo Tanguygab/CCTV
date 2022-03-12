@@ -1,6 +1,6 @@
 package io.github.tanguygab.cctv.managers;
 
-import io.github.tanguygab.cctv.CCTV;
+import io.github.tanguygab.cctv.entities.CameraGroup;
 import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.listeners.InvClickEvent;
 import io.github.tanguygab.cctv.listeners.Listener;
@@ -79,11 +79,11 @@ public class ComputerManager extends Manager<Computer> {
                 return computer;
         return null;
     }
-    public List<Computer> get(Player p) {
-        List<Computer> list = new ArrayList<>();
+    public List<String> get(Player p) {
+        List<String> list = new ArrayList<>();
         for (Computer computer : values())
             if (computer.getOwner().equals(p.getUniqueId().toString()))
-                list.add(computer);
+                list.add(computer.getId());
         return list;
     }
     public Computer getLast(Player p) {

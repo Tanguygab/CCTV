@@ -42,6 +42,10 @@ public class CCTV extends JavaPlugin {
         return lang;
     }
 
+    private CameraCmd cameraCmd;
+    private GroupCmd groupCmd;
+    private ComputerCmd computerCmd;
+
     private CameraManager cameraManager;
     private CameraGroupManager cameraGroupManager;
     private ComputerManager computerManager;
@@ -73,6 +77,10 @@ public class CCTV extends JavaPlugin {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        cameraCmd = new CameraCmd();
+        groupCmd = new GroupCmd();
+        computerCmd = new ComputerCmd();
 
         cameraManager.load();
         cameraGroupManager.load();
@@ -140,12 +148,11 @@ public class CCTV extends JavaPlugin {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         String arg = args.length > 1 ? args[0] : "";
         switch (arg) {
-            case "camera" -> CameraCmd.onCommand(sender,args);
-            case "computer" -> ComputerCmd.onCommand(sender,args);
-            case "group" -> GroupCmd.onCommand(sender,args);
+            case "camera" -> cameraCmd.onCommand(sender,args);
+            case "group" -> groupCmd.onCommand(sender,args);
+            case "computer" -> computerCmd.onCommand(sender,args);
             case "debug" -> debug = !debug;
             default -> sender.sendMessage(ChatColor.GOLD+""+ChatColor.BOLD + "Subcommands for /cctv" + ChatColor.YELLOW
-                    + "\nplayer"
                     + "\ncamera"
                     + "\ngroup"
                     + "\ncomputer");
@@ -156,10 +163,10 @@ public class CCTV extends JavaPlugin {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         String arg = args.length > 1 ? args[0] : "";
         return switch (arg) {
-            case "camera" -> CameraCmd.onTabComplete(sender,args);
-            case "computer" -> ComputerCmd.onTabComplete(sender,args);
-            case "group" -> GroupCmd.onTabComplete(args);
-            default -> List.of("camera","computer","group");
+            case "camera" -> cameraCmd.onTabComplete(sender,args);
+            case "group" -> groupCmd.onTabComplete(sender,args);
+            case "computer" -> computerCmd.onTabComplete(sender,args);
+            default -> List.of("camera","group","computer");
         };
     }
 }

@@ -1,6 +1,5 @@
 package io.github.tanguygab.cctv.managers;
 
-import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.config.LanguageFile;
 import io.github.tanguygab.cctv.entities.Camera;
 import io.github.tanguygab.cctv.entities.CameraGroup;
@@ -38,17 +37,6 @@ public class CameraGroupManager extends Manager<CameraGroup> {
         });
     }
 
-    @Override
-    public void delete(String id, Player player) {
-        LanguageFile lang = cctv.getLang();
-        CameraGroup group = get(id);
-        if (group == null || Utils.canUse(group.getOwner(),player,"group.other")) {
-            player.sendMessage(lang.GROUP_NOT_FOUND);
-            return;
-        }
-        player.sendMessage(lang.GROUP_DELETE);
-    }
-
     public void create(String name, Player p) {
         LanguageFile lang = cctv.getLang();
         if (exists(name)) {
@@ -73,36 +61,5 @@ public class CameraGroupManager extends Manager<CameraGroup> {
                 groups.add(group.getId());
         }
         return groups;
-    }
-
-    public void addCamera(Player player, String group, String camera) {
-        LanguageFile lang = cctv.getLang();
-        CameraManager cm = cctv.getCameras();
-        if (!cm.exists(camera) || !exists(group)) {
-            player.sendMessage(lang.GROUP_GROUP_OR_CAMERA_NOT_FOUND);
-            return;
-        }
-        CameraGroup camGroup = get(group);
-        Camera cam = cm.get(camera);
-        if (camGroup.getCameras().contains(cam)) {
-            camGroup.getCameras().add(cam);
-            player.sendMessage(lang.GROUP_CAMERA_ADDED);
-            player.sendMessage(lang.getCameraID(cam.getId()));
-            player.sendMessage(lang.getGroupID(camGroup.getId()));
-        } else player.sendMessage(lang.GROUP_CAMERA_ALREADY_ADDED);
-    }
-    public void removeCamera(Player player, String group, String camera) {
-        LanguageFile lang = cctv.getLang();
-        CameraManager cm = cctv.getCameras();
-        if (!exists(group) || !cm.exists(camera)) {
-            player.sendMessage(lang.GROUP_CAMERA_ALREADY_ADDED);
-            return;
-        }
-        CameraGroup camGroup = get(group);
-        Camera cam = cm.get(camera);
-        if (camGroup.getCameras().contains(cam)) {
-            camGroup.getCameras().remove(cam);
-            player.sendMessage(lang.GROUP_DELETE_CAMERA);
-        } else player.sendMessage(lang.GROUP_DOES_NOT_CONTAIN_CAMERA);
     }
 }

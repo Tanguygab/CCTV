@@ -9,14 +9,10 @@ import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.entities.Camera;
 import io.github.tanguygab.cctv.entities.CameraGroup;
 import io.github.tanguygab.cctv.entities.Computer;
+import io.github.tanguygab.cctv.entities.ID;
 import io.github.tanguygab.cctv.managers.CameraGroupManager;
 import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.managers.ComputerManager;
-import io.github.tanguygab.cctv.old.functions.computerfunctions;
-import io.github.tanguygab.cctv.old.functions.groupfunctions;
-import io.github.tanguygab.cctv.old.records.CameraGroupRecord;
-import io.github.tanguygab.cctv.old.records.CameraRecord;
-import io.github.tanguygab.cctv.old.records.ComputerRecord;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -141,8 +137,7 @@ public class cctvTabcompleter implements TabCompleter {
               subcommands.add(sub); 
           } 
         } else {
-          for (String sub : SUBSUBCOMMANDS)
-            subcommands.add(sub); 
+          subcommands.addAll(SUBSUBCOMMANDS);
         } 
         Collections.sort(subcommands);
         return subcommands;
@@ -191,8 +186,7 @@ public class cctvTabcompleter implements TabCompleter {
               subcommands.add(sub); 
           } 
         } else {
-          for (String sub : SUBSUBCOMMANDS)
-            subcommands.add(sub); 
+          subcommands.addAll(SUBSUBCOMMANDS);
         } 
         Collections.sort(subcommands);
         return subcommands;
@@ -205,8 +199,7 @@ public class cctvTabcompleter implements TabCompleter {
               subcommands.add(sub); 
           } 
         } else {
-          for (String sub : SUBSUBCOMMANDS)
-            subcommands.add(sub); 
+          subcommands.addAll(SUBSUBCOMMANDS);
         } 
         Collections.sort(subcommands);
         return subcommands;
@@ -227,18 +220,18 @@ public class cctvTabcompleter implements TabCompleter {
               subcommands.add(sub); 
           } 
         } else {
-          for (String sub : SUBSUBCOMMANDS)
-            subcommands.add(sub); 
+          subcommands.addAll(SUBSUBCOMMANDS);
         } 
         Collections.sort(subcommands);
         return subcommands;
       } 
       if (args[0].equalsIgnoreCase("group") && (args[1].equalsIgnoreCase("addcamera") || args[1].equalsIgnoreCase("removecamera"))) {
         List<String> SUBSUBCOMMANDS = new ArrayList<>();
-        if (groupfunctions.groupExist(args[2])) {
-          CameraGroupRecord.groupRec groupRecord = groupfunctions.getGroupFromID(args[2]);
-          for (CameraRecord.cameraRec cam : groupRecord.cameras)
-            SUBSUBCOMMANDS.add(cam.id); 
+        CameraGroupManager cgm = CCTV.get().getCameraGroups();
+        if (cgm.exists(args[2])) {
+          CameraGroup groupRecord = cgm.get(args[2]);
+          for (Camera cam : groupRecord.getCameras())
+            SUBSUBCOMMANDS.add(cam.getId());
         } 
         if (args[1].equalsIgnoreCase("addcamera")) {
           List<String> cameras = getListOf("camera", sender);
@@ -269,8 +262,7 @@ public class cctvTabcompleter implements TabCompleter {
               subcommands.add(sub); 
           } 
         } else {
-          for (String sub : SUBSUBCOMMANDS)
-            subcommands.add(sub); 
+          subcommands.addAll(SUBSUBCOMMANDS);
         } 
         Collections.sort(subcommands);
         return subcommands;
@@ -307,8 +299,7 @@ public class cctvTabcompleter implements TabCompleter {
               subcommands.add(sub); 
           } 
         } else {
-          for (String sub : SUBSUBCOMMANDS)
-            subcommands.add(sub); 
+          subcommands.addAll(SUBSUBCOMMANDS);
         } 
         Collections.sort(subcommands);
         return subcommands;
@@ -319,32 +310,19 @@ public class cctvTabcompleter implements TabCompleter {
   }
   
   public static List<String> getListOf(String args0, CommandSender sender) {
-    List<String> list = new ArrayList<>();
-    if (args0.equals("camera")) {
-      CameraManager cm = CCTV.get().getCameras();
-      if (sender instanceof Player) {
-        list = cm.get((Player) sender);
-      } else {
-        for (Camera rec : cm.values())
-          list.add(rec.getId());
-      } 
-    } else if (args0.equals("group")) {
-      CameraGroupManager cgm = CCTV.get().getCameraGroups();
-      if (sender instanceof Player) {
-        list = groupfunctions.getGroupsFromPlayer((Player)sender);
-      } else {
-        for (CameraGroup rec : cgm.values())
-          list.add(rec.getId());
-      } 
-    } else if (args0.equals("computer")) {
-      ComputerManager cpm = CCTV.get().getComputers();
-      if (sender instanceof Player p) {
-        list = cpm.get(p);
-      } else {
-        for (Computer rec : cpm.values())
-          list.add(rec.getId());
-      } 
-    } 
-    return list;
+    return switch (args0) {
+      case "camera" -> {
+        CameraManager cm = CCTV.get().getCameras();
+        yield sender instanceof Player p ? cm.get(p) : cm.values().stream().map(ID::getId).toList();
+      }
+      case "group" -> {
+        CameraGroupManager cgm = CCTV.get().getCameraGroups();
+        yield sender instanceof Player p ? cgm.get(p) : cgm.values().stream().map(ID::getId).toList();
+      }
+      case "computer" -> {
+        ComputerManager cpm = CCTV.get().getComputers();
+        yield sender instanceof Player p ? cpm.get(p) : cpm.values().stream().map(ID::getId).toList();
+      }
+    };
   }
 }

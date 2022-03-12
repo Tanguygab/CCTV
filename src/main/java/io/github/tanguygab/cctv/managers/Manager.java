@@ -45,5 +45,8 @@ public abstract class Manager<T> {
     public List<T> values() {
         return new ArrayList<>(map.values());
     }
-    public abstract void delete(String id, Player player);
+    public void delete(String id) {
+        map.remove(id);
+    }
+    public void delete(String id, Player player) {}
 }
