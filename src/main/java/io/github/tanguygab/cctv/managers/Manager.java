@@ -16,14 +16,15 @@ public abstract class Manager<T> {
 
     protected Map<String,T> map = new HashMap<>();
 
+    protected CCTV cctv = CCTV.get();
     protected ConfigurationFile file;
-    protected LanguageFile lang = CCTV.get().getLang();
+    protected LanguageFile lang = cctv.getLang();
 
     public Manager() {}
 
     public Manager(String fileName) {
         try {
-            File file = new File(CCTV.get().getDataFolder(), fileName);
+            File file = new File(cctv.getDataFolder(), fileName);
             if (!file.exists()) file.createNewFile();
             this.file = new YamlConfigurationFile(null, file);
         } catch (Exception e) {

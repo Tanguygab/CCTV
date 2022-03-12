@@ -4,8 +4,6 @@ import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.config.LanguageFile;
 import io.github.tanguygab.cctv.managers.ComputerManager;
 import io.github.tanguygab.cctv.managers.ViewerManager;
-import io.github.tanguygab.cctv.old.functions.computerfunctions;
-import io.github.tanguygab.cctv.old.functions.viewfunctions;
 import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.utils.NPCUtils;
 import io.github.tanguygab.cctv.utils.Utils;
@@ -19,14 +17,16 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class Listener implements org.bukkit.event.Listener {
 
     private final LanguageFile lang;
     private final ComputerManager cpm;
     private final ViewerManager vm;
+
+    public static final List<Player> chatInput = new ArrayList<>();
+    public static final Map<Player,Computer> lastClickedComputer = new HashMap<>();
 
     public Listener() {
         lang = CCTV.get().getLang();
@@ -73,37 +73,41 @@ public class Listener implements org.bukkit.event.Listener {
 
         if (mat != Material.PLAYER_HEAD && mat != Material.ENDER_PEARL && mat != Material.ENDER_EYE) return;
 
-        viewfunctions.switchFunctions(player, item);
+        if (!item.hasItemMeta() || !item.getItemMeta().hasDisplayName()) return;
+        vm.switchFunction(player, item.getItemMeta().getDisplayName());
         e.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true)
     public void on(AsyncPlayerChatEvent e) {
-        Player player = e.getPlayer();
-        String message = e.getMessage();
+        Player p = e.getPlayer();
+        String msg = e.getMessage();
 
-        List<Player> chatInput = CCTV.get().chatInput;
-        if (!chatInput.contains(player)) return;
+        if (!chatInput.contains(p)) return;
         e.setCancelled(true);
-        chatInput.remove(player);
+        chatInput.remove(p);
 
-        if (message.equals("exit")) {
-            player.sendMessage(ChatColor.RED + "You have stopped adding players to the computer!");
+        if (msg.equals("exit")) {
+            p.sendMessage(ChatColor.RED + "You have stopped adding players to the computer!");
             return;
         }
-        OfflinePlayer off = Utils.getOfflinePlayer(message);
+        OfflinePlayer off = Utils.getOfflinePlayer(msg);
         if (off == null) {
-            player.sendMessage(lang.PLAYER_NOT_FOUND);
+            p.sendMessage(lang.PLAYER_NOT_FOUND);
             return;
         }
-        Computer pc = cpm.get(computerfunctions.getLastClickedComputerFromPlayer(player));
+        Computer computer = lastClickedComputer.get(p);
+        if (computer == null) {
+            p.sendMessage(lang.COMPUTER_NOT_FOUND);
+            return;
+        }
         String uuid = off.getUniqueId().toString();
-        if (pc.isAllowedPlayers(off) || pc.getOwner().equals(uuid)) {
-            player.sendMessage(lang.PLAYER_ALREADY_ADDED);
+        if (computer.canUse(off)) {
+            p.sendMessage(lang.PLAYER_ALREADY_ADDED);
             return;
         }
-        pc.getAllowedPlayers().add(uuid);
-        player.sendMessage(lang.PLAYER_ADDED);
+        computer.getAllowedPlayers().add(uuid);
+        p.sendMessage(lang.PLAYER_ADDED);
     }
 
     @EventHandler

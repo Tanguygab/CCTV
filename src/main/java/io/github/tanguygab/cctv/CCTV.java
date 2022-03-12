@@ -22,7 +22,6 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 public class CCTV extends JavaPlugin {
@@ -61,14 +60,6 @@ public class CCTV extends JavaPlugin {
         return viewerManager;
     }
 
-    public boolean CISIWP;
-    public double CAMERA_HEAD_RADIUS;
-    public int TIME_TO_CONNECT;
-    public int TIME_TO_DISCONNECT;
-    public int TIME_FOR_SPOT;
-
-    public final List<Player> chatInput = new ArrayList<>();
-
     @Override
     public void onEnable() {
         instance = this;
@@ -83,10 +74,10 @@ public class CCTV extends JavaPlugin {
             e.printStackTrace();
         }
 
-        loadConfig();
         cameraManager.load();
         cameraGroupManager.load();
         computerManager.load();
+        viewerManager.load();
 
         loadRecipes();
         Bukkit.getPluginManager().registerEvents(new Listener(),this);
@@ -143,17 +134,6 @@ public class CCTV extends JavaPlugin {
             recipe2.setIngredient('T', Material.REDSTONE_TORCH);
             Bukkit.addRecipe(recipe2);
         }
-    }
-
-    private void loadConfig() {
-        Material mat = Material.getMaterial(config.getString("computer_block","NETHER_BRICK_STAIRS"));
-        ComputerManager.COMPUTER_MATERIAL = mat == null ? Material.NETHER_BRICK_STAIRS : mat;
-
-        CISIWP = config.getBoolean("camera_inventory_show_item_without_permissions");
-        CAMERA_HEAD_RADIUS = config.getDouble("camera_head_radius",0.35D);
-        TIME_TO_CONNECT = config.getInt("time_to_connect",3);
-        TIME_TO_DISCONNECT = config.getInt("time_to_disconnect",3);
-        TIME_FOR_SPOT = config.getInt("time_for_spot",5);
     }
 
     @Override

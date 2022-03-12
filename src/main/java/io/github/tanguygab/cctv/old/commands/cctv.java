@@ -6,14 +6,14 @@ import java.text.SimpleDateFormat;
 import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.config.LanguageFile;
 import io.github.tanguygab.cctv.entities.Camera;
+import io.github.tanguygab.cctv.entities.Computer;
+import io.github.tanguygab.cctv.listeners.Listener;
 import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.managers.ComputerManager;
 import io.github.tanguygab.cctv.old.functions.camerafunctions;
 import io.github.tanguygab.cctv.old.functions.computerfunctions;
 import io.github.tanguygab.cctv.old.functions.groupfunctions;
-import io.github.tanguygab.cctv.old.library.Search;
-import io.github.tanguygab.cctv.old.library.Arguments;
-import io.github.tanguygab.cctv.old.records.InventoryRecord;
+import io.github.tanguygab.cctv.old.Search;
 import io.github.tanguygab.cctv.utils.Heads;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -68,7 +68,7 @@ public class cctv implements CommandExecutor {
                     return true;
                   }
                   if (cm.exists(args[2])) {
-                    camerafunctions.teleportToCamera(args[2], player);
+                    cm.teleport(cm.get(args[2]), player);
                   } else {
                     player.sendMessage(lang.CAMERA_NOT_FOUND);
                   }
@@ -185,7 +185,7 @@ public class cctv implements CommandExecutor {
                     player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
-                  cam = Heads.CAMERA_1.get();
+                  cam = Heads.CAMERA.get();
                   player.getInventory().addItem(cam);
                   player.sendMessage(ChatColor.GREEN + "Place a camera with right click to make a camera!");
                   return true;
@@ -197,7 +197,7 @@ public class cctv implements CommandExecutor {
                     return true;
                   }
                   if (args.length < 2)
-                    player.sendMessage(Arguments.wrong_syntax);
+                    player.sendMessage("Arguments.wrong_syntax");
                   if (args.length >= 2 && !cm.exists(args[2])) {
                     player.sendMessage(lang.CAMERA_NOT_FOUND);
                     return true;
@@ -223,7 +223,7 @@ public class cctv implements CommandExecutor {
                     return true;
                   }
                   if (args.length < 3)
-                    player.sendMessage(Arguments.wrong_syntax);
+                    player.sendMessage("Arguments.wrong_syntax");
                   if (args.length >= 2 && !cm.exists(args[2])) {
                     player.sendMessage(lang.CAMERA_NOT_FOUND);
                     return true;
@@ -390,6 +390,7 @@ public class cctv implements CommandExecutor {
             case -599163109:
               if (!str1.equals("computer"))
                 break;
+              ComputerManager cpm = CCTV.get().getComputers();
               if (Bukkit.getServer().getPluginManager().getPlugin("Computer") != null) {
                 player.sendMessage(ChatColor.RED + "This command cannot be used when the Computer plugin is installed, you can" + " create a computer with the Computer plugin!");
                 return true;
@@ -407,7 +408,7 @@ public class cctv implements CommandExecutor {
                     player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
-                  if (!computerfunctions.computerExist(args[2])) {
+                  if (!cpm.exists(args[2])) {
                     player.sendMessage(lang.COMPUTER_NOT_FOUND);
                     return true;
                   }
@@ -465,10 +466,10 @@ public class cctv implements CommandExecutor {
                     player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
-                  if (computerfunctions.computerExist(args[2])) {
-                    ComputerRecord.computerRec pc = computerfunctions.getComputerRecord(args[2]);
-                    computerfunctions.setLastClickedComputerForPlayer(player, pc.loc);
-                    camerafunctions.getCCTVFromComputer(player, pc.loc);
+                  if (cpm.exists(args[2])) {
+                    Computer pc = cpm.get(args[2]);
+                    Listener.lastClickedComputer.put(player, pc);
+                    cpm.open(player,pc);
                   } else {
                     player.sendMessage(lang.COMPUTER_NOT_FOUND);
                   }

@@ -2,7 +2,7 @@ package io.github.tanguygab.cctv.old.functions;
 
 import java.util.Calendar;
 import java.util.Date;
-import io.github.tanguygab.cctv.old.records.CooldownRecord;
+import io.github.tanguygab.cctv.old.CooldownRecord;
 import org.bukkit.entity.Player;
 
 public class cooldownfunctions {

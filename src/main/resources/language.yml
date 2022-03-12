@@ -35,6 +35,7 @@ cameras:
   moved: "&aCamera moved to your location!"
   view-count: "&aThere are currently &2%count%&a players watching camera &2%cameraID%&a!"
   deleted-because-bugged: "&cSorry but this camera was bugged, so we removed it!"
+  item-name: "&9Camera"
 groups:
   create: "&aGroup created!"
   delete: "&aGroup deleted!"
@@ -63,6 +64,7 @@ computers:
   change-no-perms: "&cYou can only edit your own computers!"
   only-owner-can-change-owner: "&cOnly the owner of this computer can change the owner!"
   not-allowed: "&cYou aren't allowed to open this computer!"
+  item-name: "&9Computer"
 gui:
   camera:
     settings: "&eSettings"
@@ -98,12 +100,5 @@ camera-view:
     zoom-off: "&6Zoom: &4Off"
     back: "&8Back"
     spot: "&6Spotting"
-chat-set-name-to-add: "&aProvide the player that you would like to add in the chat!"
+chat-provide-player: "&aProvide the player that you would like to add in the chat!"
 chat-type-exit: "&aType 'exit' to exit player adding!"
-limit-reached:
-  camera: "&cYou reached the camera limit!"
-  computer: "&cYou reached the computer limit!"
-  group: "&cYou reached the camera group limit!"
-  camera-target: "This player reached the camera limit!"
-  computer-target: "This player reached the computer limit!"
-  group-target: "This player reached the camera group limit!"

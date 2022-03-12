@@ -5,8 +5,6 @@ import io.github.tanguygab.cctv.config.LanguageFile;
 import io.github.tanguygab.cctv.entities.Camera;
 import io.github.tanguygab.cctv.entities.CameraGroup;
 import io.github.tanguygab.cctv.entities.Viewer;
-import io.github.tanguygab.cctv.old.functions.camerafunctions;
-import io.github.tanguygab.cctv.old.functions.cooldownfunctions;
 import io.github.tanguygab.cctv.utils.Heads;
 import io.github.tanguygab.cctv.utils.NPCUtils;
 import io.github.tanguygab.cctv.utils.Utils;
@@ -14,9 +12,6 @@ import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.EulerAngle;
@@ -24,10 +19,12 @@ import org.bukkit.util.EulerAngle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import io.github.tanguygab.cctv.old.functions.cooldownfunctions;
 
 public class CameraManager extends Manager<Camera> {
+    
+    public double CAMERA_HEAD_RADIUS;
 
     public CameraManager() {
         super("cameras.yml");
@@ -35,6 +32,8 @@ public class CameraManager extends Manager<Camera> {
 
     @Override
     public void load() {
+        CAMERA_HEAD_RADIUS = cctv.getConfiguration().getDouble("camera_head_radius",0.35D);
+        
         Map<String, Object> cams = file.getValues();
         cams.forEach((id,cfg)->{
             Map<String,Object> config = (Map<String, Object>) cfg;
@@ -88,16 +87,10 @@ public class CameraManager extends Manager<Camera> {
         cam.getArmorStand().remove();
         player.sendMessage(lang.CAMERA_DELETE);
         player.sendMessage(lang.getCameraID(cam.getId()));
-        CCTV.get().getViewers().values().stream().filter(p -> p.getCamera().equals(cam)).forEach(p -> unviewCamera(Bukkit.getPlayer(p.getId())));
-        CCTV.get().getCameraGroups().removeCamera(cam);
+        cctv.getViewers().values().stream().filter(p -> p.getCamera().equals(cam)).forEach(p -> unviewCamera(Bukkit.getPlayer(p.getId())));
+        cctv.getCameraGroups().removeCamera(cam);
         map.remove(cam.getId());
-        if (player.getGameMode() == GameMode.SURVIVAL) {
-            ItemStack camItem = Heads.CAMERA_1.get();
-            ItemMeta camMeta = camItem.getItemMeta();
-            camMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&9Camera"));
-            camItem.setItemMeta(camMeta);
-            player.getInventory().addItem(camItem);
-        }
+        if (player.getGameMode() == GameMode.SURVIVAL) player.getInventory().addItem(Heads.CAMERA.get());
     }
 
     public void create(String id, String owner, Location loc, boolean enabled, boolean shown) {
@@ -109,14 +102,14 @@ public class CameraManager extends Manager<Camera> {
         as.setCustomName("CAM-" + id);
         as.setSilent(true);
         as.setHeadPose(new EulerAngle(Math.toRadians(loc.getPitch()), 0.0D, 0.0D));
-        if (shown) as.getEquipment().setHelmet(Heads.CAMERA_1.get());
+        if (shown) as.getEquipment().setHelmet(Heads.CAMERA.get());
         Camera camera = new Camera(id,owner,loc,enabled,shown,as);
         map.put(id,camera);
-        if (CCTV.get().debug) as.setCustomNameVisible(true);
+        if (cctv.debug) as.setCustomNameVisible(true);
     }
 
     public void create(String id, Location loc, Player player) {
-        LanguageFile lang = CCTV.get().getLang();
+        LanguageFile lang = cctv.getLang();
         if (exists(id)) {
             player.sendMessage(lang.CAMERA_ALREADY_EXISTS);
             return;
@@ -132,7 +125,7 @@ public class CameraManager extends Manager<Camera> {
     public void unviewCamera(Player player) {
         if (player == null) return;
 
-        ViewerManager vm = CCTV.get().getViewers();
+        ViewerManager vm = cctv.getViewers();
         Viewer p = vm.get(player);
         if (p == null) return;
         NPCUtils.despawn(player,p.getNpc());
@@ -154,21 +147,8 @@ public class CameraManager extends Manager<Camera> {
         return null;
     }
 
-    private static final Pattern cameraPattern = Pattern.compile("cctv\\.camera\\.limit\\.(\\d+)");
-    public boolean canPlaceCamera(Player player) {
-        int max = -1;
-        int amount = get(player).size();
-
-        for (PermissionAttachmentInfo perm : player.getEffectivePermissions()) {
-            Matcher m = cameraPattern.matcher(perm.getPermission());
-            if (m.matches())
-                max = Math.max(max, Integer.parseInt(m.group(1)));
-        }
-        return player.isOp() || (player.hasPermission("cctv.camera.limit." + (amount + 1)) || ((max == -1 || amount < max)));
-    }
-
     public void renameCamera(String id, String rename, Player player) {
-        LanguageFile lang = CCTV.get().getLang();
+        LanguageFile lang = cctv.getLang();
         if (!exists(id)) {
             player.sendMessage(lang.CAMERA_NOT_FOUND);
             return;
@@ -183,7 +163,7 @@ public class CameraManager extends Manager<Camera> {
     }
 
     public void viewCamera(Player player, String id, CameraGroup group) {
-        LanguageFile lang = CCTV.get().getLang();
+        LanguageFile lang = cctv.getLang();
         Camera cam = get(id);
         if (cam == null) {
             player.sendMessage(lang.CAMERA_NOT_FOUND);
@@ -198,17 +178,54 @@ public class CameraManager extends Manager<Camera> {
             player.sendMessage(lang.CAMERA_OFFLINE_OVERRIDE);
         }
         player.sendTitle("", lang.CAMERA_CONNECTING, 0, 15, 0);
-        cooldownfunctions.addCoolDown(player, CCTV.get().TIME_TO_CONNECT);
 
-        ViewerManager vm = CCTV.get().getViewers();
-        Bukkit.getScheduler().scheduleSyncDelayedTask(CCTV.get(),  () -> {
+        ViewerManager vm = cctv.getViewers();
+        cooldownfunctions.addCoolDown(player, vm.TIME_TO_CONNECT);
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(cctv,  () -> {
             vm.createPlayer(player, cam, group);
             NPCUtils.spawn(player, player.getLocation());
-            camerafunctions.teleportToCamera(id, player);
+            teleport(cam, player);
             PotionEffect invisibility = new PotionEffect(PotionEffectType.INVISIBILITY, 60000000, 0, false, false);
             player.addPotionEffect(invisibility);
             if (group != null && vm.exists(player))
                 vm.get(player).setGroup(group);
-        }, CCTV.get().TIME_TO_CONNECT * 20L);
+        }, vm.TIME_TO_CONNECT * 20L);
+    }
+
+    public void teleport(Camera cam, Player player) {
+        if (cam == null) return;
+        
+        ArmorStand as = cam.getArmorStand();
+        Location asLoc = as.getLocation();
+        double Degrees_Yaw = as.getEyeLocation().getYaw();
+        double Degrees_Pitch = as.getEyeLocation().getPitch();
+        double radian_yaw = Math.toRadians(Degrees_Yaw);
+        double radian_pitch = Math.toRadians(Degrees_Pitch);
+        double radius_head = 0.29D;
+        double radius = CAMERA_HEAD_RADIUS;
+        
+        double l3 = radius_head * Math.sin(radian_pitch);
+        boolean b = Math.abs(Degrees_Yaw) > 90.0D && Math.abs(Degrees_Yaw) <= 270.0D;
+        if (b) l3 = -l3;
+
+        double x3 = l3 * Math.sin(radian_yaw);
+        double y3 = Math.sqrt(Math.pow(radius_head, 2.0D) - Math.pow(l3, 2.0D));
+        double z3 = Math.sqrt(Math.pow(l3, 2.0D) - Math.pow(x3, 2.0D));
+        if (Degrees_Pitch < 0.0D) z3 = -z3;
+        x3 = -x3;
+        if (b) {
+            x3 = -x3;
+            z3 = -z3;
+        }
+        
+        double x2 = radius * Math.sin(radian_yaw);
+        double z2 = Math.sqrt(Math.pow(radius, 2.0D) - Math.pow(x2, 2.0D));
+        double y2 = radius * Math.sin(radian_pitch);
+        if (b) z2 = -z2;
+        y2 = -y2;
+        x2 = -x2;
+        Location loc = new Location(asLoc.getWorld(), asLoc.getX() + x2 + x3, asLoc.getY() + 0.115D + y2 + y3 - radius_head, asLoc.getZ() + z2 + z3, asLoc.getYaw(), asLoc.getPitch());
+        player.teleport(loc);
     }
 }

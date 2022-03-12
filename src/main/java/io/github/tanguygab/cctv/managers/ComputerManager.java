@@ -1,7 +1,9 @@
 package io.github.tanguygab.cctv.managers;
 
+import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.entities.Computer;
-import io.github.tanguygab.cctv.old.functions.computerfunctions;
+import io.github.tanguygab.cctv.listeners.InvClickEvent;
+import io.github.tanguygab.cctv.listeners.Listener;
 import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -23,6 +25,9 @@ public class ComputerManager extends Manager<Computer> {
 
     @Override
     public void load() {
+        Material mat = Material.getMaterial(cctv.getConfiguration().getString("computer_block","NETHER_BRICK_STAIRS"));
+        ComputerManager.COMPUTER_MATERIAL = mat == null ? Material.NETHER_BRICK_STAIRS : mat;
+        
         Map<String,Object> map = file.getValues();
         map.forEach((id,cfg)->{
             Map<String,Object> config = (Map<String, Object>) cfg;
@@ -69,20 +74,30 @@ public class ComputerManager extends Manager<Computer> {
         return get(loc) != null;
     }
     public Computer get(Location loc) {
-        for (Computer computer : values()) {
-            if (computer.getLocation().equals(loc)) return computer;
-        }
+        for (Computer computer : values())
+            if (computer.getLocation().equals(loc))
+                return computer;
         return null;
     }
+    public List<Computer> get(Player p) {
+        List<Computer> list = new ArrayList<>();
+        for (Computer computer : values())
+            if (computer.getOwner().equals(p.getUniqueId().toString()))
+                list.add(computer);
+        return list;
+    }
     public Computer getLast(Player p) {
-        return get(computerfunctions.getLastClickedComputerFromPlayer(p));
+        return Listener.lastClickedComputer.get(p);
+    }
+    public void setLast(Player p, Computer computer) {
+        Listener.lastClickedComputer.put(p,computer);
     }
 
     private Computer create(String id, String owner, Location loc, String group, List<String> allowedPlayers) {
-        for (Computer computer : values()) {
+        for (Computer computer : values())
             if (loc.equals(computer.getLocation()) || computer.getId().equals(id))
                 return null;
-        }
+
         id = id == null || id.equals("") ? Utils.getRandomNumber(9999, "computer")+"" : id;
         Computer computer = new Computer(id,loc,owner,group,allowedPlayers);
         map.put(id,computer);
@@ -95,5 +110,9 @@ public class ComputerManager extends Manager<Computer> {
             p.sendMessage(lang.COMPUTER_CREATE);
             p.sendMessage(lang.getComputerID(computer.getId()));
         } else p.sendMessage(lang.COMPUTER_ALREADY_EXISTS);
+    }
+
+    public void open(Player p, Computer computer) {
+        InvClickEvent.openComputer(p, 1,computer);
     }
 }

@@ -7,7 +7,6 @@ import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.managers.CameraGroupManager;
 import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.managers.ComputerManager;
-import io.github.tanguygab.cctv.old.library.Arguments;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -22,19 +21,10 @@ public class Utils {
     private static final Random random = new Random();
 
     public static ItemStack getComputer() {
-        ItemStack computer = new ItemStack(ComputerManager.COMPUTER_MATERIAL);
-        ItemMeta computerMeta = computer.getItemMeta();
-        computerMeta.setDisplayName(ChatColor.BLUE+"Computer");
-        computer.setItemMeta(computerMeta);
-        return computer;
+        return Utils.getItem(ComputerManager.COMPUTER_MATERIAL,CCTV.get().getLang().COMPUTER_ITEM_NAME);
     }
-
     public static ItemStack getCamera() {
-        ItemStack cam = Heads.CAMERA_1.get();
-        ItemMeta camMeta = cam.getItemMeta();
-        camMeta.setDisplayName(Arguments.camera_item_name);
-        cam.setItemMeta(camMeta);
-        return cam;
+        return Heads.CAMERA.get();
     }
 
     public static int getRandomNumber(int size, String type) {

@@ -10,7 +10,7 @@ import io.github.tanguygab.cctv.entities.CameraGroup;
 import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.managers.CameraGroupManager;
 import io.github.tanguygab.cctv.managers.ComputerManager;
-import io.github.tanguygab.cctv.old.library.Search;
+import io.github.tanguygab.cctv.old.Search;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;

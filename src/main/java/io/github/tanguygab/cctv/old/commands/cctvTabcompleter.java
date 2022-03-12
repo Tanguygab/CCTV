@@ -338,8 +338,8 @@ public class cctvTabcompleter implements TabCompleter {
       } 
     } else if (args0.equals("computer")) {
       ComputerManager cpm = CCTV.get().getComputers();
-      if (sender instanceof Player) {
-        list = computerfunctions.getComputersFromPlayer((Player)sender);
+      if (sender instanceof Player p) {
+        list = cpm.get(p);
       } else {
         for (Computer rec : cpm.values())
           list.add(rec.getId());

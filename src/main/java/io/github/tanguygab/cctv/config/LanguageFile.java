@@ -1,11 +1,14 @@
 package io.github.tanguygab.cctv.config;
 
+import io.github.tanguygab.cctv.CCTV;
 import org.bukkit.ChatColor;
 import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class LanguageFile extends YamlConfigurationFile {
 
@@ -83,6 +86,7 @@ public class LanguageFile extends YamlConfigurationFile {
         return CAMERA_VIEW_COUNT.replace("%count%",count+"").replace("%cameraID%",id);
     }
     public final String CAMERA_DELETED_BECAUSE_BUGGED = get("cameras.deleted-because-bugged","&cSorry but this camera was bugged, so we removed it!");
+    public final String CAMERA_ITEM_NAME = get("cameras.item-name", "&9Camera");
 
     public final String GROUP_CREATE = get("groups.create","&aGroup created!");
     public final String GROUP_DELETE = get("groups.delete","&aGroup deleted!");
@@ -126,26 +130,27 @@ public class LanguageFile extends YamlConfigurationFile {
     public final String COMPUTER_CHANGE_NO_PERMS = get("computers.change-no-perms", "&cYou can only edit your own computers!");
     public final String COMPUTER_ONLY_OWNER_CAN_CHANGE_OWNER = get("computers.only-owner-can-change-owner", "&cOnly the owner of this computer can change the owner!");
     public final String COMPUTER_NOT_ALLOWED = get("computers.not-allowed", "&cYou aren't allowed to open this computer!");
+    public final String COMPUTER_ITEM_NAME = get("computers.item-name", "&9Computer");
 
     public final String GUI_CAMERA_SETTINGS = get("gui.camera.settings", "&eSettings");
     public final String GUI_CAMERA_DELETE = get("gui.camera.delete", "&eDelete camera %cameraID%");
     public String getGuiCameraDelete(String id) {
-        return GUI_CAMERA_DELETE.replace("%cameraID%",id);
+        return regex(GUI_CAMERA_DELETE,"%cameraID%",id,false);
     }
     public final String GUI_CAMERA_DELETE_ITEM_CANCEL = get("gui.camera.delete-item-cancel", "&cCancel");
     public final String GUI_CAMERA_DELETE_ITEM_DELETE = get("gui.camera.delete-item-delete", "&2Delete");
     public final String GUI_COMPUTER_DEFAULT = get("gui.computer.default", "&eCCTV (page: %page%)");
     public String getGuiComputerDefault(String page) {
-        return GUI_COMPUTER_DEFAULT.replace("%page%",page);
+        return regex(GUI_COMPUTER_DEFAULT,"%page%",page,true);
     }
     public final String GUI_COMPUTER_OPTIONS_ITEM = get("gui.computer.options-item", "&eOptions");
     public final String GUI_COMPUTER_SET_GROUP = get("gui.computer.set-group", "&eSet camera group (page: %page%)");
     public String getGuiComputerSetGroup(String page) {
-        return GUI_COMPUTER_SET_GROUP.replace("%page%",page);
+        return regex(GUI_COMPUTER_SET_GROUP,"%page%",page,true);
     }
     public final String GUI_COMPUTER_REMOVE_PLAYER = get("gui.computer.remove-player", "&cRemove player (page: %page%)");
     public String getGuiComputerRemovePlayer(String page) {
-        return GUI_COMPUTER_REMOVE_PLAYER.replace("%page%",page);
+        return regex(GUI_COMPUTER_REMOVE_PLAYER,"%page%",page,true);
     }
     public final String GUI_COMPUTER_DEFAULT_ITEM_OPTION = get("gui.computer.default-item.option", "&6Options");
     public final String GUI_COMPUTER_DEFAULT_ITEM_NEXT_PAGE = get("gui.computer.default-item.next-page", "&8Next Page");
@@ -155,4 +160,42 @@ public class LanguageFile extends YamlConfigurationFile {
     public final String GUI_COMPUTER_OPTIONS_SET_CAMERA_GROUP = get("gui.computer.options.set-camera-group", "&aSet camera group");
     public final String GUI_COMPUTER_OPTIONS_ADD_PLAYER = get("gui.computer.options.add-player", "&aAdd player");
     public final String GUI_COMPUTER_OPTIONS_REMOVE_PLAYER = get("gui.computer.options.remove-player", "&cRemove player");
+
+    public final String CAMERA_VIEW_OPTION = get("camera-view.option", "&eOptions");
+    public final String CAMERA_VIEW_ROTATE_LEFT = get("camera-view.rotate-left", "&6Rotate Left");
+    public final String CAMERA_VIEW_ROTATE_RIGHT = get("camera-view.rotate-right", "&6Rotate Right");
+    public final String CAMERA_VIEW_PREVIOUS = get("camera-view.previous", "&bPrevious Camera");
+    public final String CAMERA_VIEW_NEXT = get("camera-view.next", "&bNext Camera");
+    public final String CAMERA_VIEW_EXIT = get("camera-view.exit", "&4Exit");
+    public final String CAMERA_VIEW_ZOOM = get("camera-view.zoom", "&6Zoom: &a%level%x");
+    public String getCameraViewZoom(int zoom) {
+        return regex(CAMERA_VIEW_ZOOM,"%level%",zoom == -1 ? null : zoom+"",true);
+    }
+    public final String CAMERA_VIEW_OPTIONS_NIGHTVISION_OFF = get("camera-view.options.nightvision-off", "&6Night-Vision: &4Off");
+    public final String CAMERA_VIEW_OPTIONS_NIGHTVISION_ON = get("camera-view.options.nightvision-on", "&6Night-Vision: &aOn");
+    public final String CAMERA_VIEW_OPTIONS_ZOOM_OFF = get("camera-view.options.zoom-off", "&6Zoom: &4Off");
+    public final String CAMERA_VIEW_OPTIONS_BACK = get("camera-view.options.back", "&8Back");
+    public final String CAMERA_VIEW_OPTIONS_SPOT = get("camera-view.options.spot", "&6Spotting");
+
+    public final String CHAT_PROVIDE_PLAYER = get("chat-provide-player", "&aProvide the player that you would like to add in the chat!");
+    public final String CHAT_TYPE_EXIT = get("chat-type-exit", "&aType 'exit' to exit player adding!");
+
+
+    public String regex(String str, String placeholder, String value, boolean num) {
+        if (value == null) return quote(str).replaceAll(placeholder,num ? "\\d+" : ".+");
+        return str.replace(placeholder,value);
+    }
+    public String quote(String str) {
+        return str.replaceAll("\\(", "\\\\(").replaceAll("\\)", "\\\\)");
+    }
+
+    public String getMatcher(String patt, String match, String string, String placeholder) {
+        Pattern pattern = Pattern.compile(quote(patt));
+        Matcher m = pattern.matcher(match);
+        if (!m.matches()) {
+            CCTV.get().getLogger().info("The language message '"+string+"' doesn't contain "+placeholder+"!");
+            return null;
+        }
+        return m.group(1);
+    }
 }

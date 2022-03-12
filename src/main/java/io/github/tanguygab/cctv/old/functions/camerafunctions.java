@@ -8,9 +8,7 @@ import io.github.tanguygab.cctv.config.LanguageFile;
 import io.github.tanguygab.cctv.entities.Viewer;
 import io.github.tanguygab.cctv.entities.Camera;
 import io.github.tanguygab.cctv.managers.CameraManager;
-import io.github.tanguygab.cctv.old.events.PlayerInventoryClickEvent;
-import io.github.tanguygab.cctv.old.library.Search;
-import io.github.tanguygab.cctv.entities.Computer;
+import io.github.tanguygab.cctv.old.Search;
 import io.github.tanguygab.cctv.utils.Heads;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -20,66 +18,20 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.util.EulerAngle;
 
-import io.github.tanguygab.cctv.old.library.Arguments;
 
 public class camerafunctions {
 
   public static void immediateViewCamera(String id, Player player) {
-    Camera cam = CCTV.get().getCameras().get(id);
+    CameraManager cm = CCTV.get().getCameras();
+    Camera cam = cm.get(id);
     if (cam == null) {
       CCTV.get().getViewers().delete(player);
       player.sendMessage(CCTV.get().getLang().CAMERA_NOT_FOUND);
       return;
     }
-    teleportToCamera(id, player);
+    cm.teleport(cam, player);
   }
-  
-  public static void teleportToCamera(String id, Player player) {
-    Camera cam = CCTV.get().getCameras().get(id);
-    if (cam == null) {
-      return;
-    }
-    double Degrees_Yaw = cam.getArmorStand().getEyeLocation().getYaw();
-    double Degrees_Pitch = cam.getArmorStand().getEyeLocation().getPitch();
-    double radian_yaw = Math.toRadians(Degrees_Yaw);
-    double radian_pitch = Math.toRadians(Degrees_Pitch);
-    double radius_head = 0.29D;
-    double radius = CCTV.get().CAMERA_HEAD_RADIUS;
-    double x = cam.getArmorStand().getLocation().getX();
-    double y = cam.getArmorStand().getLocation().getY() + 0.115D;
-    double z = cam.getArmorStand().getLocation().getZ();
-    double x2;
-    double y2;
-    double z2;
-    double l3;
-    double x3;
-    double y3;
-    double z3;
-    l3 = radius_head * Math.sin(radian_pitch);
-    boolean b = Math.abs(Degrees_Yaw) > 90.0D && Math.abs(Degrees_Yaw) <= 270.0D;
-    if (b)
-      l3 = -l3;
-    x3 = l3 * Math.sin(radian_yaw);
-    y3 = Math.sqrt(Math.pow(radius_head, 2.0D) - Math.pow(l3, 2.0D));
-    z3 = Math.sqrt(Math.pow(l3, 2.0D) - Math.pow(x3, 2.0D));
-    if (Degrees_Pitch < 0.0D)
-      z3 = -z3;
-    x3 = -x3;
-    if (b) {
-      x3 = -x3;
-      z3 = -z3;
-    }
-    x2 = radius * Math.sin(radian_yaw);
-    z2 = Math.sqrt(Math.pow(radius, 2.0D) - Math.pow(x2, 2.0D));
-    y2 = radius * Math.sin(radian_pitch);
-    if (b)
-      z2 = -z2;
-    y2 = -y2;
-    x2 = -x2;
-    Location loc = new Location(cam.getArmorStand().getLocation().getWorld(), x + x2 + x3, y + y2 + y3 - radius_head, z + z2 + z3, cam.getArmorStand().getLocation().getYaw(), cam.getArmorStand().getLocation().getPitch());
-    player.teleport(loc);
-  }
-  
+
   public static void moveHere(String name, Player player) {
     LanguageFile lang = CCTV.get().getLang();
     CameraManager cm = CCTV.get().getCameras();
@@ -97,14 +49,14 @@ public class camerafunctions {
       armorstand.setVisible(false);
       armorstand.setCustomName("CAM-" + cam.getId());
       armorstand.setSilent(true);
-      armorstand.getEquipment().setHelmet(Heads.CAMERA_1.get());
+      armorstand.getEquipment().setHelmet(Heads.CAMERA.get());
       armorstand.setHeadPose(new EulerAngle(Math.toRadians(loc.getPitch()), 0.0D, 0.0D));
       cam.setLocation(loc);
       for (Viewer p : CCTV.get().getViewers().values()) {
         if (p.getCamera() == cam) {
           Player target = Bukkit.getServer().getPlayer(UUID.fromString(p.getId()));
           if (target != null)
-            teleportToCamera(name, target);
+            cm.teleport(cam, target);
         }
       }
       player.sendMessage(lang.CAMERA_MOVED);
@@ -125,7 +77,7 @@ public class camerafunctions {
       cam.setShown(false);
       player.sendMessage(lang.getCameraDisabled(cam.getId()));
     } else {
-      cam.getArmorStand().getEquipment().setHelmet(Heads.CAMERA_1.get());
+      cam.getArmorStand().getEquipment().setHelmet(Heads.CAMERA.get());
       cam.setShown(true);
       player.sendMessage(lang.getCameraEnabled(cam.getId()));
     }
@@ -249,19 +201,6 @@ public class camerafunctions {
       b++;
     } 
     player.sendMessage(lang.PLAYER_NOT_FOUND);
-  }
-  
-  public static void getCCTVFromComputer(Player player, Location loc) {
-    if (loc.getX() == 0.0D && loc.getY() == 0.0D && loc.getZ() == 0.0D) {
-      player.closeInventory();
-      return;
-    } 
-    Computer pc = computerfunctions.getComputerRecordFromLocation(computerfunctions.getLastClickedComputerFromPlayer(player));
-    if (pc == null) {
-      player.closeInventory();
-      return;
-    } 
-    player.openInventory(PlayerInventoryClickEvent.CCTV(player, 1));
   }
 
   public static void countConnectedPlayersToCamera(String camera, Player player) {

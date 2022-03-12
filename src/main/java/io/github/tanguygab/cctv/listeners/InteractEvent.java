@@ -3,9 +3,6 @@ package io.github.tanguygab.cctv.listeners;
 import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.managers.ComputerManager;
-import io.github.tanguygab.cctv.old.functions.camerafunctions;
-import io.github.tanguygab.cctv.old.functions.computerfunctions;
-import io.github.tanguygab.cctv.old.functions.viewfunctions;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -29,11 +26,12 @@ public class InteractEvent {
 
         if (rcb && block != null) {
             if (!block.getType().equals(ComputerManager.COMPUTER_MATERIAL) || e.getHand() == EquipmentSlot.OFF_HAND) return;
-            Computer computer = CCTV.get().getComputers().get(block.getLocation());
+            ComputerManager cpm = CCTV.get().getComputers();
+            Computer computer = cpm.get(block.getLocation());
             if (computer != null) {
-                if (computerfunctions.canPlayerAccessComputer(p, computer.getId())) {
-                    computerfunctions.setLastClickedComputerForPlayer(p, loc);
-                    camerafunctions.getCCTVFromComputer(p, loc);
+                if (computer.canUse(p)) {
+                    cpm.setLast(p, computer);
+                    cpm.open(p, computer);
                 } else p.sendMessage(CCTV.get().getLang().COMPUTER_NOT_ALLOWED);
                 return;
             }
@@ -41,8 +39,10 @@ public class InteractEvent {
 
         if (item == null) return;
         ItemMeta meta = item.getItemMeta();
+        if (meta == null || !meta.hasDisplayName()) return;
+        String itemName = item.getItemMeta().getDisplayName();
 
-        if (rcb && item.getType() == Material.PLAYER_HEAD && meta != null && meta.hasDisplayName() && meta.getDisplayName().equals(Arguments.camera_item_name)) {
+        if (rcb && item.getType() == Material.PLAYER_HEAD && meta.getDisplayName().equals(CCTV.get().getLang().CAMERA_ITEM_NAME)) {
             createCamera(p,item,loc,e.getBlockFace());
             e.setCancelled(true);
             return;
@@ -50,7 +50,7 @@ public class InteractEvent {
         if ((rcb || e.getAction() == Action.RIGHT_CLICK_AIR) && CCTV.get().getViewers().exists(p)) {
             e.setCancelled(true);
             if (item.getType() != Material.AIR && e.getHand() != EquipmentSlot.OFF_HAND)
-                viewfunctions.switchFunctions(p, item);
+                CCTV.get().getViewers().switchFunction(p, itemName);
         }
     }
 

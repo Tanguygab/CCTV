@@ -1,4 +1,4 @@
-package io.github.tanguygab.cctv.old.records;
+package io.github.tanguygab.cctv.old;
 
 import java.util.ArrayList;
 import java.util.Date;

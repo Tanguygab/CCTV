@@ -40,7 +40,7 @@ public class CameraGroupManager extends Manager<CameraGroup> {
 
     @Override
     public void delete(String id, Player player) {
-        LanguageFile lang = CCTV.get().getLang();
+        LanguageFile lang = cctv.getLang();
         CameraGroup group = get(id);
         if (group == null || Utils.canUse(group.getOwner(),player,"group.other")) {
             player.sendMessage(lang.GROUP_NOT_FOUND);
@@ -50,7 +50,7 @@ public class CameraGroupManager extends Manager<CameraGroup> {
     }
 
     public void create(String name, Player p) {
-        LanguageFile lang = CCTV.get().getLang();
+        LanguageFile lang = cctv.getLang();
         if (exists(name)) {
             p.sendMessage(lang.GROUP_ALREADY_EXISTS);
             return;
@@ -76,8 +76,8 @@ public class CameraGroupManager extends Manager<CameraGroup> {
     }
 
     public void addCamera(Player player, String group, String camera) {
-        LanguageFile lang = CCTV.get().getLang();
-        CameraManager cm = CCTV.get().getCameras();
+        LanguageFile lang = cctv.getLang();
+        CameraManager cm = cctv.getCameras();
         if (!cm.exists(camera) || !exists(group)) {
             player.sendMessage(lang.GROUP_GROUP_OR_CAMERA_NOT_FOUND);
             return;
@@ -92,8 +92,8 @@ public class CameraGroupManager extends Manager<CameraGroup> {
         } else player.sendMessage(lang.GROUP_CAMERA_ALREADY_ADDED);
     }
     public void removeCamera(Player player, String group, String camera) {
-        LanguageFile lang = CCTV.get().getLang();
-        CameraManager cm = CCTV.get().getCameras();
+        LanguageFile lang = cctv.getLang();
+        CameraManager cm = cctv.getCameras();
         if (!exists(group) || !cm.exists(camera)) {
             player.sendMessage(lang.GROUP_CAMERA_ALREADY_ADDED);
             return;

@@ -4,8 +4,6 @@ import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.config.LanguageFile;
 import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.managers.ViewerManager;
-import io.github.tanguygab.cctv.old.functions.camerafunctions;
-import io.github.tanguygab.cctv.old.functions.viewfunctions;
 import io.github.tanguygab.cctv.utils.Utils;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -49,7 +47,7 @@ public class ViewersEvents implements Listener {
 
         p.setAllowFlight(true);
         p.setFlying(true);
-        camerafunctions.teleportToCamera(vm.get(p).getCamera().getId(), p);
+        cm.teleport(vm.get(p).getCamera(), p);
     }
 
     @EventHandler
@@ -58,7 +56,7 @@ public class ViewersEvents implements Listener {
         if (!vm.exists(player)) return;
 
         player.sendTitle("", lang.CAMERA_DISCONNECTING, 0, 15, 0);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(CCTV.get(), () -> cm.unviewCamera(player),  CCTV.get().TIME_TO_DISCONNECT * 20L);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(CCTV.get(), () -> cm.unviewCamera(player),  vm.TIME_TO_DISCONNECT * 20L);
     }
 
     @EventHandler
@@ -92,7 +90,8 @@ public class ViewersEvents implements Listener {
         if (vm.exists(p)) {
             if (!p.getInventory().getItemInMainHand().getType().equals(Material.AIR)) {
                 ItemStack item = p.getInventory().getItemInMainHand();
-                viewfunctions.switchFunctions(p, item);
+                if (item.hasItemMeta() && item.getItemMeta().hasDisplayName())
+                    vm.switchFunction(p, item.getItemMeta().getDisplayName());
             }
             e.setCancelled(true);
             return;

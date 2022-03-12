@@ -43,7 +43,7 @@ public class Computer extends ID {
         return allowedPlayers;
     }
 
-    public boolean isAllowedPlayers(OfflinePlayer player) {
-        return allowedPlayers.contains(player.getUniqueId().toString());
+    public boolean canUse(OfflinePlayer player) {
+        return allowedPlayers.contains(player.getUniqueId().toString()) || owner.equals(player.getUniqueId().toString());
     }
 }
