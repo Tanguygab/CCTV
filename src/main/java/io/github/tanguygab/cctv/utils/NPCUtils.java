@@ -36,24 +36,24 @@ public class NPCUtils {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         for (Player online : Bukkit.getOnlinePlayers()) {
+            if (p == online) continue;
             EntityPlayer playerNMS = ((CraftPlayer)online).getHandle();
             PlayerConnection connection = playerNMS.b;
             connection.a(packet);
-
-            PacketPlayOutEntityMetadata entityMetadata = new PacketPlayOutEntityMetadata(playerNMS.ae(),playerNMS.ai(),true);
-            ((CraftPlayer)p).getHandle().b.a(entityMetadata);
             online.showPlayer(CCTV.get(),p);
         }
     }
 
     public static void spawnForTarget(Player player, Player target) {
+        if (player == target) return;
         Viewer p = CCTV.get().getViewers().get(target);
         EntityPlayer nmsPlayer = ((CraftPlayer) player).getHandle();
         PlayerConnection connection = nmsPlayer.b;
         EntityPlayer npc = p.getNpc();
 
-        PacketPlayOutPlayerInfo infoPacket = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.a,nmsPlayer);
+        PacketPlayOutPlayerInfo infoPacket = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.a,npc);
         connection.a(infoPacket);
 
         PacketPlayOutNamedEntitySpawn namedEntitySpawn = new PacketPlayOutNamedEntitySpawn(npc);
@@ -61,12 +61,6 @@ public class NPCUtils {
 
         PacketPlayOutEntityHeadRotation entityHeadRotation = new PacketPlayOutEntityHeadRotation(npc,(byte) (int) (p.getLoc().getYaw() * 256.0F / 360.0F));
         connection.a(entityHeadRotation);
-
-        DataWatcher dw = npc.ai();
-        //DataWatcherObject<Byte> dwo = new DataWatcherObject<>(16, DataWatcherRegistry.a);
-        //dw.a(dwo,(byte)79);
-        PacketPlayOutEntityMetadata entityMetadata = new PacketPlayOutEntityMetadata(npc.ae(),dw,true);
-        connection.a(entityMetadata);
     }
 
 }

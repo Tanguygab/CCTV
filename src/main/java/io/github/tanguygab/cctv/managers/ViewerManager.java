@@ -169,13 +169,13 @@ public class ViewerManager extends Manager<Viewer> {
 
     private boolean spot(Player viewer, Player viewed, boolean glow) {
         if (!viewed.canSee(viewed)) return false;
+        EntityPlayer viewedNMS = ((CraftPlayer)viewed).getHandle();
+        viewedNMS.i(glow); //setGlowingTag(boolean)
         if (!glow) {
             viewed.setSneaking(true); // yeah, I'm doing that because it doesn't want to work with PacketPlayOutEntityMetadata...
             viewed.setSneaking(false);
             return true;
         }
-        EntityPlayer viewedNMS = ((CraftPlayer)viewed).getHandle();
-        viewedNMS.i(true); //setGlowingTag(boolean)
         PlayerConnection connection = ((CraftPlayer)viewer).getHandle().b;
         PacketPlayOutEntityMetadata packet = new PacketPlayOutEntityMetadata(viewedNMS.ae(),viewedNMS.ai(),true);
         connection.a(packet);
