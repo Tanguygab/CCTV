@@ -177,7 +177,7 @@ public class CameraManager extends Manager<Camera> {
             }
             player.sendMessage(lang.CAMERA_OFFLINE_OVERRIDE);
         }
-        player.sendTitle("", lang.CAMERA_CONNECTING, 0, 15, 0);
+        player.sendTitle(" ", lang.CAMERA_CONNECTING, 0, 15, 0);
 
         ViewerManager vm = cctv.getViewers();
         cooldownfunctions.addCoolDown(player, vm.TIME_TO_CONNECT);

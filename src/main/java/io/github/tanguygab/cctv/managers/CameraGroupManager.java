@@ -33,7 +33,7 @@ public class CameraGroupManager extends Manager<CameraGroup> {
     public void unload() {
         map.forEach((id, group)->{
             file.set(id + ".owner", group.getOwner());
-            file.set(id + ".cameras", group.getCameras());
+            file.set(id + ".cameras", Utils.list(group.getCameras()));
         });
     }
 

@@ -11,7 +11,8 @@ public abstract class Command<T> {
 
     private final String type;
 
-    protected final LanguageFile lang = CCTV.get().getLang();
+    protected final CCTV cctv = CCTV.get();
+    protected final LanguageFile lang = cctv.getLang();
 
     public Command(String type) {
         this.type = type;

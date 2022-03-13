@@ -1,6 +1,5 @@
 package io.github.tanguygab.cctv.commands;
 
-import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.entities.Camera;
 import io.github.tanguygab.cctv.entities.CameraGroup;
 import io.github.tanguygab.cctv.managers.CameraGroupManager;
@@ -17,8 +16,8 @@ import java.util.List;
 
 public class GroupCmd extends Command<CameraGroup> {
 
-    private final CameraGroupManager cgm = CCTV.get().getCameraGroups();
-    private final CameraManager cm = CCTV.get().getCameras();
+    private final CameraGroupManager cgm = cctv.getCameraGroups();
+    private final CameraManager cm = cctv.getCameras();
 
     public GroupCmd() {
         super("group");
@@ -176,6 +175,9 @@ public class GroupCmd extends Command<CameraGroup> {
                 group.setId(newName);
                 p.sendMessage(lang.getGroupRenamed(newName));
             }
+            case "info" -> {}
+            case "search" -> {}
+            case "list" -> {}
             default -> sender.sendMessage(ChatColor.GOLD+""+ChatColor.BOLD + "Subcommands for /cctv group" + ChatColor.YELLOW
                     + "\ncreate"
                     + "\ndelete"

@@ -37,8 +37,8 @@ public class ComputerManager extends Manager<Computer> {
             double y = (double) config.get("y");
             double z = (double) config.get("z");
 
-            String group = config.containsKey("group") ? config.get("group")+"" : null;
-            List<String> allowedPlayers = config.containsKey("group") ? (List<String>) config.get("group") : new ArrayList<>();
+            String group = config.containsKey("camera-group") ? config.get("camera-group")+"" : null;
+            List<String> allowedPlayers = config.containsKey("allowed-players") ? (List<String>) config.get("allowed-players") : new ArrayList<>();
 
             create(id,owner,new Location(world,x,y,z),group,allowedPlayers);
 
@@ -50,7 +50,7 @@ public class ComputerManager extends Manager<Computer> {
         map.forEach((id, computer)->{
             Location loc = computer.getLocation();
             file.set(id+".owner", computer.getOwner());
-            file.set(id + ".world", loc.getWorld());
+            file.set(id + ".world", loc.getWorld().getName());
             file.set(id + ".x", loc.getX());
             file.set(id + ".y", loc.getY());
             file.set(id + ".z", loc.getZ());

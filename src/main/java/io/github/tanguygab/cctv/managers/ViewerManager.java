@@ -79,10 +79,11 @@ public class ViewerManager extends Manager<Viewer> {
 
     private static void playerSetMode(Player p, boolean mode, GameMode gm) {
         p.setCanPickupItems(!mode);
-        p.setAllowFlight(mode);
         p.setGameMode(gm);
-        if (gm != GameMode.CREATIVE && gm != GameMode.SURVIVAL)
+        if (gm != GameMode.CREATIVE && gm != GameMode.SPECTATOR) {
+            p.setAllowFlight(mode);
             p.setFlying(mode);
+        }
         p.setCollidable(!mode);
         p.setInvulnerable(mode);
     }
@@ -135,7 +136,7 @@ public class ViewerManager extends Manager<Viewer> {
             return;
         }
         if (item.equals(lang.CAMERA_VIEW_EXIT)) {
-            p.sendTitle("", cctv.getLang().CAMERA_DISCONNECTING, 0, 15, 0);
+            p.sendTitle(" ", cctv.getLang().CAMERA_DISCONNECTING, 0, 15, 0);
             Bukkit.getScheduler().scheduleSyncDelayedTask(cctv, () -> cctv.getCameras().unviewCamera(p),  TIME_TO_DISCONNECT * 20L);
             return;
         }

@@ -6,21 +6,12 @@ import java.text.SimpleDateFormat;
 import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.config.LanguageFile;
 import io.github.tanguygab.cctv.entities.Camera;
-import io.github.tanguygab.cctv.entities.CameraGroup;
-import io.github.tanguygab.cctv.entities.Computer;
-import io.github.tanguygab.cctv.listeners.Listener;
-import io.github.tanguygab.cctv.managers.CameraGroupManager;
 import io.github.tanguygab.cctv.managers.CameraManager;
-import io.github.tanguygab.cctv.managers.ComputerManager;
 import io.github.tanguygab.cctv.old.functions.camerafunctions;
-import io.github.tanguygab.cctv.old.functions.computerfunctions;
-import io.github.tanguygab.cctv.old.functions.groupfunctions;
 import io.github.tanguygab.cctv.old.Search;
 import io.github.tanguygab.cctv.utils.Heads;
-import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -30,7 +21,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public class cctv implements CommandExecutor {
 
-  public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {.
+  public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
     if (sender instanceof Player) {
       Player player = (Player)sender;
       LanguageFile lang = CCTV.get().getLang();
@@ -40,13 +31,7 @@ public class cctv implements CommandExecutor {
         } else if (args.length >= 1) {
           String str2, str3;
           ItemStack cam;
-          String str4;
-          ItemMeta camMeta;
-          String str5;
-          int bool;
           int page;
-          ItemStack computer;
-          ItemMeta computerMeta;
           int i;
           String str1;
           switch ((str1 = args[0].toLowerCase()).hashCode()) {
@@ -124,7 +109,7 @@ public class cctv implements CommandExecutor {
                     player.sendMessage(ChatColor.RED + "Please put in the Camera Name!");
                     return true;
                   }
-                  camerafunctions.rename(args[2], args[3], player);
+                  cm.renameCamera(args[2], args[3], player);
                   return true;
                 case -934396624:
                   if (!str3.equals("return"))
@@ -133,7 +118,7 @@ public class cctv implements CommandExecutor {
                     player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
-                  camerafunctions.unviewPlayer(player);
+                  cm.unviewCamera(player);
                   return true;
                 case -906336856:
                   if (!str3.equals("search"))
@@ -242,7 +227,7 @@ public class cctv implements CommandExecutor {
                     return true;
                   }
                   if (!CCTV.get().getViewers().exists(player)) {
-                    CameraUtils.viewCamera(player, args[2], null);
+                    cm.viewCamera(player, args[2], null);
                   } else {
                     player.sendMessage(ChatColor.RED + "You already watching a camera!");
                   }
@@ -285,6 +270,7 @@ public class cctv implements CommandExecutor {
               sender.sendMessage(ChatColor.GOLD +""+ ChatColor.BOLD + "Subcommands for /cctv camera" + ChatColor.YELLOW + "\n" + "create" + "\n" + "delete" + "\n" + "view" + "\n" + "teleport" +
                   "\n" + "movehere" + "\n" + "return" + "\n" + "list" + "\n" + "setowner" + "\n" + "get" + "\n" + "hide" + "\n" + "show");
               return true;
+              /*
             case -985752863:
               if (!str1.equals("player"))
                 break;
@@ -301,6 +287,7 @@ public class cctv implements CommandExecutor {
                     player.sendMessage(lang.NO_PERMISSIONS);
                     return true;
                   }
+
                   if (inventoryfunctions.inventoryExist(args[2])) {
                     InventoryRecord.InventoryRec rec = inventoryfunctions.getLastInventoryRecord(args[2]);
                     DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
@@ -324,6 +311,7 @@ public class cctv implements CommandExecutor {
                   }
                   player.sendMessage(ChatColor.RED + "We don't have any saved data of this player!");
                   break;
+
                 case 950484197:
                   if (!str2.equals("compare"))
                     break;
@@ -391,260 +379,7 @@ public class cctv implements CommandExecutor {
                   break;
               }
               return false;
-            case -599163109:
-              if (!str1.equals("computer"))
-                break;
-              ComputerManager cpm = CCTV.get().getComputers();
-              if (Bukkit.getServer().getPluginManager().getPlugin("Computer") != null) {
-                player.sendMessage(ChatColor.RED + "This command cannot be used when the Computer plugin is installed, you can" + " create a computer with the Computer plugin!");
-                return true;
-              }
-              if (args.length == 1) {
-                args = new String[] { args[0], "" };
-              } else if (args.length == 2) {
-                args = new String[] { args[0], args[1], "" };
-              }
-              switch ((str5 = args[1].toLowerCase()).hashCode()) {
-                case -1360201941:
-                  if (!str5.equals("teleport"))
-                    break;
-                  if (!player.hasPermission("cctv.computer.teleport")) {
-                    player.sendMessage(lang.NO_PERMISSIONS);
-                    return true;
-                  }
-                  if (!cpm.exists(args[2])) {
-                    player.sendMessage(lang.COMPUTER_NOT_FOUND);
-                    return true;
-                  }
-                  computerfunctions.TeleportToComputer(args[2], player);
-                  return true;
-                case -906336856:
-                  if (!str5.equals("search"))
-                    break;
-                  if (!player.hasPermission("cctv.computer.search")) {
-                    player.sendMessage(lang.NO_PERMISSIONS);
-                    return true;
-                  }
-                  if (args.length < 4) {
-                    player.sendMessage(ChatColor.YELLOW + "Use /cctv computer search <all/personal> <pagenumber>");
-                    player.sendMessage(ChatColor.YELLOW + "Or /cctv computer search <player/name> <value> <pagenumber>");
-                    return false;
-                  }
-                  if (args.length > 2 && args.length >= ((args[2].equalsIgnoreCase("all") || args[2].equalsIgnoreCase("personal")) ? 4 : 5))
-                    if (!args[(args[2].equalsIgnoreCase("all") || args[2].equalsIgnoreCase("personal")) ? 3 : 4].matches("[0-9]+")) {
-                      player.sendMessage(ChatColor.RED + args[(args[2].equalsIgnoreCase("all") || args[2].equalsIgnoreCase("personal")) ? 3 : 4] + " isn't a number!");
-                      return false;
-                    }
-                  player.sendMessage(lang.getListSearch(args[2].toLowerCase(), (args.length >= 5) ? args[3] : ""));
-                  i = (args.length < ((args[2].equalsIgnoreCase("all") || args[2].equalsIgnoreCase("personal")) ? 4 : 5)) ? 1 : Integer.valueOf(args[(args[2].equalsIgnoreCase("all") || args[2].equalsIgnoreCase("personal")) ? 3 : 4]).intValue();
-                  computerfunctions.list(player, i, Search.valueOf(args[2].toLowerCase()), (args.length >= 4) ? args[3] : "");
-                  return true;
-                case 102230:
-                  if (!str5.equals("get"))
-                    break;
-                  if (!player.hasPermission("cctv.computer.create")) {
-                    player.sendMessage(lang.NO_PERMISSIONS);
-                    return true;
-                  }
-                  computer = new ItemStack(ComputerManager.COMPUTER_MATERIAL);
-                  computerMeta = computer.getItemMeta();
-                  computerMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&9Computer"));
-                  computer.setItemMeta(computerMeta);
-                  player.getInventory().addItem(computer);
-                  return true;
-                case 3322014:
-                  if (!str5.equals("list"))
-                    break;
-                  if (!player.hasPermission("cctv.computer.list")) {
-                    player.sendMessage(lang.NO_PERMISSIONS);
-                    return true;
-                  }
-                  if (args.length > 2 && !args[2].equals("") && !args[2].matches("[0-9]+"))
-                    player.sendMessage(ChatColor.RED + args[2] + " isn't a number!");
-                  computerfunctions.list(player, (args.length < 3) ? 1 : (args[2].equals("") ? 1 : Integer.valueOf(args[2])), Search.all, "");
-                  return true;
-                case 3417674:
-                  if (!str5.equals("open"))
-                    break;
-                  if (!player.hasPermission("cctv.computer.open")) {
-                    player.sendMessage(lang.NO_PERMISSIONS);
-                    return true;
-                  }
-                  if (cpm.exists(args[2])) {
-                    Computer pc = cpm.get(args[2]);
-                    Listener.lastClickedComputer.put(player, pc);
-                    cpm.open(player,pc);
-                  } else {
-                    player.sendMessage(lang.COMPUTER_NOT_FOUND);
-                  }
-                  return true;
-                case 1430430609:
-                  if (!str5.equals("setowner"))
-                    break;
-                  if (!player.hasPermission("cctv.computer.setowner")) {
-                    player.sendMessage(lang.NO_PERMISSIONS);
-                    return true;
-                  }
-                  if (args.length == 3)
-                    args = new String[] { args[0], args[1], args[2], "" };
-                  computerfunctions.setOwner(player, args[2], args[3]);
-                  return true;
-              }
-              sender.sendMessage(ChatColor.GOLD +""+ ChatColor.BOLD + "Subcommands for /cctv computer" + ChatColor.YELLOW + "\n" + "create" + "\n" + "setowner" + "\n" + "list\nopen");
-              return true;
-            case 98629247:
-              if (!str1.equals("group"))
-                break;
-              CameraGroupManager cgm = CCTV.get().getCameraGroups();
-              if (args.length == 1) {
-                args = new String[] { args[0], "" };
-              } else if (args.length == 2) {
-                args = new String[] { args[0], args[1], "" };
-              }
-              switch ((str4 = args[1].toLowerCase()).hashCode()) {
-                case -1352294148:
-                  if (!str4.equals("create"))
-                    break;
-                  if (!player.hasPermission("cctv.group.create")) {
-                    player.sendMessage(lang.NO_PERMISSIONS);
-                    return true;
-                  }
-                  cgm.create(args[2],player);
-                  return true;
-                case -1335458389:
-                  if (!str4.equals("delete"))
-                    break;
-                  if (!player.hasPermission("cctv.group.delete") && !player.hasPermission("cctv.group.other")) {
-                    player.sendMessage(lang.NO_PERMISSIONS);
-                    return true;
-                  }
-                  if (args[2] != null && args[2].length() >= 1) {
-                    cgm.delete(args[2]);
-                    return true;
-                  }
-                  player.sendMessage(ChatColor.RED + "Please give a Group Name!");
-                  return true;
-                case -934594754:
-                  if (!str4.equals("rename"))
-                    break;
-                  if (!player.hasPermission("cctv.group.rename") && !player.hasPermission("cctv.group.other")) {
-                    player.sendMessage(lang.NO_PERMISSIONS);
-                    return true;
-                  }
-                  if (args.length <= 3) {
-                    player.sendMessage(ChatColor.RED + "Please put in the Group Name!");
-                    return true;
-                  }
-                  //too lazy to change lol
-                  player.sendMessage(lang.GROUP_NOT_FOUND);
-                  return true;
-                case -906336856:
-                  if (!str4.equals("search"))
-                    break;
-                  if (!player.hasPermission("cctv.group.search")) {
-                    player.sendMessage(lang.NO_PERMISSIONS);
-                    return true;
-                  }
-                  if (args.length < 4) {
-                    player.sendMessage(ChatColor.YELLOW + "Use /cctv group search <all/personal> <pagenumber>");
-                    player.sendMessage(ChatColor.YELLOW + "Or /cctv group search <player/name> <value> <pagenumber>");
-                    return false;
-                  }
-                  if (args.length > 2 && args.length >= ((args[2].equalsIgnoreCase("all") || args[2].equalsIgnoreCase("personal")) ? 4 : 5))
-                    if (!args[(args[2].equalsIgnoreCase("all") || args[2].equalsIgnoreCase("personal")) ? 3 : 4].matches("[0-9]+")) {
-                      player.sendMessage(ChatColor.RED + args[(args[2].equalsIgnoreCase("all") || args[2].equalsIgnoreCase("personal")) ? 3 : 4] + " isn't a number!");
-                      return false;
-                    }
-                  player.sendMessage(lang.getListSearch(args[2].toLowerCase(), (args.length >= 5) ? args[3] : ""));
-                  bool = (args.length < ((args[2].equalsIgnoreCase("all") || args[2].equalsIgnoreCase("personal")) ? 4 : 5)) ? 1 : Integer.parseInt(args[(args[2].equalsIgnoreCase("all") || args[2].equalsIgnoreCase("personal")) ? 3 : 4]);
-                  groupfunctions.list(player, bool, Search.valueOf(args[2].toLowerCase()), (args.length >= 4) ? args[3] : "");
-                  return true;
-                case -413054807:
-                  if (!str4.equals("removecamera"))
-                    break;
-                  if (!player.hasPermission("cctv.group.removecamera") && !player.hasPermission("cctv.group.other")) {
-                    player.sendMessage(lang.NO_PERMISSIONS);
-                    return true;
-                  }
-                  if (args.length <= 3) {
-                    player.sendMessage(ChatColor.RED + "Please specify the group, and a camera.");
-                    return true;
-                  }
-                  if (!cgm.exists(args[2])) {
-                    player.sendMessage(lang.GROUP_NOT_FOUND);
-                    return true;
-                  }
-                  cm = CCTV.get().getCameras();
-                  if (!cm.exists(args[3])) {
-                    player.sendMessage(lang.CAMERA_NOT_FOUND);
-                    return true;
-                  }
-                  Camera camera = cm.get(args[3]);
-                  cgm.get(args[2]).getCameras().remove(camera);
-                  return true;
-                case 3237038:
-                  if (!str4.equals("info"))
-                    break;
-                  if (!player.hasPermission("cctv.group.info")) {
-                    player.sendMessage(lang.NO_PERMISSIONS);
-                    return true;
-                  }
-                  if (args.length <= 2) {
-                    player.sendMessage(ChatColor.RED + "Please specify the Group!");
-                    return true;
-                  }
-                  groupfunctions.info(player, args[2]);
-                  return true;
-                case 3322014:
-                  if (!str4.equals("list"))
-                    break;
-                  if (!player.hasPermission("cctv.group.list")) {
-                    player.sendMessage(lang.NO_PERMISSIONS);
-                    return true;
-                  }
-                  if (args.length > 2 && !args[2].equals("") && !args[2].matches("[0-9]+"))
-                    player.sendMessage(ChatColor.RED + args[2] + " isn't a number!");
-                  groupfunctions.list(player, (args.length < 3) ? 1 : (args[2].equals("") ? 1 : Integer.valueOf(args[2]).intValue()), (player.hasPermission("cctv.admin") || player.hasPermission("cctv.group.other")) ? Search.all : Search.personal, "");
-                  return true;
-                case 441220870:
-                  if (!str4.equals("addcamera"))
-                    break;
-                  if (!player.hasPermission("cctv.group.addcamera") && !player.hasPermission("cctv.group.other")) {
-                    player.sendMessage(lang.NO_PERMISSIONS);
-                    return true;
-                  }
-                  if (args.length <= 3) {
-                    player.sendMessage(ChatColor.RED + "Please specify the camera, and a group.");
-                    return true;
-                  }
-                  cm = CCTV.get().getCameras();
-                  cgm.get(args[2]).getCameras().add(cm.get(args[3]));
-                  return true;
-                case 1430430609:
-                  if (!str4.equals("setowner"))
-                    break;
-                  if (!player.hasPermission("cctv.group.setowner") && !player.hasPermission("cctv.group.other")) {
-                    player.sendMessage(lang.NO_PERMISSIONS);
-                    return true;
-                  }
-                  if (args.length <= 3) {
-                    player.sendMessage(ChatColor.RED + "Please specify the group, and the owner.");
-                    return true;
-                  }
-                  if (!cgm.exists(args[2])) {
-                    player.sendMessage(lang.GROUP_NOT_FOUND);
-                    return true;
-                  }
-                  OfflinePlayer off = Utils.getOfflinePlayer(args[3]);
-                  if (off == null) {
-                    player.sendMessage(lang.PLAYER_NOT_FOUND);
-                    return true;
-                  }
-                  cgm.get(args[2]).setOwner(off.getUniqueId().toString());
-                  return true;
-              }
-              sender.sendMessage(ChatColor.GOLD +""+ ChatColor.BOLD + "Subcommands for /cctv group" + ChatColor.YELLOW + "\n" + "create" + "\n" + "delete" + "\n" + "addcamera" + "\n" + "removecamera" + "\n" + "setowner" + "\n" + "info" + "\n" + "list");
-              return true;
+              */
           }
           player.sendMessage(ChatColor.GOLD +""+ ChatColor.BOLD + "Subcommands for /cctv" + ChatColor.YELLOW + "\n" + "player" + "\n" + "camera" + "\n" + "group" + "\n" + "computer");
           return true;

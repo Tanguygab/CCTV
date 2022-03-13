@@ -55,7 +55,7 @@ public class ViewersEvents implements Listener {
         Player player = e.getPlayer();
         if (!vm.exists(player)) return;
 
-        player.sendTitle("", lang.CAMERA_DISCONNECTING, 0, 15, 0);
+        player.sendTitle(" ", lang.CAMERA_DISCONNECTING, 0, 15, 0);
         Bukkit.getScheduler().scheduleSyncDelayedTask(CCTV.get(), () -> cm.unviewCamera(player),  vm.TIME_TO_DISCONNECT * 20L);
     }
 

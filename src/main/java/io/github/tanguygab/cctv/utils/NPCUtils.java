@@ -30,7 +30,12 @@ public class NPCUtils {
     }
 
     public static void despawn(Player p, EntityPlayer npc) {
-        PacketPlayOutEntityDestroy packet = new PacketPlayOutEntityDestroy(npc.ae());
+        PacketPlayOutEntityDestroy packet = null;
+        try {
+            packet = (PacketPlayOutEntityDestroy) Class.forName("net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy").getConstructor(int[].class).newInstance(new int[]{npc.ae()});
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         for (Player online : Bukkit.getOnlinePlayers()) {
             EntityPlayer playerNMS = ((CraftPlayer)online).getHandle();
             PlayerConnection connection = playerNMS.b;

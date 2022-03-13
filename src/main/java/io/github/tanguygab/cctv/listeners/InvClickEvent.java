@@ -182,10 +182,10 @@ public class InvClickEvent implements Listener {
     private void openInvOptions(Player p) {
         Inventory inv = Bukkit.createInventory(null, InventoryType.HOPPER, lang.GUI_COMPUTER_OPTIONS_ITEM);
 
-        inv.setItem(0, Heads.COMPUTER_SET_CAMGROUP.get());
-        inv.setItem(1, Heads.COMPUTER_ADD_PLAYER.get());
-        inv.setItem(2, Heads.COMPUTER_REMOVE_PLAYER.get());
-        inv.setItem(4, Heads.COMPUTER_BACK.get());
+        inv.setItem(0, Heads.COMPUTER_BACK.get());
+        inv.setItem(2, Heads.COMPUTER_SET_CAMGROUP.get());
+        inv.setItem(3, Heads.COMPUTER_ADD_PLAYER.get());
+        inv.setItem(4, Heads.COMPUTER_REMOVE_PLAYER.get());
 
         p.openInventory(inv);
     }
@@ -246,7 +246,7 @@ public class InvClickEvent implements Listener {
         inv.setItem(45, Utils.getItem(Heads.EXIT,lang.GUI_COMPUTER_DEFAULT_ITEM_EXIT));
 
         CameraGroup group = computer.getCameraGroup();
-        if (group == null)
+        if (group != null)
             for (int a = (page - 1) * 48; a < 48 * page && a < group.getCameras().size(); a++)
                 inv.addItem(Utils.getItem(Heads.CAMERA,"&eCamera: " + group.getCameras().get(a).getId()));
 

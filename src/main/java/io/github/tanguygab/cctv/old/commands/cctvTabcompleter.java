@@ -323,6 +323,7 @@ public class cctvTabcompleter implements TabCompleter {
         ComputerManager cpm = CCTV.get().getComputers();
         yield sender instanceof Player p ? cpm.get(p) : cpm.values().stream().map(ID::getId).toList();
       }
+      default -> List.of();
     };
   }
 }

@@ -180,7 +180,7 @@ public class LanguageFile extends YamlConfigurationFile {
 
 
     public String regex(String str, String placeholder, String value, boolean num) {
-        if (value == null) return quote(str).replaceAll(placeholder,num ? "\\d+" : ".+");
+        if (value == null) return quote(str).replace(placeholder,"(?<placeholder>"+(num ? "\\d+" : ".+")+")");
         return str.replace(placeholder,value);
     }
     public String quote(String str) {
@@ -188,12 +188,12 @@ public class LanguageFile extends YamlConfigurationFile {
     }
 
     public String getMatcher(String patt, String match, String string, String placeholder) {
-        Pattern pattern = Pattern.compile(quote(patt));
+        Pattern pattern = Pattern.compile(patt);
         Matcher m = pattern.matcher(match);
         if (!m.matches()) {
             CCTV.get().getLogger().info("The language message '"+string+"' doesn't contain "+placeholder+"!");
             return null;
         }
-        return m.group(1);
+        return m.group("placeholder");
     }
 }

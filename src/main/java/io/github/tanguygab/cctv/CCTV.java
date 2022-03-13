@@ -6,6 +6,8 @@ import io.github.tanguygab.cctv.commands.GroupCmd;
 import io.github.tanguygab.cctv.config.ConfigurationFile;
 import io.github.tanguygab.cctv.config.LanguageFile;
 import io.github.tanguygab.cctv.config.YamlConfigurationFile;
+import io.github.tanguygab.cctv.listeners.ComputersEvents;
+import io.github.tanguygab.cctv.listeners.InvClickEvent;
 import io.github.tanguygab.cctv.listeners.ViewersEvents;
 import io.github.tanguygab.cctv.listeners.Listener;
 import io.github.tanguygab.cctv.managers.CameraGroupManager;
@@ -90,6 +92,8 @@ public class CCTV extends JavaPlugin {
         loadRecipes();
         Bukkit.getPluginManager().registerEvents(new Listener(),this);
         Bukkit.getPluginManager().registerEvents(new ViewersEvents(),this);
+        Bukkit.getPluginManager().registerEvents(new ComputersEvents(),this);
+        Bukkit.getPluginManager().registerEvents(new InvClickEvent(),this);
 
         getLogger().info(".-==--+]- CCTV -[+--==-.");
         getLogger().info("This is the CCTV plugin!");
@@ -146,7 +150,7 @@ public class CCTV extends JavaPlugin {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        String arg = args.length > 1 ? args[0] : "";
+        String arg = args.length > 0 ? args[0] : "";
         switch (arg) {
             case "camera" -> cameraCmd.onCommand(sender,args);
             case "group" -> groupCmd.onCommand(sender,args);

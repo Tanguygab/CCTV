@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.config.LanguageFile;
+import io.github.tanguygab.cctv.managers.ComputerManager;
 import io.github.tanguygab.cctv.old.Search;
 import io.github.tanguygab.cctv.entities.Computer;
 import org.bukkit.Bukkit;
@@ -15,9 +16,10 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 public class computerfunctions {
-  
+
   public static void setOwner(Player player, String computer, String name) {
     LanguageFile lang = CCTV.get().getLang();
+    ComputerManager cpm = CCTV.get().getComputers();
     byte b;
     int i;
     OfflinePlayer[] arrayOfOfflinePlayer;
@@ -25,40 +27,40 @@ public class computerfunctions {
       OfflinePlayer off = arrayOfOfflinePlayer[b];
       if (off != null && off.getName() != null && off.getName().equalsIgnoreCase(name))
         if (computer.equals("")) {
-          if (player.getTargetBlock(null, 200).getType().equals(ComputerUtils.getComputerMaterial())) {
+          if (player.getTargetBlock(null, 200).getType().equals(ComputerManager.COMPUTER_MATERIAL)) {
             Location loc = player.getTargetBlock(null, 200).getLocation();
-            for (ComputerRecord.computerRec rec : ComputerRecord.computers) {
-              if (loc.equals(rec.loc)) {
-                if (rec.owner.equals(player.getUniqueId().toString()) || player.hasPermission("cctv.computer.other")) {
-                  rec.owner = off.getUniqueId().toString();
+            for (Computer rec : cpm.values()) {
+              if (loc.equals(rec.getLocation())) {
+                if (rec.getOwner().equals(player.getUniqueId().toString()) || player.hasPermission("cctv.computer.other")) {
+                  rec.setOwner(off.getUniqueId().toString());
                   player.sendMessage(lang.getComputerOwnerChanged(off.getName()));
                 } else {
                   player.sendMessage(lang.COMPUTER_ONLY_OWNER_CAN_CHANGE_OWNER);
-                } 
+                }
                 return;
-              } 
-            } 
-          } 
+              }
+            }
+          }
           player.sendMessage(lang.COMPUTER_NOT_FOUND);
         } else {
-          for (ComputerRecord.computerRec rec : ComputerRecord.computers) {
-            if (rec.id.equals(computer)) {
-              if (rec.owner.equals(player.getUniqueId().toString()) || player.hasPermission("cctv.computer.other")) {
-                rec.owner = off.getUniqueId().toString();
+          for (Computer rec : cpm.values()) {
+            if (rec.getId().equals(computer)) {
+              if (rec.getOwner().equals(player.getUniqueId().toString()) || player.hasPermission("cctv.computer.other")) {
+                rec.setOwner(off.getUniqueId().toString());
                 player.sendMessage(lang.getComputerOwnerChanged(off.getName()));
               } else {
                 player.sendMessage(lang.COMPUTER_ONLY_OWNER_CAN_CHANGE_OWNER);
-              } 
+              }
               return;
-            } 
-          } 
+            }
+          }
           player.sendMessage(lang.COMPUTER_NOT_FOUND);
-        }  
+        }
       b++;
-    } 
+    }
     player.sendMessage(lang.PLAYER_NOT_FOUND);
   }
-  
+
   public static void list(Player p, int page, Search s, String search) {
     LanguageFile lang = CCTV.get().getLang();
     List<Computer> list = CCTV.get().getComputers().values().stream().filter(c -> !(s != Search.all && (s != Search.personal || !c.getOwner().equals(p.getUniqueId().toString())) && (s != Search.name || !c.getId().toLowerCase().startsWith(search.toLowerCase())) && (s != Search.player || c.getOwner().equals("none") || !Bukkit.getOfflinePlayer(UUID.fromString(c.getOwner())).getName().startsWith(search)))).toList();

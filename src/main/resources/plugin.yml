@@ -1,6 +1,6 @@
 name: CCTV
 version: 6.9
-main: io.github.tanguygab.cctv.old.CCTV
+main: io.github.tanguygab.cctv.CCTV
 api-version: 1.18
 loadbefore: [ WorldGuard ]
 softdepend: [ Multiverse-Core, multiworld ]
