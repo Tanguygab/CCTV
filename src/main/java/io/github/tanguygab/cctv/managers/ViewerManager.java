@@ -1,6 +1,5 @@
 package io.github.tanguygab.cctv.managers;
 
-import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.config.ConfigurationFile;
 import io.github.tanguygab.cctv.entities.Camera;
 import io.github.tanguygab.cctv.entities.CameraGroup;
@@ -12,6 +11,7 @@ import net.minecraft.server.level.EntityPlayer;
 import net.minecraft.server.network.PlayerConnection;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -20,6 +20,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,6 +30,8 @@ public class ViewerManager extends Manager<Viewer> {
     public int TIME_TO_CONNECT;
     public int TIME_TO_DISCONNECT;
     public int TIME_FOR_SPOT;
+
+    private final CameraManager cm = cctv.getCameras();
 
     public ViewerManager() {
         super();
@@ -74,7 +77,7 @@ public class ViewerManager extends Manager<Viewer> {
     }
 
     public boolean exists(Player p) {
-        return super.exists(p.getUniqueId().toString());
+        return exists(p.getUniqueId().toString());
     }
 
     private static void playerSetMode(Player p, boolean mode, GameMode gm) {
@@ -98,97 +101,173 @@ public class ViewerManager extends Manager<Viewer> {
         for (Player online : Bukkit.getOnlinePlayers()) online.hidePlayer(cctv,p);
     }
 
+    private boolean hasItemPerm(Player p, String perm) {
+        return CISWP || p.hasPermission("cctv.view."+perm);
+    }
+
     private void giveViewerItems(Player p, CameraGroup group) {
         PlayerInventory inv = p.getInventory();
         inv.clear();
         if (CISWP || p.hasPermission("cctv.view.zoom") || p.hasPermission("cctv.view.nightvision") || p.hasPermission("cctv.view.spot"))
             inv.setItem(0, Utils.getItem(Heads.OPTIONS,lang.CAMERA_VIEW_OPTION));
-        if (CISWP || p.hasPermission("cctv.view.move")) {
+        if (hasItemPerm(p,"move")) {
             inv.setItem(3, Heads.ROTATE_LEFT.get());
             inv.setItem(group != null && group.getCameras().size() > 1 ? 4 : 5, Heads.ROTATE_RIGHT.get());
         }
-        if ((CISWP || p.hasPermission("cctv.view.switch")) && group != null && group.getCameras().size() > 1) {
+        if (hasItemPerm(p,"switch") && group != null && group.getCameras().size() > 1) {
             inv.setItem(6, Heads.CAM_PREVIOUS.get());
             inv.setItem(7, Heads.CAM_NEXT.get());
         }
         inv.setItem(8, Utils.getItem(Heads.EXIT,lang.CAMERA_VIEW_EXIT));
     }
 
-    public void switchFunction(Player p, String item) {
-        if (item.equals(lang.CAMERA_VIEW_OPTION)) {
-            Inventory inv = Bukkit.createInventory(null, 9, lang.GUI_CAMERA_SETTINGS);
-            if (CISWP || p.hasPermission("cctv.view.nightvision"))
-                inv.setItem(3, p.hasPotionEffect(PotionEffectType.NIGHT_VISION) ? Heads.NIGHT_VISION_ON.get() : Heads.NIGHT_VISION_OFF.get());
-
-            if (CISWP || p.hasPermission("cctv.view.zoom")) {
-                PotionEffect effect = p.getPotionEffect(PotionEffectType.SLOW);
-                inv.setItem(4, Utils.getItem(Heads.ZOOM,
-                        effect != null
-                                ? lang.getCameraViewZoom(effect.getAmplifier()+1)
-                                : lang.CAMERA_VIEW_OPTIONS_ZOOM_OFF
-                ));
-            }
-            if (CISWP || p.hasPermission("cctv.view.spot"))
-                inv.setItem(5, Utils.getItem(Heads.SPOTTING,lang.CAMERA_VIEW_OPTIONS_SPOT));
-            
-            inv.setItem(8, Utils.getItem(Heads.EXIT,lang.CAMERA_VIEW_OPTIONS_BACK));
-            p.openInventory(inv);
-            return;
-        }
+    public void onCameraItems(Player p, String item) {
         if (item.equals(lang.CAMERA_VIEW_EXIT)) {
-            p.sendTitle(" ", cctv.getLang().CAMERA_DISCONNECTING, 0, 15, 0);
-            Bukkit.getScheduler().scheduleSyncDelayedTask(cctv, () -> cctv.getCameras().unviewCamera(p),  TIME_TO_DISCONNECT * 20L);
+            p.sendTitle(" ", cctv.getLang().CAMERA_DISCONNECTING, 0, TIME_TO_DISCONNECT*20, 0);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(cctv, () -> cm.unviewCamera(p),  TIME_TO_DISCONNECT * 20L);
             return;
         }
+        if (item.equals(lang.CAMERA_VIEW_OPTION)) openOptions(p);
         if (item.equals(lang.CAMERA_VIEW_ROTATE_LEFT)) rotateCamera(p, -18);
         if (item.equals(lang.CAMERA_VIEW_ROTATE_RIGHT)) rotateCamera(p, 18);
-        if (item.equals(lang.CAMERA_VIEW_PREVIOUS)) previousCamera(p);
-        if (item.equals(lang.CAMERA_VIEW_NEXT)) nextCamera(p);
+        if (item.equals(lang.CAMERA_VIEW_PREVIOUS)) switchCamera(p,true);
+        if (item.equals(lang.CAMERA_VIEW_NEXT)) switchCamera(p,false);
     }
 
-    public void settingFunction(Player viewer, String item) {
+    public void onCameraOptionsMenu(Player viewer, String item) {
         if (item.matches(lang.getCameraViewZoom(-1))) {
             String zoom = lang.getMatcher(lang.getCameraViewZoom(-1),item,"camera-view.zoom","%level%");
             if (zoom == null) return;
             int x = Integer.parseInt(zoom);
             zoom(viewer, (x == 6) ? 0 : (x + 1));
         }
-        if (item.equals(lang.CAMERA_VIEW_OPTIONS_SPOT)) {
-            viewer.closeInventory();
-            List<Player> spotted = new ArrayList<>();
-            for (Player viewed : Bukkit.getOnlinePlayers())
-                if (spot(viewer, viewed,true))
-                    spotted.add(viewed);
-
-            Bukkit.getScheduler().scheduleSyncDelayedTask(cctv, () -> {
-                spotted.forEach(viewed->spot(viewed,viewed,false));
-            }, cctv.getViewers().TIME_FOR_SPOT * 20L);
-
-        }
+        if (item.equals(lang.CAMERA_VIEW_OPTIONS_SPOT)) spotting(viewer);
         if (item.equals(lang.CAMERA_VIEW_OPTIONS_NIGHTVISION_OFF)) nightvision(viewer, true);
         if (item.equals(lang.CAMERA_VIEW_OPTIONS_NIGHTVISION_ON)) nightvision(viewer, false);
         if (item.equals(lang.CAMERA_VIEW_OPTIONS_ZOOM_OFF)) zoom(viewer, 1);
         if (item.equals(lang.CAMERA_VIEW_OPTIONS_BACK))  viewer.closeInventory();
     }
 
+    private void openOptions(Player p) {
+        Inventory inv = Bukkit.createInventory(null, 9, lang.GUI_CAMERA_SETTINGS);
+        if (hasItemPerm(p,"nightvision")) inv.setItem(3, p.hasPotionEffect(PotionEffectType.NIGHT_VISION) ? Heads.NIGHT_VISION_ON.get() : Heads.NIGHT_VISION_OFF.get());
+
+        if (hasItemPerm(p,"zoom")) {
+            PotionEffect effect = p.getPotionEffect(PotionEffectType.SLOW);
+            inv.setItem(4, Utils.getItem(Heads.ZOOM,
+                    effect != null
+                            ? lang.getCameraViewZoom(effect.getAmplifier()+1)
+                            : lang.CAMERA_VIEW_OPTIONS_ZOOM_OFF
+            ));
+        }
+
+        if (hasItemPerm(p,"spot")) inv.setItem(5, Utils.getItem(Heads.SPOTTING,lang.CAMERA_VIEW_OPTIONS_SPOT));
+
+        inv.setItem(8, Utils.getItem(Heads.EXIT,lang.CAMERA_VIEW_OPTIONS_BACK));
+        p.openInventory(inv);
+    }
+
     private boolean spot(Player viewer, Player viewed, boolean glow) {
         if (!viewed.canSee(viewed)) return false;
+        if (!glow) {
+            viewed.setSneaking(true); // yeah, I'm doing that because it doesn't want to work with PacketPlayOutEntityMetadata...
+            viewed.setSneaking(false);
+            return true;
+        }
         EntityPlayer viewedNMS = ((CraftPlayer)viewed).getHandle();
+        viewedNMS.i(true); //setGlowingTag(boolean)
         PlayerConnection connection = ((CraftPlayer)viewer).getHandle().b;
-
-        viewedNMS.i(glow); //setGlowingTag(boolean)
         PacketPlayOutEntityMetadata packet = new PacketPlayOutEntityMetadata(viewedNMS.ae(),viewedNMS.ai(),true);
         connection.a(packet);
         return true;
     }
 
-    public void nightvision(Player player, boolean b) {
+    private void spotting(Player p) {
+        if (!p.hasPermission("cctv.view.spot")) {
+            p.sendMessage(lang.NO_PERMISSIONS);
+            return;
+        }
+        p.closeInventory();
+        List<Player> spotted = new ArrayList<>();
+        for (Player viewed : Bukkit.getOnlinePlayers())
+            if (spot(p, viewed,true))
+                spotted.add(viewed);
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(cctv, () -> spotted.forEach(viewed->spot(viewed,viewed,false)), cctv.getViewers().TIME_FOR_SPOT * 20L);
+    }
+    private void nightvision(Player p, boolean vision) {
+        if (!p.hasPermission("cctv.view.nightvision")) {
+            p.sendMessage(lang.NO_PERMISSIONS);
+            return;
+        }
+        Inventory inv = p.getOpenInventory().getTopInventory();
+        if (vision) {
+            p.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 60000000, 0, false, false));
+            inv.setItem(3, Heads.NIGHT_VISION_ON.get());
+            return;
+        }
+        p.removePotionEffect(PotionEffectType.NIGHT_VISION);
+        inv.setItem(3, Heads.NIGHT_VISION_OFF.get());
+    }
+    private void rotateCamera(Player p, int degrees) {
+        if (!p.hasPermission("cctv.view.move")) {
+            p.sendMessage(lang.NO_PERMISSIONS);
+            return;
+        }
+        Viewer viewer = get(p);
+        Location loc = viewer.getCamera().getArmorStand().getLocation();
+        float yaw = Math.round(loc.getYaw() + degrees);
+        Camera cam = viewer.getCamera();
+        float camYaw = cam.getLocation().getYaw();
+        if (yaw >= Math.round(((camYaw > 359.0F) ? (camYaw - 360.0F) : camYaw) - 36.0F) && yaw <= Math.round(((camYaw > 359.0F) ? (camYaw - 360.0F) : camYaw) + 36.0F)) {
+            loc.setYaw(yaw);
+            cam.getArmorStand().teleport(loc);
+            for (Viewer otherViewer : values())
+                if (otherViewer.getCamera() == viewer.getCamera())
+                    cm.teleport(viewer.getCamera(), get(otherViewer));
+        } else p.sendMessage(lang.MAX_ROTATION);
 
     }
-    public void rotateCamera(Player player, int degrees) {}
-    public void previousCamera(final Player player) {}
-    public void nextCamera(final Player player) {}
-    public void zoom(Player player, int zoomlevel) {}
+    private void switchCamera(final Player p, boolean previous) {
+        if (!p.hasPermission("cctv.view.switch")) {
+            p.sendMessage(lang.NO_PERMISSIONS);
+            return;
+        }
+        Viewer viewer = get(p);
+        CameraGroup group = viewer.getGroup();
+        if (group == null) {
+            p.sendMessage(lang.SWITCHING_NOT_POSSIBLE);
+            return;
+        }
+        if (group.getCameras().size() <= 1) {
+            p.sendMessage(lang.NO_CAMERAS);
+            return;
+        }
+
+        List<Camera> cams = new ArrayList<>(group.getCameras());
+        if (previous) Collections.reverse(cams);
+
+        Camera currentCam = viewer.getCamera();
+        Camera cam = cams.indexOf(currentCam) == cams.size()-1
+                ? cams.get(0)
+                : cams.get(cams.indexOf(currentCam)+1);
+        cm.viewCameraInstant(cam, p);
+        viewer.setCamera(cam);
+    }
+    private void zoom(Player p, int zoomlevel) {
+        if (!p.hasPermission("cctv.view.zoom")) {
+            p.sendMessage(lang.NO_PERMISSIONS);
+            return;
+        }
+        Inventory inv = p.getOpenInventory().getTopInventory();
+        if (zoomlevel == 0) {
+            p.removePotionEffect(PotionEffectType.SLOW);
+            inv.setItem(4, Heads.ZOOM.get());
+            return;
+        }
+        p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 60000000, zoomlevel - 1, false, false));
+        inv.setItem(4, Utils.getItem(Heads.ZOOM,lang.getCameraViewZoom(zoomlevel)));
+    }
 
 
 }

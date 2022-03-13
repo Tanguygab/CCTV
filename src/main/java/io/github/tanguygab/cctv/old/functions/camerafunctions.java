@@ -21,17 +21,6 @@ import org.bukkit.util.EulerAngle;
 
 public class camerafunctions {
 
-  public static void immediateViewCamera(String id, Player player) {
-    CameraManager cm = CCTV.get().getCameras();
-    Camera cam = cm.get(id);
-    if (cam == null) {
-      CCTV.get().getViewers().delete(player);
-      player.sendMessage(CCTV.get().getLang().CAMERA_NOT_FOUND);
-      return;
-    }
-    cm.teleport(cam, player);
-  }
-
   public static void moveHere(String name, Player player) {
     LanguageFile lang = CCTV.get().getLang();
     CameraManager cm = CCTV.get().getCameras();

@@ -53,29 +53,43 @@ public class InvClickEvent implements Listener {
             e.setCancelled(true);
             if (title.matches(lang.GUI_CAMERA_SETTINGS.replaceAll("\\(", "\\\\(").replaceAll("\\)", "\\\\)"))) {
                 if (e.getClickedInventory() == e.getView().getTopInventory())
-                    vm.settingFunction(p, itemName);
+                    vm.onCameraOptionsMenu(p, itemName);
                 return;
             }
-            vm.switchFunction(p, itemName);
+            vm.onCameraItems(p, itemName);
             return;
         }
 
 
         Computer computer = cpm.getLast(p);
-        e.setCancelled(true);
-        if (title.equals(lang.GUI_COMPUTER_OPTIONS_ITEM)) onOptions(p,itemName,computer);
+        if (title.equals(lang.GUI_COMPUTER_OPTIONS_ITEM)) {
+            e.setCancelled(true);
+            onOptions(p,itemName,computer);
+            return;
+        }
 
-        if (title.matches(lang.getGuiComputerDefault(null)))
+        if (title.matches(lang.getGuiComputerDefault(null))) {
+            e.setCancelled(true);
             onMain(p,itemName,computer,lang.getMatcher(lang.getGuiComputerDefault(null),title,"gui.computer.default","%page%"));
+            return;
+        }
 
-        if (title.matches(lang.getGuiComputerSetGroup(null)))
+        if (title.matches(lang.getGuiComputerSetGroup(null))) {
+            e.setCancelled(true);
             onSetGroup(p,itemName,computer,lang.getMatcher(lang.getGuiComputerSetGroup(null),title,"gui.computer.set-group","%page%"));
+            return;
+        }
 
-        if (title.matches(lang.getGuiComputerRemovePlayer(null)))
+        if (title.matches(lang.getGuiComputerRemovePlayer(null))) {
+            e.setCancelled(true);
             onRemovePlayer(p,itemName,computer,lang.getMatcher(lang.getGuiComputerRemovePlayer(null),title,"gui.computer.remove-player","%page%"));
+            return;
+        }
 
-        if (title.matches(lang.getGuiCameraDelete(null)))
-            onCameraDelete(p,e.getSlot(),lang.getMatcher(lang.getGuiCameraDelete(null),title,"gui.camera.delete","%cameraID%"));
+        if (title.matches(lang.getGuiCameraDelete(null))) {
+            e.setCancelled(true);
+            onCameraDelete(p, e.getSlot(), lang.getMatcher(lang.getGuiCameraDelete(null), title, "gui.camera.delete", "%cameraID%"));
+        }
     }
 
     public void onMain(Player p, String item, Computer computer, String page) {

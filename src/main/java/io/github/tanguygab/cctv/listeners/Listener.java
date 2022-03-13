@@ -34,7 +34,7 @@ public class Listener implements org.bukkit.event.Listener {
         vm = CCTV.get().getViewers();
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST,ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void on(PlayerInteractEvent e) {
         InteractEvent.on(e);
     }
@@ -60,22 +60,12 @@ public class Listener implements org.bukkit.event.Listener {
             cpm.create(null,e.getPlayer(), e.getBlock().getLocation());
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST,ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void on(PlayerInteractAtEntityEvent e) {
         if (!(e.getRightClicked() instanceof ArmorStand as)) return;
         String customName = as.getCustomName();
-        if (customName != null && ChatColor.stripColor(customName).startsWith("CAM-")) e.setCancelled(true);
-        Player player = e.getPlayer();
-        if (!vm.exists(player)) return;
-
-        ItemStack item = player.getInventory().getItemInMainHand();
-        Material mat = item.getType();
-
-        if (mat != Material.PLAYER_HEAD && mat != Material.ENDER_PEARL && mat != Material.ENDER_EYE) return;
-
-        if (!item.hasItemMeta() || !item.getItemMeta().hasDisplayName()) return;
-        vm.switchFunction(player, item.getItemMeta().getDisplayName());
-        e.setCancelled(true);
+        if (customName != null && ChatColor.stripColor(customName).startsWith("CAM-"))
+            e.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true)

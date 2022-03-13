@@ -1,6 +1,7 @@
 package io.github.tanguygab.cctv.listeners;
 
 import io.github.tanguygab.cctv.CCTV;
+import io.github.tanguygab.cctv.config.LanguageFile;
 import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.managers.ComputerManager;
 import org.bukkit.GameMode;
@@ -18,6 +19,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class InteractEvent {
 
     public static void on(PlayerInteractEvent e) {
+        LanguageFile lang = CCTV.get().getLang();
         Player p = e.getPlayer();
         ItemStack item = e.getItem();
         Block block = e.getClickedBlock();
@@ -32,7 +34,7 @@ public class InteractEvent {
                 if (computer.canUse(p)) {
                     cpm.setLast(p, computer);
                     cpm.open(p, computer);
-                } else p.sendMessage(CCTV.get().getLang().COMPUTER_NOT_ALLOWED);
+                } else p.sendMessage(lang.COMPUTER_NOT_ALLOWED);
                 return;
             }
         }
@@ -40,9 +42,9 @@ public class InteractEvent {
         if (item == null) return;
         ItemMeta meta = item.getItemMeta();
         if (meta == null || !meta.hasDisplayName()) return;
-        String itemName = item.getItemMeta().getDisplayName();
+        String itemName = meta.getDisplayName();
 
-        if (rcb && item.getType() == Material.PLAYER_HEAD && meta.getDisplayName().equals(CCTV.get().getLang().CAMERA_ITEM_NAME)) {
+        if (rcb && item.getType() == Material.PLAYER_HEAD && itemName.equals(lang.CAMERA_ITEM_NAME)) {
             createCamera(p,item,loc,e.getBlockFace());
             e.setCancelled(true);
             return;
@@ -50,7 +52,7 @@ public class InteractEvent {
         if ((rcb || e.getAction() == Action.RIGHT_CLICK_AIR) && CCTV.get().getViewers().exists(p)) {
             e.setCancelled(true);
             if (item.getType() != Material.AIR && e.getHand() != EquipmentSlot.OFF_HAND)
-                CCTV.get().getViewers().switchFunction(p, itemName);
+                CCTV.get().getViewers().onCameraItems(p, itemName);
         }
     }
 

@@ -177,9 +177,9 @@ public class CameraManager extends Manager<Camera> {
             }
             player.sendMessage(lang.CAMERA_OFFLINE_OVERRIDE);
         }
-        player.sendTitle(" ", lang.CAMERA_CONNECTING, 0, 15, 0);
 
         ViewerManager vm = cctv.getViewers();
+        player.sendTitle(" ", lang.CAMERA_CONNECTING, 0, vm.TIME_TO_CONNECT*20, 0);
         cooldownfunctions.addCoolDown(player, vm.TIME_TO_CONNECT);
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(cctv,  () -> {
@@ -193,9 +193,18 @@ public class CameraManager extends Manager<Camera> {
         }, vm.TIME_TO_CONNECT * 20L);
     }
 
+    public void viewCameraInstant(Camera cam, Player p) {
+        if (cam == null) {
+            CCTV.get().getViewers().delete(p);
+            p.sendMessage(CCTV.get().getLang().CAMERA_NOT_FOUND);
+            return;
+        }
+        teleport(cam, p);
+    }
+
     public void teleport(Camera cam, Player player) {
         if (cam == null) return;
-        
+
         ArmorStand as = cam.getArmorStand();
         Location asLoc = as.getLocation();
         double Degrees_Yaw = as.getEyeLocation().getYaw();
@@ -204,7 +213,7 @@ public class CameraManager extends Manager<Camera> {
         double radian_pitch = Math.toRadians(Degrees_Pitch);
         double radius_head = 0.29D;
         double radius = CAMERA_HEAD_RADIUS;
-        
+
         double l3 = radius_head * Math.sin(radian_pitch);
         boolean b = Math.abs(Degrees_Yaw) > 90.0D && Math.abs(Degrees_Yaw) <= 270.0D;
         if (b) l3 = -l3;
@@ -218,7 +227,7 @@ public class CameraManager extends Manager<Camera> {
             x3 = -x3;
             z3 = -z3;
         }
-        
+
         double x2 = radius * Math.sin(radian_yaw);
         double z2 = Math.sqrt(Math.pow(radius, 2.0D) - Math.pow(x2, 2.0D));
         double y2 = radius * Math.sin(radian_pitch);

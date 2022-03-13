@@ -55,7 +55,7 @@ public class ViewersEvents implements Listener {
         Player player = e.getPlayer();
         if (!vm.exists(player)) return;
 
-        player.sendTitle(" ", lang.CAMERA_DISCONNECTING, 0, 15, 0);
+        player.sendTitle(" ", lang.CAMERA_DISCONNECTING, 0, vm.TIME_TO_DISCONNECT*20, 0);
         Bukkit.getScheduler().scheduleSyncDelayedTask(CCTV.get(), () -> cm.unviewCamera(player),  vm.TIME_TO_DISCONNECT * 20L);
     }
 
@@ -85,13 +85,13 @@ public class ViewersEvents implements Listener {
             if (e.getEntity() instanceof ArmorStand as && cm.values().stream().anyMatch(cam -> cam.getArmorStand() == as))
                 e.setCancelled(true);
             return;
-        }
+        }p.sendMessage(e.getEntity().getCustomName()+" hit");
 
         if (vm.exists(p)) {
             if (!p.getInventory().getItemInMainHand().getType().equals(Material.AIR)) {
                 ItemStack item = p.getInventory().getItemInMainHand();
                 if (item.hasItemMeta() && item.getItemMeta().hasDisplayName())
-                    vm.switchFunction(p, item.getItemMeta().getDisplayName());
+                    vm.onCameraItems(p, item.getItemMeta().getDisplayName());
             }
             e.setCancelled(true);
             return;
