@@ -5,14 +5,20 @@ import io.github.tanguygab.cctv.entities.CameraGroup;
 import io.github.tanguygab.cctv.managers.CameraGroupManager;
 import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.utils.Utils;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 public class GroupCmd extends Command<CameraGroup> {
 
@@ -175,28 +181,76 @@ public class GroupCmd extends Command<CameraGroup> {
                 group.setId(newName);
                 p.sendMessage(lang.getGroupRenamed(newName));
             }
-            case "info" -> {}
-            case "search" -> {}
-            case "list" -> {}
-            default -> sender.sendMessage(ChatColor.GOLD+""+ChatColor.BOLD + "Subcommands for /cctv group" + ChatColor.YELLOW
-                    + "\ncreate"
-                    + "\ndelete"
-                    + "\naddcamera"
-                    + "\nremovecamera"
-                    + "\nsetowner"
-                    + "\ninfo"
-                    + "\nlist");
+            case "info" -> {
+                if (!hasPerm(p,"info")) {
+                    p.sendMessage(lang.NO_PERMISSIONS);
+                    return;
+                }
+                if (args.length < 3) {
+                    p.sendMessage(ChatColor.RED + "Please specify a group name!");
+                    return;
+                }
+                CameraGroup group = cgm.get(args[2]);
+                if (group == null || !canUse(p,group.getOwner())) {
+                    p.sendMessage(lang.GROUP_NOT_FOUND);
+                    return;
+                }
+                OfflinePlayer off = Bukkit.getServer().getOfflinePlayer(UUID.fromString(group.getOwner()));
+                String owner = off.getName() == null ? "Unknown" : off.getName();
+                TextComponent comp = comp("Camera Group info:",ChatColor.GOLD);
+                comp.setBold(true);
+                comp.addExtra(comp("\nName: ",ChatColor.GOLD,group.getId(),ChatColor.YELLOW));
+                comp.addExtra(comp("\nOwner: ",ChatColor.GOLD,owner,ChatColor.YELLOW));
+                comp.addExtra(comp("\nCameras:",ChatColor.GOLD));
+
+                for (Camera cam : group.getCameras()) {
+                    TextComponent camComp = comp("\n - "+cam.getId(),ChatColor.YELLOW);
+                    camComp.setBold(false);
+                    comp.addExtra(camComp);
+                }
+                p.spigot().sendMessage(comp);
+            }
+            case "list" -> {
+                if (!hasPerm(p,"list")) {
+                    p.sendMessage(lang.NO_PERMISSIONS);
+                    return;
+                }
+                TextComponent comp = comp("Camera Groups:",ChatColor.GOLD);
+                comp.setBold(true);
+
+                for (String group : cgm.get(p)) {
+                    TextComponent groupComp = new TextComponent("\n - "+group);
+                    groupComp.setColor(ChatColor.YELLOW);
+                    groupComp.setBold(false);
+                    groupComp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,new Text(new BaseComponent[]{comp("Click to see its info!",ChatColor.YELLOW)})));
+                    groupComp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,"/cctv group info "+group));
+                    comp.addExtra(groupComp);
+                }
+                p.spigot().sendMessage(comp);
+            }
+            default -> sender.spigot().sendMessage(helpPage("Camera Group commands",
+                    "create <name>:Create a new Group",
+                    "delete <name>:Delete a group",
+                    "addcamera <group> <camera>:Add a camera to your group",
+                    "removecamera <group> <camera>:Remove a camera from your group",
+                    "setowner <group> <player>:Change the owner of your group",
+                    "rename <group> <name>:Rename your group",
+                    "info <group>:Get info of your group",
+                    "list:Get the list of all groups"));
         }
     }
 
     public List<String> onTabComplete(CommandSender sender, String[] args) {
         return switch (args.length) {
-            case 2 -> List.of("create","delete","addcamera","removecamera","setowner","info","list");
-            case 3 -> args[1].equalsIgnoreCase("list") ? null : Utils.list(cgm.values());
+            case 2 -> List.of("create","delete","addcamera","removecamera","setowner","rename","info","list");
+            case 3 -> switch (args[1].toLowerCase()) {
+                case "addcamera","removecamera", "info" -> sender instanceof Player p ? cgm.get(p) : Utils.list(cgm.values());
+                default -> null;
+            };
             case 4 -> {
                 String group = args[2];
                 List<String> addedCameras = cgm.exists(group) ? Utils.list(cgm.get(group).getCameras()) : List.of();
-                yield switch (args[1]) {
+                yield switch (args[1].toLowerCase()) {
                     case "addcamera" -> {
                         List<String> list = sender instanceof Player p ? cm.get(p) : Utils.list(cm.values());
                         list.removeAll(addedCameras);

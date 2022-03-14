@@ -156,10 +156,18 @@ public class CCTV extends JavaPlugin {
             case "group" -> groupCmd.onCommand(sender,args);
             case "computer" -> computerCmd.onCommand(sender,args);
             case "debug" -> debug = !debug;
-            default -> sender.sendMessage(ChatColor.GOLD+""+ChatColor.BOLD + "Subcommands for /cctv" + ChatColor.YELLOW
-                    + "\ncamera"
-                    + "\ngroup"
-                    + "\ncomputer");
+            default -> sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                    "&6&m                                        \n"
+                    + "&6[CCTV] &7" + getDescription().getVersion() + "\n"
+                    + " &7- &6/cctv\n"
+                    + "   &8| &eDefault help page\n"
+                    + " &7- &6/cctv camera\n"
+                    + "   &8| &eCamera commands\n"
+                    + " &7- &6/cctv group\n"
+                    + "   &8| &eCamera Group commands\n"
+                    + " &7- &6/cctv computer\n"
+                    + "   &8| &eComputer commands\n"
+                    + "&6&m                                        "));
         }
         return true;
     }
