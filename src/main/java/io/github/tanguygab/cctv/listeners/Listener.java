@@ -2,6 +2,7 @@ package io.github.tanguygab.cctv.listeners;
 
 import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.config.LanguageFile;
+import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.managers.ComputerManager;
 import io.github.tanguygab.cctv.managers.ViewerManager;
 import io.github.tanguygab.cctv.entities.Computer;
@@ -14,7 +15,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
@@ -64,8 +67,24 @@ public class Listener implements org.bukkit.event.Listener {
     public void on(PlayerInteractAtEntityEvent e) {
         if (!(e.getRightClicked() instanceof ArmorStand as)) return;
         String customName = as.getCustomName();
-        if (customName != null && ChatColor.stripColor(customName).startsWith("CAM-"))
-            e.setCancelled(true);
+        if (customName == null || !(customName = ChatColor.stripColor(customName)).startsWith("CAM-")) return;
+
+        e.setCancelled(true);
+        Player p = e.getPlayer();
+        CameraManager cm = CCTV.get().getCameras();
+        if (cm.values().stream().noneMatch(cam -> cam.getArmorStand() == as)) {
+            as.remove();
+            p.sendMessage(lang.CAMERA_DELETED_BECAUSE_BUGGED);
+            return;
+        }
+
+        List<String> cameras = cm.get(p);
+        if (!cameras.contains(customName.substring(4))) return;
+
+        Inventory inv = Bukkit.createInventory(null, InventoryType.HOPPER, lang.getGuiCameraDelete(as.getCustomName().substring(4)));
+        inv.setItem(1, Utils.getItem(Material.RED_WOOL,lang.GUI_CAMERA_DELETE_ITEM_CANCEL));
+        inv.setItem(3, Utils.getItem(Material.LIME_WOOL,lang.GUI_CAMERA_DELETE_ITEM_DELETE));
+        p.openInventory(inv);
     }
 
     @EventHandler(ignoreCancelled = true)

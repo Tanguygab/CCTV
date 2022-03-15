@@ -4,8 +4,6 @@ import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.config.LanguageFile;
 import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.managers.ViewerManager;
-import io.github.tanguygab.cctv.utils.Utils;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
@@ -15,12 +13,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryInteractEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.List;
 
 public class ViewersEvents implements Listener {
 
@@ -85,7 +79,7 @@ public class ViewersEvents implements Listener {
             if (e.getEntity() instanceof ArmorStand as && cm.values().stream().anyMatch(cam -> cam.getArmorStand() == as))
                 e.setCancelled(true);
             return;
-        }p.sendMessage(e.getEntity().getCustomName()+" hit");
+        }
 
         if (vm.exists(p)) {
             if (!p.getInventory().getItemInMainHand().getType().equals(Material.AIR)) {
@@ -94,26 +88,8 @@ public class ViewersEvents implements Listener {
                     vm.onCameraItems(p, item.getItemMeta().getDisplayName());
             }
             e.setCancelled(true);
-            return;
         }
 
-        if (!(e.getEntity() instanceof ArmorStand as)) return;
-        if (as.getCustomName() == null) return;
-        String name = ChatColor.stripColor(as.getCustomName());
-        if (!name.startsWith("CAM-") || !cm.exists(name)) return;
 
-        if (cm.values().stream().noneMatch(cam -> cam.getArmorStand() == as)) {
-            as.remove();
-            p.sendMessage(lang.CAMERA_DELETED_BECAUSE_BUGGED);
-            return;
-        }
-
-        List<String> cameras = cm.get(p);
-        if (!cameras.contains(name)) return;
-
-        Inventory inv = Bukkit.createInventory(null, InventoryType.HOPPER, lang.getGuiCameraDelete(as.getCustomName().substring(4)));
-        inv.setItem(1, Utils.getItem(Material.RED_WOOL,lang.GUI_CAMERA_DELETE_ITEM_CANCEL));
-        inv.setItem(3, Utils.getItem(Material.LIME_WOOL,lang.GUI_CAMERA_DELETE_ITEM_DELETE));
-        p.openInventory(inv);
     }
 }

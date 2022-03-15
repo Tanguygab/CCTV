@@ -176,12 +176,12 @@ public class InvClickEvent implements Listener {
         openRemovePlayer(p,checkPage(item,lang.GUI_COMPUTER_DEFAULT_ITEM_NEXT_PAGE,lang.GUI_COMPUTER_DEFAULT_ITEM_PREVIOUS_PAGE,page,maxpages),computer);
     }
     public void onCameraDelete(Player p, int slot, String name) {
-        if (slot == 5) {
+        if (slot == 3) {
             p.closeInventory();
             CCTV.get().getCameras().delete(name, p);
             return;
         }
-        if (slot == 3) p.closeInventory();
+        if (slot == 1) p.closeInventory();
     }
 
     private int checkPage(String item, String next, String prev, String page, double maxpages) {
