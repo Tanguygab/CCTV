@@ -1,7 +1,6 @@
 package io.github.tanguygab.cctv.managers;
 
 import io.github.tanguygab.cctv.config.LanguageFile;
-import io.github.tanguygab.cctv.entities.Camera;
 import io.github.tanguygab.cctv.entities.CameraGroup;
 import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.entity.Player;
@@ -48,10 +47,6 @@ public class CameraGroupManager extends Manager<CameraGroup> {
         map.put(name,rec);
         p.sendMessage(lang.GROUP_CREATE);
         p.sendMessage(lang.getGroupID(rec.getId()));
-    }
-
-    public void removeCamera(Camera cam) {
-        values().forEach(g->g.getCameras().remove(cam));
     }
 
     public List<String> get(Player p) {

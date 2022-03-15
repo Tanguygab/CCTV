@@ -32,6 +32,7 @@ public class ComputerCmd extends Command {
                     return;
                 }
                 p.getInventory().addItem(Utils.getComputer());
+                p.sendMessage(ChatColor.GREEN + "Place down this item to create a computer!");
             }
             case "list" -> {
                 if (!hasPerm(p,"list")) {

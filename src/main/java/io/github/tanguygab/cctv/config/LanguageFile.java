@@ -75,10 +75,20 @@ public class LanguageFile extends YamlConfigurationFile {
     public String getCameraDisabled(String id) {
         return CAMERA_DISABLED.replace("%cameraID%",id);
     }
-    public final String CAMERA_OFFLINE = get("cameras.offline","&cThis camera is offline!");
-    public final String CAMERA_OFFLINE_OVERRIDE = get("cameras.offline-override","&cNOTE: This camera is offline! You can view this camera because you can bypass it!");
     public final String CAMERA_ALREADY_ENABLED = get("cameras.already-enabled","&cThis camera is already enabled!");
     public final String CAMERA_ALREADY_DISABLED = get("cameras.already-disabled","&cThis camera is already disabled!");
+    public final String CAMERA_OFFLINE = get("cameras.offline","&cThis camera is offline!");
+    public final String CAMERA_OFFLINE_OVERRIDE = get("cameras.offline-override","&cNOTE: This camera is offline! You can view this camera because you can bypass it!");
+    private final String CAMERA_SHOWN = get("cameras.shown","&aCamera &2%cameraID%&a is now &2shown&a!");
+    public String getCameraShown(String id) {
+        return CAMERA_SHOWN.replace("%cameraID%",id);
+    }
+    private final String CAMERA_HIDDEN = get("cameras.hidden","&aCamera &2%cameraID%&a is now &chidden&a!");
+    public String getCameraHidden(String id) {
+        return CAMERA_HIDDEN.replace("%cameraID%",id);
+    }
+    public final String CAMERA_ALREADY_SHOWN = get("cameras.already-shown","&cThis camera is already shown!");
+    public final String CAMERA_ALREADY_HIDDEN = get("cameras.already-hidden","&cThis camera is already hidden!");
     public final String CAMERA_MOVED = get("cameras.moved","&aCamera moved to your location!");
     private final String CAMERA_VIEW_COUNT = get("cameras.view-count","&aThere are currently &2%count%&a players watching camera &2%cameraID%&a!");
     public String getCameraViewCount(int count, String id) {

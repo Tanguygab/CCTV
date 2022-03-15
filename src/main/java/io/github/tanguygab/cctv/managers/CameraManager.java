@@ -87,8 +87,8 @@ public class CameraManager extends Manager<Camera> {
         cam.getArmorStand().remove();
         player.sendMessage(lang.CAMERA_DELETE);
         player.sendMessage(lang.getCameraID(cam.getId()));
-        cctv.getViewers().values().stream().filter(p -> p.getCamera().equals(cam)).forEach(p -> unviewCamera(Bukkit.getPlayer(p.getId())));
-        cctv.getCameraGroups().removeCamera(cam);
+        cctv.getViewers().values().stream().filter(p -> p.getCamera() == cam).forEach(p -> unviewCamera(Bukkit.getPlayer(p.getId())));
+        cctv.getCameraGroups().values().forEach(g->g.getCameras().remove(cam));
         map.remove(cam.getId());
         if (player.getGameMode() == GameMode.SURVIVAL) player.getInventory().addItem(Heads.CAMERA.get());
     }
@@ -98,6 +98,7 @@ public class CameraManager extends Manager<Camera> {
         ArmorStand as = loc.getWorld().spawn(loc, ArmorStand.class);
         as.setGravity(false);
         as.setCollidable(false);
+        as.setInvulnerable(true);
         as.setVisible(false);
         as.setCustomName("CAM-" + id);
         as.setSilent(true);

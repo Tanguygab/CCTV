@@ -1,11 +1,18 @@
 package io.github.tanguygab.cctv.commands;
 
+import io.github.tanguygab.cctv.entities.Camera;
+import io.github.tanguygab.cctv.managers.CameraManager;
+import io.github.tanguygab.cctv.utils.Utils;
+import net.md_5.bungee.api.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 
 public class CameraCmd extends Command {
+
+    private final CameraManager cm = cctv.getCameras();
 
     public CameraCmd() {
         super("camera");
@@ -19,30 +26,262 @@ public class CameraCmd extends Command {
         String arg = args.length > 1 ? args[1] : "";
 
         switch (arg) {
-            case "get" -> {}
-            case "create" -> {}
-            case "delete" -> {}
-            case "list" -> {}
-            case "view" -> {}
-            case "connected" -> {}
-            case "return" -> {}
-            case "teleport" -> {}
-            case "enable" -> {}
-            case "disable" -> {}
-            case "show" -> {}
-            case "hide" -> {}
-            case "movehere" -> {}
-            case "rename" -> {}
-            case "setowner" -> {}
+            case "get" -> {
+                if (!hasPerm(p,"create")) {
+                    p.sendMessage(lang.NO_PERMISSIONS);
+                    return;
+                }
+                p.getInventory().addItem(Utils.getCamera());
+                p.sendMessage(ChatColor.GREEN + "Place down this item to create a camera!");
+            }
+            case "create" -> {
+                if (!hasPerm(p,"create")) {
+                    p.sendMessage(lang.NO_PERMISSIONS);
+                    return;
+                }
+                if (args.length > 2) cm.create(args[2],p.getLocation(),p);
+                else p.sendMessage(ChatColor.RED + "Please specify a camera name!");
+            }
+            case "delete" -> {
+                if (!hasPerm(p,"delete")) {
+                    p.sendMessage(lang.NO_PERMISSIONS);
+                    return;
+                }
+                if (args.length < 3) {
+                    p.sendMessage(ChatColor.RED + "Please specify a camera name!");
+                    return;
+                }
+                Camera camera = cm.get(args[2]);
+                if (camera == null || !canUse(p,camera.getOwner())) {
+                    p.sendMessage(lang.CAMERA_NOT_FOUND);
+                    return;
+                }
+                cm.delete(camera.getId(),p);
+            }
+            case "list" -> {
+                if (!hasPerm(p,"list")) {
+                    p.sendMessage(lang.NO_PERMISSIONS);
+                    return;
+                }
+                p.spigot().sendMessage(list("Cameras",cm.get(p),"view","Click to view!"));
+            }
+            case "view" -> {
+                if (!hasPerm(p,"view")) {
+                    p.sendMessage(lang.NO_PERMISSIONS);
+                    return;
+                }
+                if (cctv.getViewers().exists(p)) {
+                    p.sendMessage(ChatColor.RED + "You already watching a camera!");
+                    return;
+                }
+                cm.viewCamera(p, args[2], null);
+            }
+            case "connected" -> {
+                if (!hasPerm(p,"connected")) {
+                    p.sendMessage(lang.NO_PERMISSIONS);
+                    return;
+                }
+                if (args.length < 3) {
+                    p.sendMessage(ChatColor.RED + "Please specify a camera name!");
+                    return;
+                }
+                Camera camera = cm.get(args[2]);
+                if (camera == null || !canUse(p,camera.getOwner())) {
+                    p.sendMessage(lang.CAMERA_NOT_FOUND);
+                    return;
+                }
+                p.sendMessage(lang.getCameraViewCount(Math.toIntExact(cctv.getViewers().values().stream().filter(viewer->viewer.getCamera()==camera).count()),camera.getId()));
+            }
+            case "return" -> {
+                if (!hasPerm(p,"return")) {
+                    p.sendMessage(lang.NO_PERMISSIONS);
+                    return;
+                }
+                cm.unviewCamera(p);
+            }
+            case "teleport" -> {
+                if (!hasPerm(p,"teleport")) {
+                    p.sendMessage(lang.NO_PERMISSIONS);
+                    return;
+                }
+                if (args.length < 3) {
+                    p.sendMessage(ChatColor.RED + "Please specify a camera name!");
+                    return;
+                }
+                Camera camera = cm.get(args[2]);
+                if (camera == null || !canUse(p,camera.getOwner())) {
+                    p.sendMessage(lang.CAMERA_NOT_FOUND);
+                    return;
+                }
+                cm.teleport(camera,p);
+            }
+            case "enable" -> {
+                if (!hasPerm(p,"enable")) {
+                    p.sendMessage(lang.NO_PERMISSIONS);
+                    return;
+                }
+                if (args.length < 3) {
+                    p.sendMessage(ChatColor.RED + "Please specify a camera name!");
+                    return;
+                }
+                Camera camera = cm.get(args[2]);
+                if (camera == null || !canUse(p,camera.getOwner())) {
+                    p.sendMessage(lang.CAMERA_NOT_FOUND);
+                    return;
+                }
+                if (camera.isEnabled()) {
+                    p.sendMessage(lang.CAMERA_ALREADY_ENABLED);
+                    return;
+                }
+                camera.setEnabled(true);
+                p.sendMessage(lang.getCameraEnabled(camera.getId()));
+            }
+            case "disable" -> {
+                if (!hasPerm(p,"disable")) {
+                    p.sendMessage(lang.NO_PERMISSIONS);
+                    return;
+                }
+                if (args.length < 3) {
+                    p.sendMessage(ChatColor.RED + "Please specify a camera name!");
+                    return;
+                }
+                Camera camera = cm.get(args[2]);
+                if (camera == null || !canUse(p,camera.getOwner())) {
+                    p.sendMessage(lang.CAMERA_NOT_FOUND);
+                    return;
+                }
+                if (!camera.isEnabled()) {
+                    p.sendMessage(lang.CAMERA_ALREADY_DISABLED);
+                    return;
+                }
+                camera.setEnabled(false);
+                p.sendMessage(lang.getCameraDisabled(camera.getId()));
+            }
+            case "show" -> {
+                if (!hasPerm(p,"show")) {
+                    p.sendMessage(lang.NO_PERMISSIONS);
+                    return;
+                }
+                if (args.length < 3) {
+                    p.sendMessage(ChatColor.RED + "Please specify a camera name!");
+                    return;
+                }
+                Camera camera = cm.get(args[2]);
+                if (camera == null || !canUse(p,camera.getOwner())) {
+                    p.sendMessage(lang.CAMERA_NOT_FOUND);
+                    return;
+                }
+                if (camera.isShown()) {
+                    p.sendMessage(lang.CAMERA_ALREADY_SHOWN);
+                    return;
+                }
+                camera.setShown(true);
+                p.sendMessage(lang.getCameraShown(camera.getId()));
+            }
+            case "hide" -> {
+                if (!hasPerm(p,"hide")) {
+                    p.sendMessage(lang.NO_PERMISSIONS);
+                    return;
+                }
+                if (args.length < 3) {
+                    p.sendMessage(ChatColor.RED + "Please specify a camera name!");
+                    return;
+                }
+                Camera camera = cm.get(args[2]);
+                if (camera == null || !canUse(p,camera.getOwner())) {
+                    p.sendMessage(lang.CAMERA_NOT_FOUND);
+                    return;
+                }
+                if (!camera.isShown()) {
+                    p.sendMessage(lang.CAMERA_ALREADY_HIDDEN);
+                    return;
+                }
+                camera.setShown(false);
+                p.sendMessage(lang.getCameraHidden(camera.getId()));
+            }
+            case "movehere" -> {
+                if (!hasPerm(p,"movehere")) {
+                    p.sendMessage(lang.NO_PERMISSIONS);
+                    return;
+                }
+                if (args.length < 3) {
+                    p.sendMessage(ChatColor.RED + "Please specify a camera name!");
+                    return;
+                }
+                Camera camera = cm.get(args[2]);
+                if (camera == null || !canUse(p,camera.getOwner())) {
+                    p.sendMessage(lang.CAMERA_NOT_FOUND);
+                    return;
+                }
+                camera.setLocation(p.getLocation());
+                p.sendMessage(lang.CAMERA_MOVED);
+            }
+            case "rename" -> {
+                if (!hasPerm(p,"rename")) {
+                    p.sendMessage(lang.NO_PERMISSIONS);
+                    return;
+                }
+                if (args.length < 3) {
+                    p.sendMessage(ChatColor.RED + "Please specify a camera name!");
+                    return;
+                }
+                Camera camera = cm.get(args[2]);
+                if (camera == null || !canUse(p,camera.getOwner())) {
+                    p.sendMessage(lang.CAMERA_NOT_FOUND);
+                    return;
+                }
+                if (args.length < 4) {
+                    p.sendMessage(ChatColor.RED + "Please specify a new name!");
+                    return;
+                }
+                String newName = args[3];
+                if (cm.exists(newName)) {
+                    p.sendMessage(lang.CAMERA_ALREADY_EXISTS);
+                    return;
+                }
+                camera.setId(newName);
+                p.sendMessage(lang.getCameraRenamed(newName));
+            }
+            case "setowner" -> {
+                if (!hasPerm(p,"setowner")) {
+                    p.sendMessage(lang.NO_PERMISSIONS);
+                    return;
+                }
+                if (args.length < 3) {
+                    p.sendMessage(ChatColor.RED + "Please specify a camera name!");
+                    return;
+                }
+                Camera camera = cm.get(args[2]);
+                if (camera == null || !canUse(p,camera.getOwner())) {
+                    p.sendMessage(lang.CAMERA_NOT_FOUND);
+                    return;
+                }
+                if (args.length < 4) {
+                    p.sendMessage(ChatColor.RED + "Please specify a new owner!");
+                    return;
+                }
+                OfflinePlayer newOwner = Utils.getOfflinePlayer(args[3]);
+                if (newOwner == null) {
+                    p.sendMessage(lang.PLAYER_NOT_FOUND);
+                    return;
+                }
+                String uuid = newOwner.getUniqueId().toString();
+                if (camera.getOwner().equals(uuid)) {
+                    p.sendMessage(lang.CAMERA_PLAYER_ALREADY_OWNER);
+                    return;
+                }
+                camera.setOwner(uuid);
+                p.sendMessage(lang.getCameraOwnerChanged(newOwner.getName()));
+            }
             default -> sender.spigot().sendMessage(helpPage("Camera commands",
                     "get:Get the camera item",
                     "create <name>:Create a new camera",
                     "delete <name>:Delete a camera",
-                    "list:Get the list of all computers",
+                    "list:Get the list of all cameras",
                     "view <camera>:View the camera",
                     "connected <camera>:All players connected to this camera",
                     "return:Stop viewing your current camera",
-                    "teleport <computer>:Teleport to the camera",
+                    "teleport <camera>:Teleport to the camera",
                     "enable <camera>:Enable the camera",
                     "disable <camera>:Disable the camera",
                     "show <camera>:Show the camera",
@@ -50,7 +289,6 @@ public class CameraCmd extends Command {
                     "movehere:Move the camera to your location",
                     "rename <camera> <name>:Rename the camera",
                     "setowner <camera> <player>:Set the camera's owner"));
-
         }
     }
 
