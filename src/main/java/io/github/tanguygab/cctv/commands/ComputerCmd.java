@@ -1,13 +1,12 @@
 package io.github.tanguygab.cctv.commands;
 
-import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.managers.ComputerManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class ComputerCmd extends Command<Computer> {
+public class ComputerCmd extends Command {
 
     private final ComputerManager cpm = cctv.getComputers();
 

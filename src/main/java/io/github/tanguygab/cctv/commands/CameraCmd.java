@@ -1,12 +1,11 @@
 package io.github.tanguygab.cctv.commands;
 
-import io.github.tanguygab.cctv.entities.Camera;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class CameraCmd extends Command<Camera> {
+public class CameraCmd extends Command {
 
     public CameraCmd() {
         super("camera");

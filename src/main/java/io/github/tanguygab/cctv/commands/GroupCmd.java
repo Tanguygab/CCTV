@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-public class GroupCmd extends Command<CameraGroup> {
+public class GroupCmd extends Command {
 
     private final CameraGroupManager cgm = cctv.getCameraGroups();
     private final CameraManager cm = cctv.getCameras();

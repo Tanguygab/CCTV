@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public abstract class Command<T> {
+public abstract class Command {
 
     private final String type;
 
