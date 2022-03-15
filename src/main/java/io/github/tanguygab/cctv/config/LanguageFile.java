@@ -59,7 +59,7 @@ public class LanguageFile extends YamlConfigurationFile {
     public String getCameraOwnerChanged(String player) {
         return CAMERA_OWNER_CHANGED.replace("%player%",player);
     }
-    public final String CAMERA_PLAYER_ALREADY_OWNER = get("cameras.player-already-owner","&cThat player is already the owner of that camera!");
+    public final String CAMERA_PLAYER_ALREADY_OWNER = get("cameras.player-already-owner","&cThis player is already the owner of this camera!");
     public final String CAMERA_CHANGE_NO_PERMS = get("cameras.change-no-perms","&cYou can only change your own cameras!");
     private final String CAMERA_RENAMED = get("cameras.renamed","&aCamera renamed to '%cameraID%'!");
     public String getCameraRenamed(String id) {
@@ -99,13 +99,13 @@ public class LanguageFile extends YamlConfigurationFile {
     public String getGroupOwnerChanged(String player) {
         return GROUP_OWNER_CHANGED.replace("%player%",player);
     }
-    public final String GROUP_PLAYER_ALREADY_OWNER = get("groups.player-already-owner","&cThis player is already the owner of that group!");
+    public final String GROUP_PLAYER_ALREADY_OWNER = get("groups.player-already-owner","&cThis player is already the owner of this group!");
     private final String GROUP_RENAMED = get("groups.renamed","&aGroup renamed to '%groupID%'!");
     public String getGroupRenamed(String id) {
         return GROUP_RENAMED.replace("%groupID%",id);
     }
     public final String GROUP_NO_CAMERAS_ADDED = get("groups.no-cameras-added","&cThis group doesn't have any cameras!");
-    public final String GROUP_CAMERA_ALREADY_ADDED = get("groups.camera-already-added","&cThis camera has already been added to that group!");
+    public final String GROUP_CAMERA_ALREADY_ADDED = get("groups.camera-already-added","&cThis camera has already been added to this group!");
     public final String GROUP_CAMERA_ADDED = get("groups.camera-added","&aCamera added to the group!");
     public final String GROUP_REMOVE_CAMERA = get("groups.remove-camera","&aCamera removed from this group!");
     public final String GROUP_DOES_NOT_CONTAIN_CAMERA = get("groups.does-not-contain-camera","&cThis group does not contain a camera with that ID!");
@@ -124,6 +124,7 @@ public class LanguageFile extends YamlConfigurationFile {
     public String getComputerOwnerChanged(String player) {
         return COMPUTER_OWNER_CHANGED.replace("%player%",player);
     }
+    public final String COMPUTER_PLAYER_ALREADY_OWNER = get("computers.player-already-owner","&cThis player is already the owner of this computer!");
     public final String COMPUTER_CHANGE_NO_PERMS = get("computers.change-no-perms", "&cYou can only edit your own computers!");
     public final String COMPUTER_ONLY_OWNER_CAN_CHANGE_OWNER = get("computers.only-owner-can-change-owner", "&cOnly the owner of this computer can change the owner!");
     public final String COMPUTER_NOT_ALLOWED = get("computers.not-allowed", "&cYou aren't allowed to open this computer!");
