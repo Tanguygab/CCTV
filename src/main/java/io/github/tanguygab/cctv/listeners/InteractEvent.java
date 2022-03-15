@@ -27,15 +27,18 @@ public class InteractEvent {
         boolean rcb = e.getAction() == Action.RIGHT_CLICK_BLOCK;
 
         if (rcb && block != null) {
-            if (!block.getType().equals(ComputerManager.COMPUTER_MATERIAL) || e.getHand() == EquipmentSlot.OFF_HAND) return;
-            ComputerManager cpm = CCTV.get().getComputers();
-            Computer computer = cpm.get(block.getLocation());
-            if (computer != null) {
-                if (computer.canUse(p)) {
-                    cpm.setLast(p, computer);
-                    cpm.open(p, computer);
-                } else p.sendMessage(lang.COMPUTER_NOT_ALLOWED);
-                return;
+            if (block.getType() == ComputerManager.COMPUTER_MATERIAL && e.getHand() != EquipmentSlot.OFF_HAND) {
+                ComputerManager cpm = CCTV.get().getComputers();
+                Computer computer = cpm.get(block.getLocation());
+                if (computer != null) {
+                    p.sendMessage(computer.getId());
+                    if (computer.canUse(p)) {
+                        cpm.setLast(p, computer);
+                        cpm.open(p, computer);
+                    } else p.sendMessage(lang.COMPUTER_NOT_ALLOWED);
+                    e.setCancelled(true);
+                    return;
+                }
             }
         }
 
