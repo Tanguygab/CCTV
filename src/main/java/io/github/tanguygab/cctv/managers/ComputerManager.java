@@ -1,5 +1,6 @@
 package io.github.tanguygab.cctv.managers;
 
+import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.entities.CameraGroup;
 import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.listeners.InvClickEvent;
@@ -114,5 +115,11 @@ public class ComputerManager extends Manager<Computer> {
 
     public void open(Player p, Computer computer) {
         InvClickEvent.openComputer(p, 1,computer);
+    }
+
+    public void teleport(Player p, Computer computer) {
+        Location loc = computer.getLocation().clone();
+        loc.add(1.0D,0.5D,0.5D);
+        p.teleport(loc);
     }
 }

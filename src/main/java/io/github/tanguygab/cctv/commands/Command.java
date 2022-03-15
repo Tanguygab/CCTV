@@ -3,8 +3,11 @@ package io.github.tanguygab.cctv.commands;
 import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.config.LanguageFile;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -61,6 +64,19 @@ public abstract class Command {
             comp.addExtra(comp(els[1],ChatColor.YELLOW));
         }
         comp.addExtra(strikeThrough);
+        return comp;
+    }
+    protected TextComponent list(String name, List<String> list, String cmd, String hover) {
+        TextComponent comp = comp(name+":",ChatColor.GOLD);
+        comp.setBold(true);
+
+        list.forEach(el->{
+            TextComponent subComp = comp("\n - "+el,ChatColor.YELLOW);
+            subComp.setBold(false);
+            subComp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,new Text(new BaseComponent[]{comp(hover,ChatColor.YELLOW)})));
+            subComp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,"/cctv "+type+" "+cmd+" "+el));
+            comp.addExtra(subComp);
+        });
         return comp;
     }
 
