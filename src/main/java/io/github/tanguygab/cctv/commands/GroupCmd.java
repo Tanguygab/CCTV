@@ -62,6 +62,53 @@ public class GroupCmd extends Command<CameraGroup> {
                 p.sendMessage(lang.GROUP_DELETE);
                 cgm.delete(group.getId());
             }
+            case "list" -> {
+                if (!hasPerm(p,"list")) {
+                    p.sendMessage(lang.NO_PERMISSIONS);
+                    return;
+                }
+                TextComponent comp = comp("Camera Groups:",ChatColor.GOLD);
+                comp.setBold(true);
+
+                for (String group : cgm.get(p)) {
+                    TextComponent groupComp = new TextComponent("\n - "+group);
+                    groupComp.setColor(ChatColor.YELLOW);
+                    groupComp.setBold(false);
+                    groupComp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,new Text(new BaseComponent[]{comp("Click to see its info!",ChatColor.YELLOW)})));
+                    groupComp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,"/cctv group info "+group));
+                    comp.addExtra(groupComp);
+                }
+                p.spigot().sendMessage(comp);
+            }
+            case "info" -> {
+                if (!hasPerm(p,"info")) {
+                    p.sendMessage(lang.NO_PERMISSIONS);
+                    return;
+                }
+                if (args.length < 3) {
+                    p.sendMessage(ChatColor.RED + "Please specify a group name!");
+                    return;
+                }
+                CameraGroup group = cgm.get(args[2]);
+                if (group == null || !canUse(p,group.getOwner())) {
+                    p.sendMessage(lang.GROUP_NOT_FOUND);
+                    return;
+                }
+                OfflinePlayer off = Bukkit.getServer().getOfflinePlayer(UUID.fromString(group.getOwner()));
+                String owner = off.getName() == null ? "Unknown" : off.getName();
+                TextComponent comp = comp("Camera Group info:",ChatColor.GOLD);
+                comp.setBold(true);
+                comp.addExtra(comp("\nName: ",ChatColor.GOLD,group.getId(),ChatColor.YELLOW));
+                comp.addExtra(comp("\nOwner: ",ChatColor.GOLD,owner,ChatColor.YELLOW));
+                comp.addExtra(comp("\nCameras:",ChatColor.GOLD));
+
+                for (Camera cam : group.getCameras()) {
+                    TextComponent camComp = comp("\n - "+cam.getId(),ChatColor.YELLOW);
+                    camComp.setBold(false);
+                    comp.addExtra(camComp);
+                }
+                p.spigot().sendMessage(comp);
+            }
             case "addcamera" -> {
                 if (!hasPerm(p,"addcamera")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
@@ -124,6 +171,32 @@ public class GroupCmd extends Command<CameraGroup> {
                 group.getCameras().remove(camera);
                 p.sendMessage(lang.GROUP_REMOVE_CAMERA);
             }
+            case "rename" -> {
+                if (!hasPerm(p,"rename")) {
+                    p.sendMessage(lang.NO_PERMISSIONS);
+                    return;
+                }
+                if (args.length < 3) {
+                    p.sendMessage(ChatColor.RED + "Please specify a group name!");
+                    return;
+                }
+                CameraGroup group = cgm.get(args[2]);
+                if (group == null || !canUse(p,group.getOwner())) {
+                    p.sendMessage(lang.GROUP_NOT_FOUND);
+                    return;
+                }
+                if (args.length < 4) {
+                    p.sendMessage(ChatColor.RED + "Please specify a new name!");
+                    return;
+                }
+                String newName = args[3];
+                if (cgm.exists(newName)) {
+                    p.sendMessage(lang.GROUP_ALREADY_EXISTS);
+                    return;
+                }
+                group.setId(newName);
+                p.sendMessage(lang.getGroupRenamed(newName));
+            }
             case "setowner" -> {
                 if (!hasPerm(p,"setowner")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
@@ -155,88 +228,15 @@ public class GroupCmd extends Command<CameraGroup> {
                 group.setOwner(uuid);
                 p.sendMessage(lang.getGroupOwnerChanged(newOwner.getUniqueId().toString()));
             }
-            case "rename" -> {
-                if (!hasPerm(p,"rename")) {
-                    p.sendMessage(lang.NO_PERMISSIONS);
-                    return;
-                }
-                if (args.length < 3) {
-                    p.sendMessage(ChatColor.RED + "Please specify a group name!");
-                    return;
-                }
-                CameraGroup group = cgm.get(args[2]);
-                if (group == null || !canUse(p,group.getOwner())) {
-                    p.sendMessage(lang.GROUP_NOT_FOUND);
-                    return;
-                }
-                if (args.length < 4) {
-                    p.sendMessage(ChatColor.RED + "Please specify a new name!");
-                    return;
-                }
-                String newName = args[3];
-                if (cgm.exists(newName)) {
-                    p.sendMessage(lang.GROUP_ALREADY_EXISTS);
-                    return;
-                }
-                group.setId(newName);
-                p.sendMessage(lang.getGroupRenamed(newName));
-            }
-            case "info" -> {
-                if (!hasPerm(p,"info")) {
-                    p.sendMessage(lang.NO_PERMISSIONS);
-                    return;
-                }
-                if (args.length < 3) {
-                    p.sendMessage(ChatColor.RED + "Please specify a group name!");
-                    return;
-                }
-                CameraGroup group = cgm.get(args[2]);
-                if (group == null || !canUse(p,group.getOwner())) {
-                    p.sendMessage(lang.GROUP_NOT_FOUND);
-                    return;
-                }
-                OfflinePlayer off = Bukkit.getServer().getOfflinePlayer(UUID.fromString(group.getOwner()));
-                String owner = off.getName() == null ? "Unknown" : off.getName();
-                TextComponent comp = comp("Camera Group info:",ChatColor.GOLD);
-                comp.setBold(true);
-                comp.addExtra(comp("\nName: ",ChatColor.GOLD,group.getId(),ChatColor.YELLOW));
-                comp.addExtra(comp("\nOwner: ",ChatColor.GOLD,owner,ChatColor.YELLOW));
-                comp.addExtra(comp("\nCameras:",ChatColor.GOLD));
-
-                for (Camera cam : group.getCameras()) {
-                    TextComponent camComp = comp("\n - "+cam.getId(),ChatColor.YELLOW);
-                    camComp.setBold(false);
-                    comp.addExtra(camComp);
-                }
-                p.spigot().sendMessage(comp);
-            }
-            case "list" -> {
-                if (!hasPerm(p,"list")) {
-                    p.sendMessage(lang.NO_PERMISSIONS);
-                    return;
-                }
-                TextComponent comp = comp("Camera Groups:",ChatColor.GOLD);
-                comp.setBold(true);
-
-                for (String group : cgm.get(p)) {
-                    TextComponent groupComp = new TextComponent("\n - "+group);
-                    groupComp.setColor(ChatColor.YELLOW);
-                    groupComp.setBold(false);
-                    groupComp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,new Text(new BaseComponent[]{comp("Click to see its info!",ChatColor.YELLOW)})));
-                    groupComp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,"/cctv group info "+group));
-                    comp.addExtra(groupComp);
-                }
-                p.spigot().sendMessage(comp);
-            }
             default -> sender.spigot().sendMessage(helpPage("Camera Group commands",
-                    "create <name>:Create a new Group",
+                    "create <name>:Create a new group",
                     "delete <name>:Delete a group",
+                    "list:Get the list of all groups",
+                    "info <group>:Get the group's info",
                     "addcamera <group> <camera>:Add a camera to your group",
                     "removecamera <group> <camera>:Remove a camera from your group",
-                    "setowner <group> <player>:Change the owner of your group",
-                    "rename <group> <name>:Rename your group",
-                    "info <group>:Get info of your group",
-                    "list:Get the list of all groups"));
+                    "rename <group> <name>:Rename the group",
+                    "setowner <group> <player>:Change the group's owner"));
         }
     }
 

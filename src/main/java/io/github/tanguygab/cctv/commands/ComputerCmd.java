@@ -23,12 +23,17 @@ public class ComputerCmd extends Command<Computer> {
         String arg = args.length > 1 ? args[1] : "";
 
         switch (arg) {
-            case "teleport" -> {}
-            case "search" -> {}
             case "get" -> {}
             case "list" -> {}
             case "open" -> {}
+            case "teleport" -> {}
             case "setowner" -> {}
+            default -> sender.spigot().sendMessage(helpPage("Computer commands",
+                    "get:Get the computer item",
+                    "list:Get the list of all computers",
+                    "open <computer>:Open the computer's menu",
+                    "teleport <computer>:Teleport to the computer",
+                    "setowner <computer> <player>:Set the computer's owner"));
         }
     }
 

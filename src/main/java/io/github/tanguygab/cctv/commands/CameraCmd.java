@@ -20,21 +20,38 @@ public class CameraCmd extends Command<Camera> {
         String arg = args.length > 1 ? args[1] : "";
 
         switch (arg) {
-            case "teleport" -> {}
+            case "get" -> {}
             case "create" -> {}
             case "delete" -> {}
-            case "enable" -> {}
-            case "rename" -> {}
-            case "return" -> {}
-            case "connected" -> {}
-            case "movehere" -> {}
-            case "get" -> {}
-            case "hide" -> {}
             case "list" -> {}
-            case "show" -> {}
             case "view" -> {}
-            case "setowner" -> {}
+            case "connected" -> {}
+            case "return" -> {}
+            case "teleport" -> {}
+            case "enable" -> {}
             case "disable" -> {}
+            case "show" -> {}
+            case "hide" -> {}
+            case "movehere" -> {}
+            case "rename" -> {}
+            case "setowner" -> {}
+            default -> sender.spigot().sendMessage(helpPage("Camera commands",
+                    "get:Get the camera item",
+                    "create <name>:Create a new camera",
+                    "delete <name>:Delete a camera",
+                    "list:Get the list of all computers",
+                    "view <camera>:View the camera",
+                    "connected <camera>:All players connected to this camera",
+                    "return:Stop viewing your current camera",
+                    "teleport <computer>:Teleport to the camera",
+                    "enable <camera>:Enable the camera",
+                    "disable <camera>:Disable the camera",
+                    "show <camera>:Show the camera",
+                    "hide <camera>:Hide the camera",
+                    "movehere:Move the camera to your location",
+                    "rename <camera> <name>:Rename the camera",
+                    "setowner <camera> <player>:Set the camera's owner"));
+
         }
     }
 
