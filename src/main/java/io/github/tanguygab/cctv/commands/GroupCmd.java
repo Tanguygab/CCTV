@@ -6,11 +6,7 @@ import io.github.tanguygab.cctv.managers.CameraGroupManager;
 import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.utils.Utils;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -67,18 +63,7 @@ public class GroupCmd extends Command {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
-                TextComponent comp = comp("Camera Groups:",ChatColor.GOLD);
-                comp.setBold(true);
-
-                for (String group : cgm.get(p)) {
-                    TextComponent groupComp = new TextComponent("\n - "+group);
-                    groupComp.setColor(ChatColor.YELLOW);
-                    groupComp.setBold(false);
-                    groupComp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,new Text(new BaseComponent[]{comp("Click to see its info!",ChatColor.YELLOW)})));
-                    groupComp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,"/cctv group info "+group));
-                    comp.addExtra(groupComp);
-                }
-                p.spigot().sendMessage(comp);
+                p.spigot().sendMessage(list("Camera Groups",cgm.get(p),"info","Click to get its info!"));
             }
             case "info" -> {
                 if (!hasPerm(p,"info")) {
@@ -226,7 +211,7 @@ public class GroupCmd extends Command {
                     return;
                 }
                 group.setOwner(uuid);
-                p.sendMessage(lang.getGroupOwnerChanged(newOwner.getUniqueId().toString()));
+                p.sendMessage(lang.getGroupOwnerChanged(newOwner.getName()));
             }
             default -> sender.spigot().sendMessage(helpPage("Camera Group commands",
                     "create <name>:Create a new group",
