@@ -227,9 +227,9 @@ public class GroupCmd extends Command {
 
     public List<String> onTabComplete(CommandSender sender, String[] args) {
         return switch (args.length) {
-            case 2 -> List.of("create","delete","addcamera","removecamera","setowner","rename","info","list");
+            case 2 -> List.of("create","delete","list","info","addcamera","removecamera","rename","setowner");
             case 3 -> switch (args[1].toLowerCase()) {
-                case "addcamera","removecamera", "info" -> sender instanceof Player p ? cgm.get(p) : Utils.list(cgm.values());
+                case "delete","addcamera","removecamera","setowner","rename","info" -> sender instanceof Player p ? cgm.get(p) : Utils.list(cgm.values());
                 default -> null;
             };
             case 4 -> {
