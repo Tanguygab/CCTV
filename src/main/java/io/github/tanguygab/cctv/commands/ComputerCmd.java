@@ -4,10 +4,12 @@ import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.managers.ComputerManager;
 import io.github.tanguygab.cctv.utils.Utils;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class ComputerCmd extends Command {
@@ -114,8 +116,15 @@ public class ComputerCmd extends Command {
     }
 
     public List<String> onTabComplete(CommandSender sender, String[] args) {
-
-        return null;
+        return switch (args.length) {
+            case 2 -> List.of("get","list","open","teleport","setowner");
+            case 3 -> switch (args[1].toLowerCase()) {
+                case "open","teleport","setowner" -> sender instanceof Player p ? cpm.get(p) : Utils.list(cpm.values());
+                default -> null;
+            };
+            case 4 -> args[1].equalsIgnoreCase("setowner") ? Arrays.stream(Bukkit.getOfflinePlayers()).map(OfflinePlayer::getName).toList() : null;
+            default -> null;
+        };
     }
 
 }

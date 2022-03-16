@@ -4,10 +4,12 @@ import io.github.tanguygab.cctv.entities.Camera;
 import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.utils.Utils;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class CameraCmd extends Command {
@@ -286,15 +288,22 @@ public class CameraCmd extends Command {
                     "disable <camera>:Disable the camera",
                     "show <camera>:Show the camera",
                     "hide <camera>:Hide the camera",
-                    "movehere:Move the camera to your location",
+                    "movehere <camera>:Move the camera to your location",
                     "rename <camera> <name>:Rename the camera",
                     "setowner <camera> <player>:Set the camera's owner"));
         }
     }
 
     public List<String> onTabComplete(CommandSender sender, String[] args) {
-
-        return null;
+        return switch (args.length) {
+            case 2 -> List.of("get","create","delete","list","view","connected","return","teleport","enable","disable","show","hide","movehere","rename","info","setowner");
+            case 3 -> switch (args[1].toLowerCase()) {
+                case "get","create","list","return" -> null;
+                default -> sender instanceof Player p ? cm.get(p) : Utils.list(cm.values());
+            };
+            case 4 -> args[1].equalsIgnoreCase("setowner") ? Arrays.stream(Bukkit.getOfflinePlayers()).map(OfflinePlayer::getName).toList() : null;
+            default -> null;
+        };
     }
 
 }
