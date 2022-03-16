@@ -7,13 +7,15 @@ import io.github.tanguygab.cctv.config.ConfigurationFile;
 import io.github.tanguygab.cctv.config.LanguageFile;
 import io.github.tanguygab.cctv.config.YamlConfigurationFile;
 import io.github.tanguygab.cctv.listeners.ComputersEvents;
-import io.github.tanguygab.cctv.listeners.InvClickEvent;
 import io.github.tanguygab.cctv.listeners.ViewersEvents;
 import io.github.tanguygab.cctv.listeners.Listener;
 import io.github.tanguygab.cctv.managers.CameraGroupManager;
 import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.managers.ComputerManager;
 import io.github.tanguygab.cctv.managers.ViewerManager;
+import io.github.tanguygab.cctv.menus.CCTVMenu;
+import io.github.tanguygab.cctv.utils.CustomHeads;
+import io.github.tanguygab.cctv.utils.Heads;
 import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.*;
 import org.bukkit.command.Command;
@@ -37,11 +39,15 @@ public class CCTV extends JavaPlugin {
 
     private ConfigurationFile config;
     private LanguageFile lang;
+    private CustomHeads customHeads;
     public ConfigurationFile getConfiguration() {
         return config;
     }
     public LanguageFile getLang() {
         return lang;
+    }
+    public CustomHeads getCustomHeads() {
+        return customHeads;
     }
 
     private CameraCmd cameraCmd;
@@ -80,6 +86,8 @@ public class CCTV extends JavaPlugin {
             e.printStackTrace();
         }
 
+        customHeads = new CustomHeads();
+
         cameraCmd = new CameraCmd();
         groupCmd = new GroupCmd();
         computerCmd = new ComputerCmd();
@@ -93,7 +101,6 @@ public class CCTV extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new Listener(),this);
         Bukkit.getPluginManager().registerEvents(new ViewersEvents(),this);
         Bukkit.getPluginManager().registerEvents(new ComputersEvents(),this);
-        Bukkit.getPluginManager().registerEvents(new InvClickEvent(),this);
 
         getLogger().info(".-==--+]- CCTV -[+--==-.");
         getLogger().info("This is the CCTV plugin!");
@@ -124,7 +131,7 @@ public class CCTV extends JavaPlugin {
     private void loadRecipes() {
         NamespacedKey key = Utils.cameraKey;
         if (Bukkit.getRecipe(key) == null) {
-            ShapedRecipe recipe = new ShapedRecipe(key, Utils.getCamera());
+            ShapedRecipe recipe = new ShapedRecipe(key, Heads.CAMERA.get());
             recipe.shape("RPP", "PDG", "LCP");
             recipe.setIngredient('R', Material.REDSTONE_BLOCK);
             recipe.setIngredient('P', Material.HEAVY_WEIGHTED_PRESSURE_PLATE);
@@ -146,6 +153,11 @@ public class CCTV extends JavaPlugin {
             recipe2.setIngredient('T', Material.REDSTONE_TORCH);
             Bukkit.addRecipe(recipe2);
         }
+    }
+
+    public void openMenu(Player p, CCTVMenu menu) {
+        Listener.openedMenus.put(p,menu);
+        menu.open();
     }
 
     @Override

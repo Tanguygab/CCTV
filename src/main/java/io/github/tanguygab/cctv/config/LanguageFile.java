@@ -1,18 +1,13 @@
 package io.github.tanguygab.cctv.config;
 
-import io.github.tanguygab.cctv.CCTV;
 import org.bukkit.ChatColor;
-import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class LanguageFile extends YamlConfigurationFile {
 
-    public LanguageFile(InputStream source, File destination) throws IllegalStateException, YAMLException, IOException {
+    public LanguageFile(InputStream source, File destination) throws Exception {
         super(source, destination);
     }
 
@@ -25,24 +20,7 @@ public class LanguageFile extends YamlConfigurationFile {
     public final String PLAYER_ALREADY_ADDED = get("player-already-added","&cPlayer has already been added!");
     public final String PLAYER_ADDED = get("player-added","&aPlayer has been added!");
     public final String PLAYER_REMOVED = get("player-removed","&cPlayer has been removed!");
-    public final String PLAYER_NOT_IN_LIST = get("player-not-in-list","&cThis player isn't in this list!");
-    public final String TOO_MANY_PAGES = get("to-many-pages","&cThere aren't that many pages!");
-    private final String LIST = get("list.list","&6- &7%ID%");
-    public String getList(String id) {
-        return LIST.replace("%ID%",id);
-    }
-    private final String LIST_ADMIN = get("list.admin","&6- (%player%) &7%ID%");
-    public String getListAdmin(String player, String id) {
-        return LIST_ADMIN.replace("%player%",player).replace("%ID%",id);
-    }
-    private final String LIST_SEARCH = get("list.search","&eResults for %search% %value%");
-    public String getListSearch(String search, String value) {
-        return LIST_SEARCH.replace("%search%",search).replace("%value%",value);
-    }
-    private final String LIST_NO_RESULT = get("list.search","&cWe couldn't find any results for %search% %value%!");
-    public String getListNoResult(String search, String value) {
-        return LIST_NO_RESULT.replace("%search%",search).replace("%value%",value);
-    }
+
     public final String MAX_ROTATION = get("max-rotation","&cThis is the limit of rotation!");
     public final String NO_CAMERAS = get("no-cameras","&cThere aren't any cameras!");
     public final String SWITCHING_NOT_POSSIBLE = get("switching-not-possible","&cSwitching through cameras is not possible!");
@@ -60,7 +38,6 @@ public class LanguageFile extends YamlConfigurationFile {
         return CAMERA_OWNER_CHANGED.replace("%player%",player);
     }
     public final String CAMERA_PLAYER_ALREADY_OWNER = get("cameras.player-already-owner","&cThis player is already the owner of this camera!");
-    public final String CAMERA_CHANGE_NO_PERMS = get("cameras.change-no-perms","&cYou can only change your own cameras!");
     private final String CAMERA_RENAMED = get("cameras.renamed","&aCamera renamed to '%cameraID%'!");
     public String getCameraRenamed(String id) {
         return CAMERA_RENAMED.replace("%cameraID%",id);
@@ -114,13 +91,11 @@ public class LanguageFile extends YamlConfigurationFile {
     public String getGroupRenamed(String id) {
         return GROUP_RENAMED.replace("%groupID%",id);
     }
-    public final String GROUP_NO_CAMERAS_ADDED = get("groups.no-cameras-added","&cThis group doesn't have any cameras!");
     public final String GROUP_CAMERA_ALREADY_ADDED = get("groups.camera-already-added","&cThis camera has already been added to this group!");
     public final String GROUP_CAMERA_ADDED = get("groups.camera-added","&aCamera added to the group!");
     public final String GROUP_REMOVE_CAMERA = get("groups.remove-camera","&aCamera removed from this group!");
     public final String GROUP_DOES_NOT_CONTAIN_CAMERA = get("groups.does-not-contain-camera","&cThis group does not contain a camera with that ID!");
     public final String GROUP_ASSIGNED_TO_COMPUTER = get("groups.assigned-to-computer","&aGroup assigned to this PC!");
-    public final String GROUP_REMOVED_FROM_COMPUTER = get("groups.removed-from-computer","&aGroup removed from this computer!");
 
     public final String COMPUTER_CREATE = get("computers.create", "&aComputer created!");
     public final String COMPUTER_DELETE = get("computers.delete", "&cComputer deleted!");
@@ -136,30 +111,28 @@ public class LanguageFile extends YamlConfigurationFile {
     }
     public final String COMPUTER_PLAYER_ALREADY_OWNER = get("computers.player-already-owner","&cThis player is already the owner of this computer!");
     public final String COMPUTER_CHANGE_NO_PERMS = get("computers.change-no-perms", "&cYou can only edit your own computers!");
-    public final String COMPUTER_ONLY_OWNER_CAN_CHANGE_OWNER = get("computers.only-owner-can-change-owner", "&cOnly the owner of this computer can change the owner!");
     public final String COMPUTER_NOT_ALLOWED = get("computers.not-allowed", "&cYou aren't allowed to open this computer!");
     public final String COMPUTER_ITEM_NAME = get("computers.item-name", "&9Computer");
-    public final String COMPUTER_NO_GROUP = get("computers.no-group","&cNo group assigned to this computer!");
 
     public final String GUI_CAMERA_SETTINGS = get("gui.camera.settings", "&eSettings");
     public final String GUI_CAMERA_DELETE = get("gui.camera.delete", "&eDelete camera %cameraID%");
     public String getGuiCameraDelete(String id) {
-        return regex(GUI_CAMERA_DELETE,"%cameraID%",id,false);
+        return GUI_CAMERA_DELETE.replace("%cameraID%",id);
     }
     public final String GUI_CAMERA_DELETE_ITEM_CANCEL = get("gui.camera.delete-item-cancel", "&cCancel");
     public final String GUI_CAMERA_DELETE_ITEM_DELETE = get("gui.camera.delete-item-delete", "&2Delete");
     public final String GUI_COMPUTER_DEFAULT = get("gui.computer.default", "&eCCTV (page: %page%)");
     public String getGuiComputerDefault(String page) {
-        return regex(GUI_COMPUTER_DEFAULT,"%page%",page,true);
+        return GUI_COMPUTER_DEFAULT.replace("%page%",page);
     }
     public final String GUI_COMPUTER_OPTIONS_ITEM = get("gui.computer.options-item", "&eOptions");
     public final String GUI_COMPUTER_SET_GROUP = get("gui.computer.set-group", "&eSet camera group (page: %page%)");
     public String getGuiComputerSetGroup(String page) {
-        return regex(GUI_COMPUTER_SET_GROUP,"%page%",page,true);
+        return GUI_COMPUTER_SET_GROUP.replace("%page%",page);
     }
     public final String GUI_COMPUTER_REMOVE_PLAYER = get("gui.computer.remove-player", "&cRemove player (page: %page%)");
     public String getGuiComputerRemovePlayer(String page) {
-        return regex(GUI_COMPUTER_REMOVE_PLAYER,"%page%",page,true);
+        return GUI_COMPUTER_REMOVE_PLAYER.replace("%page%",page);
     }
     public final String GUI_COMPUTER_DEFAULT_ITEM_OPTION = get("gui.computer.default-item.option", "&6Options");
     public final String GUI_COMPUTER_DEFAULT_ITEM_NEXT_PAGE = get("gui.computer.default-item.next-page", "&8Next Page");
@@ -178,7 +151,7 @@ public class LanguageFile extends YamlConfigurationFile {
     public final String CAMERA_VIEW_EXIT = get("camera-view.exit", "&4Exit");
     public final String CAMERA_VIEW_ZOOM = get("camera-view.zoom", "&6Zoom: &a%level%x");
     public String getCameraViewZoom(int zoom) {
-        return regex(CAMERA_VIEW_ZOOM,"%level%",zoom == -1 ? null : zoom+"",true);
+        return CAMERA_VIEW_ZOOM.replace("%level%",zoom+"");
     }
     public final String CAMERA_VIEW_OPTIONS_NIGHTVISION_OFF = get("camera-view.options.nightvision-off", "&6Night-Vision: &4Off");
     public final String CAMERA_VIEW_OPTIONS_NIGHTVISION_ON = get("camera-view.options.nightvision-on", "&6Night-Vision: &aOn");
@@ -189,22 +162,4 @@ public class LanguageFile extends YamlConfigurationFile {
     public final String CHAT_PROVIDE_PLAYER = get("chat-provide-player", "&aProvide the player that you would like to add in the chat!");
     public final String CHAT_TYPE_EXIT = get("chat-type-exit", "&aType 'exit' to exit player adding!");
 
-
-    public String regex(String str, String placeholder, String value, boolean num) {
-        if (value == null) return quote(str).replace(placeholder,"(?<placeholder>"+(num ? "\\d+" : ".+")+")");
-        return str.replace(placeholder,value);
-    }
-    public String quote(String str) {
-        return str.replaceAll("\\(", "\\\\(").replaceAll("\\)", "\\\\)");
-    }
-
-    public String getMatcher(String patt, String match, String string, String placeholder) {
-        Pattern pattern = Pattern.compile(patt);
-        Matcher m = pattern.matcher(match);
-        if (!m.matches()) {
-            CCTV.get().getLogger().info("The language message '"+string+"' doesn't contain "+placeholder+"!");
-            return null;
-        }
-        return m.group("placeholder");
-    }
 }

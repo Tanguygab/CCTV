@@ -5,7 +5,6 @@ import io.github.tanguygab.cctv.config.LanguageFile;
 import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.managers.ViewerManager;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,7 +13,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.event.player.*;
-import org.bukkit.inventory.ItemStack;
 
 public class ViewersEvents implements Listener {
 
@@ -82,11 +80,7 @@ public class ViewersEvents implements Listener {
         }
 
         if (vm.exists(p)) {
-            if (!p.getInventory().getItemInMainHand().getType().equals(Material.AIR)) {
-                ItemStack item = p.getInventory().getItemInMainHand();
-                if (item.hasItemMeta() && item.getItemMeta().hasDisplayName())
-                    vm.onCameraItems(p, item.getItemMeta().getDisplayName());
-            }
+            vm.onCameraItems(p, p.getInventory().getItemInMainHand());
             e.setCancelled(true);
         }
 

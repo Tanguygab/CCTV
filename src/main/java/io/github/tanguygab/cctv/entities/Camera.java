@@ -2,6 +2,7 @@ package io.github.tanguygab.cctv.entities;
 
 import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.config.LanguageFile;
+import io.github.tanguygab.cctv.utils.CustomHeads;
 import io.github.tanguygab.cctv.utils.Heads;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -17,15 +18,17 @@ public class Camera extends ID {
     private Location loc;
     private boolean enabled;
     private boolean shown;
+    private String skin;
     private final ArmorStand armorStand;
 
-    public Camera(String name, String owner, Location loc, boolean enabled, boolean shown, ArmorStand armorStand) {
+    public Camera(String name, String owner, Location loc, boolean enabled, boolean shown, ArmorStand armorStand, String skin) {
         super(name);
         this.owner = owner;
         this.loc = loc;
         this.enabled = enabled;
         this.shown = shown;
         this.armorStand = armorStand;
+        this.skin = skin;
     }
 
     public String getOwner() {
@@ -73,11 +76,19 @@ public class Camera extends ID {
         return shown;
     }
     public void setShown(boolean shown) {
-        armorStand.getEquipment().setHelmet(shown ? Heads.CAMERA.get() : null);
+        armorStand.getEquipment().setHelmet(shown ? CCTV.get().getCustomHeads().get(skin) : null);
         this.shown = shown;
     }
 
     public ArmorStand getArmorStand() {
         return armorStand;
+    }
+
+    public String getSkin() {
+        return skin;
+    }
+    public void setSkin(String skin) {
+        this.skin = skin;
+        setShown(true);
     }
 }

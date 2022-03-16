@@ -1,10 +1,8 @@
 package io.github.tanguygab.cctv.managers;
 
-import io.github.tanguygab.cctv.CCTV;
-import io.github.tanguygab.cctv.entities.CameraGroup;
 import io.github.tanguygab.cctv.entities.Computer;
-import io.github.tanguygab.cctv.listeners.InvClickEvent;
 import io.github.tanguygab.cctv.listeners.Listener;
+import io.github.tanguygab.cctv.menus.computers.ComputerMainMenu;
 import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -114,7 +112,7 @@ public class ComputerManager extends Manager<Computer> {
     }
 
     public void open(Player p, Computer computer) {
-        InvClickEvent.openComputer(p, 1,computer);
+        cctv.openMenu(p,new ComputerMainMenu(p,computer));
     }
 
     public void teleport(Player p, Computer computer) {

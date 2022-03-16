@@ -41,7 +41,7 @@ public enum Heads {
         return this.item.clone();
     }
 
-    private static ItemStack createSkull(String base64, String name) {
+    static ItemStack createSkull(String base64, String name) {
         ItemStack head = Utils.getItem(Material.PLAYER_HEAD,name);
         SkullMeta headMeta = (SkullMeta)head.getItemMeta();
         GameProfile profile = new GameProfile(UUID.randomUUID(), null);

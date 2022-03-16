@@ -24,9 +24,6 @@ public class Utils {
     public static ItemStack getComputer() {
         return Utils.getItem(ComputerManager.COMPUTER_MATERIAL,CCTV.get().getLang().COMPUTER_ITEM_NAME);
     }
-    public static ItemStack getCamera() {
-        return Heads.CAMERA.get();
-    }
 
     public static int getRandomNumber(int size, String type) {
         int number = random.nextInt(size);

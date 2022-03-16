@@ -31,7 +31,6 @@ public class InteractEvent {
                 ComputerManager cpm = CCTV.get().getComputers();
                 Computer computer = cpm.get(block.getLocation());
                 if (computer != null) {
-                    p.sendMessage(computer.getId());
                     if (computer.canUse(p)) {
                         cpm.setLast(p, computer);
                         cpm.open(p, computer);
@@ -54,8 +53,8 @@ public class InteractEvent {
         }
         if ((rcb || e.getAction() == Action.RIGHT_CLICK_AIR) && CCTV.get().getViewers().exists(p)) {
             e.setCancelled(true);
-            if (item.getType() != Material.AIR && e.getHand() != EquipmentSlot.OFF_HAND)
-                CCTV.get().getViewers().onCameraItems(p, itemName);
+            if (e.getHand() != EquipmentSlot.OFF_HAND)
+                CCTV.get().getViewers().onCameraItems(p, item);
         }
     }
 

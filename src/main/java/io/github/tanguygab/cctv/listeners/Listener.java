@@ -2,10 +2,13 @@ package io.github.tanguygab.cctv.listeners;
 
 import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.config.LanguageFile;
+import io.github.tanguygab.cctv.entities.Camera;
 import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.managers.ComputerManager;
 import io.github.tanguygab.cctv.managers.ViewerManager;
 import io.github.tanguygab.cctv.entities.Computer;
+import io.github.tanguygab.cctv.menus.CCTVMenu;
+import io.github.tanguygab.cctv.menus.CameraMenu;
 import io.github.tanguygab.cctv.utils.NPCUtils;
 import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.*;
@@ -15,9 +18,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.*;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
@@ -30,6 +33,7 @@ public class Listener implements org.bukkit.event.Listener {
 
     public static final List<Player> chatInput = new ArrayList<>();
     public static final Map<Player,Computer> lastClickedComputer = new HashMap<>();
+    public static Map<Player,CCTVMenu> openedMenus = new HashMap<>();
 
     public Listener() {
         lang = CCTV.get().getLang();
@@ -67,24 +71,25 @@ public class Listener implements org.bukkit.event.Listener {
     public void on(PlayerInteractAtEntityEvent e) {
         if (!(e.getRightClicked() instanceof ArmorStand as)) return;
         String customName = as.getCustomName();
-        if (customName == null || !(customName = ChatColor.stripColor(customName)).startsWith("CAM-")) return;
+        if (customName == null || !ChatColor.stripColor(customName).startsWith("CAM-")) return;
 
         e.setCancelled(true);
         Player p = e.getPlayer();
         CameraManager cm = CCTV.get().getCameras();
-        if (cm.values().stream().noneMatch(cam -> cam.getArmorStand() == as)) {
+
+        Camera camera = null;
+        for (Camera cam : cm.values())
+            if (cam.getArmorStand() == as)
+                camera = cam;
+
+        if (camera == null) {
             as.remove();
             p.sendMessage(lang.CAMERA_DELETED_BECAUSE_BUGGED);
             return;
         }
 
-        List<String> cameras = cm.get(p);
-        if (!cameras.contains(customName.substring(4))) return;
-
-        Inventory inv = Bukkit.createInventory(null, InventoryType.HOPPER, lang.getGuiCameraDelete(as.getCustomName().substring(4)));
-        inv.setItem(1, Utils.getItem(Material.RED_WOOL,lang.GUI_CAMERA_DELETE_ITEM_CANCEL));
-        inv.setItem(3, Utils.getItem(Material.LIME_WOOL,lang.GUI_CAMERA_DELETE_ITEM_DELETE));
-        p.openInventory(inv);
+        if (!cm.get(p).contains(camera.getId())) return;
+        CCTV.get().openMenu(p,new CameraMenu(p,camera));
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -130,6 +135,24 @@ public class Listener implements org.bukkit.event.Listener {
             joined.hidePlayer(CCTV.get(),p);
             NPCUtils.spawnForTarget(joined,p);
         });
+    }
+
+    @EventHandler
+    public void on(InventoryClickEvent e) {
+        if (!(e.getWhoClicked() instanceof Player p)) return;
+        if (openedMenus.containsKey(p)) {
+            openedMenus.get(p).onClick(e.getCurrentItem(),e.getRawSlot());
+            e.setCancelled(true);
+            return;
+        }
+        if (vm.exists(p)) vm.onCameraItems(p, e.getCurrentItem());
+    }
+
+    @EventHandler
+    public void on(InventoryCloseEvent e) {
+        Player p = (Player) e.getPlayer();
+        CCTVMenu menu = openedMenus.get(p);
+        if (menu != null && menu.inv.equals(e.getInventory())) openedMenus.get(p).close();
     }
 
 }

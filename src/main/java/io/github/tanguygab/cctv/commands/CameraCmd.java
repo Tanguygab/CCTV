@@ -2,6 +2,7 @@ package io.github.tanguygab.cctv.commands;
 
 import io.github.tanguygab.cctv.entities.Camera;
 import io.github.tanguygab.cctv.managers.CameraManager;
+import io.github.tanguygab.cctv.utils.Heads;
 import io.github.tanguygab.cctv.utils.Utils;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -33,7 +34,7 @@ public class CameraCmd extends Command {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
-                p.getInventory().addItem(Utils.getCamera());
+                p.getInventory().addItem(Heads.CAMERA.get());
                 p.sendMessage(ChatColor.GREEN + "Place down this item to create a camera!");
             }
             case "create" -> {
@@ -296,7 +297,7 @@ public class CameraCmd extends Command {
 
     public List<String> onTabComplete(CommandSender sender, String[] args) {
         return switch (args.length) {
-            case 2 -> List.of("get","create","delete","list","view","connected","return","teleport","enable","disable","show","hide","movehere","rename","info","setowner");
+            case 2 -> List.of("get","create","delete","list","view","connected","return","teleport","enable","disable","show","hide","movehere","rename","setowner");
             case 3 -> switch (args[1].toLowerCase()) {
                 case "get","create","list","return" -> null;
                 default -> sender instanceof Player p ? cm.get(p) : Utils.list(cm.values());

@@ -37,8 +37,10 @@ public class CameraManager extends Manager<Camera> {
         cams.forEach((id,cfg)->{
             Map<String,Object> config = (Map<String, Object>) cfg;
             String owner = config.get("owner")+"";
+            String skin = config.get("skin")+"";
             boolean enabled = (boolean) config.get("enabled");
             boolean shown = (boolean) config.get("shown");
+
             World world = Bukkit.getServer().getWorld(config.get("world")+"");
             double x = (double) config.get("x");
             double y = (double) config.get("y");
@@ -55,7 +57,7 @@ public class CameraManager extends Manager<Camera> {
                         as.remove();
                 }
             }
-            create(id, owner, loc, enabled, shown);
+            create(id,owner,loc,enabled,shown,skin);
         });
     }
 
@@ -92,7 +94,7 @@ public class CameraManager extends Manager<Camera> {
         if (player.getGameMode() == GameMode.SURVIVAL) player.getInventory().addItem(Heads.CAMERA.get());
     }
 
-    public void create(String id, String owner, Location loc, boolean enabled, boolean shown) {
+    public void create(String id, String owner, Location loc, boolean enabled, boolean shown, String skin) {
         if (exists(id)) return;
         ArmorStand as = loc.getWorld().spawn(loc, ArmorStand.class);
         as.setGravity(false);
@@ -103,7 +105,7 @@ public class CameraManager extends Manager<Camera> {
         as.setSilent(true);
         as.setHeadPose(new EulerAngle(Math.toRadians(loc.getPitch()), 0.0D, 0.0D));
         if (shown) as.getEquipment().setHelmet(Heads.CAMERA.get());
-        Camera camera = new Camera(id,owner,loc,enabled,shown,as);
+        Camera camera = new Camera(id,owner,loc,enabled,shown,as,skin);
         map.put(id,camera);
         if (cctv.debug) as.setCustomNameVisible(true);
     }
@@ -116,7 +118,7 @@ public class CameraManager extends Manager<Camera> {
         }
         if (id == null) id = Utils.getRandomNumber(999999, "computer")+"";
 
-        create(id,player.getUniqueId().toString(),loc,true,true);
+        create(id,player.getUniqueId().toString(),loc,true,true,"_DEFAULT_");
         player.sendMessage(lang.CAMERA_CREATE);
         player.sendMessage(lang.getCameraID(id));
     }
