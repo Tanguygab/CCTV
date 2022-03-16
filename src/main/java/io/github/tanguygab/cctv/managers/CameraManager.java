@@ -20,11 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import io.github.tanguygab.cctv.old.functions.cooldownfunctions;
-
 public class CameraManager extends Manager<Camera> {
     
     public double CAMERA_HEAD_RADIUS;
+    public List<Player> connecting = new ArrayList<>();
 
     public CameraManager() {
         super("cameras.yml");
@@ -163,34 +162,35 @@ public class CameraManager extends Manager<Camera> {
         player.sendMessage(lang.getCameraRenamed(rename));
     }
 
-    public void viewCamera(Player player, String id, CameraGroup group) {
+    public void viewCamera(Player p, String id, CameraGroup group) {
         LanguageFile lang = cctv.getLang();
         Camera cam = get(id);
         if (cam == null) {
-            player.sendMessage(lang.CAMERA_NOT_FOUND);
+            p.sendMessage(lang.CAMERA_NOT_FOUND);
             return;
         }
-        if (cooldownfunctions.isCooldownActive(player)) return;
+        if (connecting.contains(p)) return;
         if (!cam.isEnabled()) {
-            if (!player.hasPermission("cctv.camera.view.override") && !player.hasPermission("cctv.admin")) {
-                player.sendTitle(lang.CAMERA_OFFLINE, "",0, 15, 0);
+            if (!p.hasPermission("cctv.camera.view.override") && !p.hasPermission("cctv.admin")) {
+                p.sendTitle(lang.CAMERA_OFFLINE, "",0, 15, 0);
                 return;
             }
-            player.sendMessage(lang.CAMERA_OFFLINE_OVERRIDE);
+            p.sendMessage(lang.CAMERA_OFFLINE_OVERRIDE);
         }
 
         ViewerManager vm = cctv.getViewers();
-        player.sendTitle(" ", lang.CAMERA_CONNECTING, 0, vm.TIME_TO_CONNECT*20, 0);
-        cooldownfunctions.addCoolDown(player, vm.TIME_TO_CONNECT);
+        p.sendTitle(" ", lang.CAMERA_CONNECTING, 0, vm.TIME_TO_CONNECT*20, 0);
+        connecting.add(p);
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(cctv,  () -> {
-            vm.createPlayer(player, cam, group);
-            NPCUtils.spawn(player, player.getLocation());
-            teleport(cam, player);
+            vm.createPlayer(p, cam, group);
+            NPCUtils.spawn(p, p.getLocation());
+            teleport(cam, p);
             PotionEffect invisibility = new PotionEffect(PotionEffectType.INVISIBILITY, 60000000, 0, false, false);
-            player.addPotionEffect(invisibility);
-            if (group != null && vm.exists(player))
-                vm.get(player).setGroup(group);
+            p.addPotionEffect(invisibility);
+            if (group != null && vm.exists(p))
+                vm.get(p).setGroup(group);
+            connecting.remove(p);
         }, vm.TIME_TO_CONNECT * 20L);
     }
 
