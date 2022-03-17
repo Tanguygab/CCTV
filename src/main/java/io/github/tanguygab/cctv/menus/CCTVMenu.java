@@ -15,6 +15,7 @@ public abstract class CCTVMenu {
     public Inventory inv;
     protected CCTV cctv = CCTV.get();
     protected LanguageFile lang = cctv.getLang();
+    public boolean renaming = false;
 
     protected CCTVMenu(Player p) {
         this.p = p;
@@ -25,6 +26,10 @@ public abstract class CCTVMenu {
     public abstract void onClick(ItemStack item, int slot);
 
     public void close() {
+        if (renaming) {
+            renaming = false;
+            return;
+        }
         Listener.openedMenus.remove(p);
     }
 

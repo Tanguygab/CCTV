@@ -17,7 +17,12 @@ public class ComputerMenu extends CCTVMenu {
     @Override
     public void open() {}
 
-    protected void setPage(int page) {}
+    protected void setPage(int page) {
+        if (page < 1) return;
+        this.page = page;
+        renaming = true;
+        open();
+    }
 
     @Override
     public void onClick(ItemStack item, int slot) {}

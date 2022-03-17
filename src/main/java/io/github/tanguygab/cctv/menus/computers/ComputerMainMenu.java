@@ -12,8 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.List;
-
 public class ComputerMainMenu extends ComputerMenu {
 
     public ComputerMainMenu(Player p, Computer computer) {
@@ -29,25 +27,13 @@ public class ComputerMainMenu extends ComputerMenu {
         inv.setItem(27, Heads.COMPUTER_NEXT.get());
         inv.setItem(36, Heads.COMPUTER_PREVIOUS.get());
         inv.setItem(45, Utils.getItem(Heads.EXIT,lang.GUI_COMPUTER_DEFAULT_ITEM_EXIT));
-        setPage(page);
 
-        p.openInventory(inv);
-    }
-
-    @Override
-    protected void setPage(int page) {
-        if (page < 1) return;
-        this.page = page;
         CameraGroup group = computer.getCameraGroup();
-        List<Integer> siderBarSlots = List.of(9,18,27,36,45);
-        for (int i=1; i < 48; i++)
-            if (!siderBarSlots.contains(i))
-                inv.clear(i);
-
         if (group == null) return;
-
         for (int a = (page - 1) * 48; a < 48 * page && a < group.getCameras().size(); a++)
             inv.addItem(Utils.getItem(Heads.CAMERA, "&eCamera: " + group.getCameras().get(a).getId()));
+
+        p.openInventory(inv);
     }
 
     @Override
