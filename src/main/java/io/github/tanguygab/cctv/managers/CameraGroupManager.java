@@ -28,14 +28,6 @@ public class CameraGroupManager extends Manager<CameraGroup> {
         });
     }
 
-    @Override
-    public void unload() {
-        map.forEach((id, group)->{
-            file.set(id + ".owner", group.getOwner());
-            file.set(id + ".cameras", Utils.list(group.getCameras()));
-        });
-    }
-
     public void create(String name, Player p) {
         LanguageFile lang = cctv.getLang();
         if (exists(name)) {

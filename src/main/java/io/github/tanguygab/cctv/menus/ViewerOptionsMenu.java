@@ -2,7 +2,6 @@ package io.github.tanguygab.cctv.menus;
 
 import io.github.tanguygab.cctv.managers.ViewerManager;
 import io.github.tanguygab.cctv.utils.Heads;
-import io.github.tanguygab.cctv.utils.Utils;
 import net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata;
 import net.minecraft.server.level.EntityPlayer;
 import net.minecraft.server.network.PlayerConnection;
@@ -27,21 +26,21 @@ public class ViewerOptionsMenu extends CCTVMenu {
 
     @Override
     public void open() {
-        inv = Bukkit.getServer().createInventory(null, 9, lang.GUI_CAMERA_SETTINGS);
+        inv = Bukkit.getServer().createInventory(null, 9, lang.CAMERA_VIEW_OPTIONS_TITLE);
         if (hasItemPerm(p,"nightvision")) inv.setItem(3, p.hasPotionEffect(PotionEffectType.NIGHT_VISION) ? Heads.NIGHT_VISION_ON.get() : Heads.NIGHT_VISION_OFF.get());
 
         if (hasItemPerm(p,"zoom")) {
             PotionEffect effect = p.getPotionEffect(PotionEffectType.SLOW);
-            inv.setItem(4, Utils.getItem(Heads.ZOOM,
+            inv.setItem(4, getItem(Heads.ZOOM,
                     effect != null
                             ? lang.getCameraViewZoom(effect.getAmplifier()+1)
                             : lang.CAMERA_VIEW_OPTIONS_ZOOM_OFF
             ));
         }
 
-        if (hasItemPerm(p,"spot")) inv.setItem(5, Utils.getItem(Heads.SPOTTING,lang.CAMERA_VIEW_OPTIONS_SPOT));
+        if (hasItemPerm(p,"spot")) inv.setItem(5, getItem(Heads.SPOTTING,lang.CAMERA_VIEW_OPTIONS_SPOT));
 
-        inv.setItem(8, Utils.getItem(Heads.EXIT,lang.CAMERA_VIEW_OPTIONS_BACK));
+        inv.setItem(8, getItem(Heads.EXIT,lang.CAMERA_VIEW_OPTIONS_BACK));
         p.openInventory(inv);
     }
 
@@ -121,6 +120,6 @@ public class ViewerOptionsMenu extends CCTVMenu {
             return;
         }
         p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 60000000, zoomlevel - 1, false, false));
-        inv.setItem(4, Utils.getItem(Heads.ZOOM,lang.getCameraViewZoom(zoomlevel)));
+        inv.setItem(4, getItem(Heads.ZOOM,lang.getCameraViewZoom(zoomlevel)));
     }
 }

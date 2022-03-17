@@ -5,7 +5,6 @@ import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.managers.CameraGroupManager;
 import io.github.tanguygab.cctv.menus.ComputerMenu;
 import io.github.tanguygab.cctv.utils.Heads;
-import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -34,7 +33,7 @@ public class ComputerSetGroupMenu extends ComputerMenu {
 
         List<String> groups = cgm.get(p);
         for (int i = (page - 1) * 48; i < 48 * page && i < groups.size(); i++)
-            inv.addItem(Utils.getItem(Heads.CAMERA, ChatColor.GOLD + "Group: " + ChatColor.YELLOW + groups.get(i)));
+            inv.addItem(getItem(Heads.CAMERA, ChatColor.GOLD + "Group: " + ChatColor.YELLOW + groups.get(i)));
 
         p.openInventory(inv);
     }

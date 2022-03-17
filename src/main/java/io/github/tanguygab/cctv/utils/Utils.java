@@ -8,9 +8,9 @@ import io.github.tanguygab.cctv.entities.ID;
 import io.github.tanguygab.cctv.managers.CameraGroupManager;
 import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.managers.ComputerManager;
+import io.github.tanguygab.cctv.menus.CCTVMenu;
 import org.bukkit.*;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
 import java.util.Random;
@@ -22,7 +22,7 @@ public class Utils {
     private static final Random random = new Random();
 
     public static ItemStack getComputer() {
-        return Utils.getItem(ComputerManager.COMPUTER_MATERIAL,CCTV.get().getLang().COMPUTER_ITEM_NAME);
+        return CCTVMenu.getItem(ComputerManager.COMPUTER_MATERIAL,CCTV.get().getLang().COMPUTER_ITEM_NAME);
     }
 
     public static int getRandomNumber(int size, String type) {
@@ -69,19 +69,5 @@ public class Utils {
 
     public static List<String> list(List<?> list) {
         return list.stream().map(el->el instanceof ID id ? id.getId() : el+"").toList();
-    }
-
-    public static ItemStack getItem(ItemStack item, String name) {
-        ItemMeta meta = item.getItemMeta();
-        if (meta == null) return item;
-        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&',name));
-        item.setItemMeta(meta);
-        return item;
-    }
-    public static ItemStack getItem(Heads head, String name) {
-        return getItem(head.get(),name);
-    }
-    public static ItemStack getItem(Material mat, String name) {
-        return getItem(new ItemStack(mat),name);
     }
 }

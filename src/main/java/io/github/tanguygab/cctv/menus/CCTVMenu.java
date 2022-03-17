@@ -3,11 +3,13 @@ package io.github.tanguygab.cctv.menus;
 import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.config.LanguageFile;
 import io.github.tanguygab.cctv.listeners.Listener;
-import io.github.tanguygab.cctv.utils.Utils;
+import io.github.tanguygab.cctv.utils.Heads;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public abstract class CCTVMenu {
 
@@ -34,12 +36,26 @@ public abstract class CCTVMenu {
     }
 
     public void fillSlots(int... slots) {
-        ItemStack filler = Utils.getItem(Material.GRAY_STAINED_GLASS_PANE, " ");
+        ItemStack filler = getItem(Material.GRAY_STAINED_GLASS_PANE, " ");
         for (Integer slot : slots) inv.setItem(slot,filler);
     }
 
     public void open(CCTVMenu menu) {
         cctv.openMenu(p,menu);
+    }
+
+    public static ItemStack getItem(ItemStack item, String name) {
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) return item;
+        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&',name));
+        item.setItemMeta(meta);
+        return item;
+    }
+    public static ItemStack getItem(Material mat, String name) {
+        return CCTVMenu.getItem(new ItemStack(mat),name);
+    }
+    public static ItemStack getItem(Heads head, String name) {
+        return CCTVMenu.getItem(head.get(),name);
     }
 
 }

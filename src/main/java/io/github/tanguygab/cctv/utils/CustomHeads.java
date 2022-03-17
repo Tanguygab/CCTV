@@ -3,14 +3,11 @@ package io.github.tanguygab.cctv.utils;
 import io.github.tanguygab.cctv.CCTV;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CustomHeads {
 
-    private final Map<String,ItemStack> heads = new HashMap<>();
+    public final Map<String,ItemStack> heads = new LinkedHashMap<>();
 
     public CustomHeads() {
         heads.put("_DEFAULT_",Heads.CAMERA.get());
@@ -23,7 +20,7 @@ public class CustomHeads {
     }
 
     public ItemStack get(String name) {
-        return heads.getOrDefault(name,Heads.CAMERA.get());
+        return heads.getOrDefault(name,Heads.CAMERA.get()).clone();
     }
 
 }

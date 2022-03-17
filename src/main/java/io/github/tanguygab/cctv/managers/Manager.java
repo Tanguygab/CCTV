@@ -17,7 +17,7 @@ public abstract class Manager<T> {
     protected Map<String,T> map = new HashMap<>();
 
     protected CCTV cctv = CCTV.get();
-    protected ConfigurationFile file;
+    public ConfigurationFile file;
     protected LanguageFile lang = cctv.getLang();
 
     public Manager() {}
@@ -34,8 +34,6 @@ public abstract class Manager<T> {
 
     public abstract void load();
 
-    public abstract void unload();
-
     public boolean exists(String id) {
         return map.containsKey(id);
     }
@@ -44,6 +42,9 @@ public abstract class Manager<T> {
     }
     public List<T> values() {
         return new ArrayList<>(map.values());
+    }
+    public void put(String id, Object element) {
+        map.put(id, (T) element);
     }
     public void delete(String id) {
         map.remove(id);

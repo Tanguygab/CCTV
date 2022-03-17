@@ -118,8 +118,6 @@ public class CCTV extends JavaPlugin {
         HandlerList.unregisterAll(this);
 
         cameraManager.unload();
-        cameraGroupManager.unload();
-        computerManager.unload();
 
         for (Player p : Bukkit.getOnlinePlayers()) {
             cameraManager.unviewCamera(p);

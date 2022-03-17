@@ -3,6 +3,7 @@ package io.github.tanguygab.cctv.utils;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import io.github.tanguygab.cctv.CCTV;
+import io.github.tanguygab.cctv.menus.CCTVMenu;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -42,7 +43,7 @@ public enum Heads {
     }
 
     static ItemStack createSkull(String base64, String name) {
-        ItemStack head = Utils.getItem(Material.PLAYER_HEAD,name);
+        ItemStack head = CCTVMenu.getItem(Material.PLAYER_HEAD,name);
         SkullMeta headMeta = (SkullMeta)head.getItemMeta();
         GameProfile profile = new GameProfile(UUID.randomUUID(), null);
         profile.getProperties().put("textures", new Property("textures", base64));

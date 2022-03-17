@@ -4,6 +4,7 @@ import io.github.tanguygab.cctv.config.ConfigurationFile;
 import io.github.tanguygab.cctv.entities.Camera;
 import io.github.tanguygab.cctv.entities.CameraGroup;
 import io.github.tanguygab.cctv.entities.Viewer;
+import io.github.tanguygab.cctv.menus.CCTVMenu;
 import io.github.tanguygab.cctv.menus.ViewerOptionsMenu;
 import io.github.tanguygab.cctv.utils.Heads;
 import io.github.tanguygab.cctv.utils.Utils;
@@ -45,9 +46,6 @@ public class ViewerManager extends Manager<Viewer> {
         TIME_TO_DISCONNECT = config.getInt("time_to_disconnect",3);
         TIME_FOR_SPOT = config.getInt("time_for_spot",5);
     }
-
-    @Override
-    public void unload() {}
 
     @Override
     public void delete(String id, Player player) {
@@ -105,7 +103,7 @@ public class ViewerManager extends Manager<Viewer> {
         PlayerInventory inv = p.getInventory();
         inv.clear();
         if (CISWP || p.hasPermission("cctv.view.zoom") || p.hasPermission("cctv.view.nightvision") || p.hasPermission("cctv.view.spot"))
-            inv.setItem(0, Utils.getItem(Heads.OPTIONS,lang.CAMERA_VIEW_OPTION));
+            inv.setItem(0, CCTVMenu.getItem(Heads.OPTIONS,lang.CAMERA_VIEW_OPTION));
         if (CISWP || p.hasPermission("cctv.view.move")) {
             inv.setItem(3, Heads.ROTATE_LEFT.get());
             inv.setItem(group != null && group.getCameras().size() > 1 ? 4 : 5, Heads.ROTATE_RIGHT.get());
@@ -114,7 +112,7 @@ public class ViewerManager extends Manager<Viewer> {
             inv.setItem(6, Heads.CAM_PREVIOUS.get());
             inv.setItem(7, Heads.CAM_NEXT.get());
         }
-        inv.setItem(8, Utils.getItem(Heads.EXIT,lang.CAMERA_VIEW_EXIT));
+        inv.setItem(8, CCTVMenu.getItem(Heads.EXIT,lang.CAMERA_VIEW_EXIT));
     }
 
     public void onCameraItems(Player p, ItemStack item) {

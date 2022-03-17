@@ -29,7 +29,7 @@ public class LanguageFile extends YamlConfigurationFile {
     public final String CAMERA_DELETE = get("cameras.delete","&cCamera deleted!");
     public final String CAMERA_ALREADY_EXISTS = get("cameras.already-exists","&cThis camera already exists!");
     public final String CAMERA_NOT_FOUND = get("cameras.not-found","&cThis camera doesn't exist.");
-    public final String CAMERA_ID = get("cameras.id","&eCamera ID: %cameraID%");
+    private final String CAMERA_ID = get("cameras.id","&eCamera ID: %cameraID%");
     public String getCameraID(String id) {
         return CAMERA_ID.replace("%cameraID%",id);
     }
@@ -114,14 +114,15 @@ public class LanguageFile extends YamlConfigurationFile {
     public final String COMPUTER_NOT_ALLOWED = get("computers.not-allowed", "&cYou aren't allowed to open this computer!");
     public final String COMPUTER_ITEM_NAME = get("computers.item-name", "&9Computer");
 
-    public final String GUI_CAMERA_SETTINGS = get("gui.camera.settings", "&eSettings");
-    public final String GUI_CAMERA_DELETE = get("gui.camera.delete", "&eDelete camera %cameraID%");
-    public String getGuiCameraDelete(String id) {
-        return GUI_CAMERA_DELETE.replace("%cameraID%",id);
+    private final String GUI_CAMERA = get("gui.camera.title", "&eCamera %cameraID%");
+    public String getGuiCamera(String id) {
+        return GUI_CAMERA.replace("%cameraID%",id);
     }
-    public final String GUI_CAMERA_DELETE_ITEM_CANCEL = get("gui.camera.delete-item-cancel", "&cCancel");
-    public final String GUI_CAMERA_DELETE_ITEM_DELETE = get("gui.camera.delete-item-delete", "&2Delete");
-    public final String GUI_COMPUTER_DEFAULT = get("gui.computer.default", "&eCCTV (page: %page%)");
+    public final String GUI_CAMERA_CHANGE_SKIN = get("gui.camera.change-skin", "&aChange Camera Skin");
+    public final String GUI_CAMERA_DELETE = get("gui.camera.delete", "&4Delete");
+    public final String GUI_CAMERA_EXIT = get("gui.camera.exit", "&cExit");
+
+    private final String GUI_COMPUTER_DEFAULT = get("gui.computer.default", "&eCCTV (page: %page%)");
     public String getGuiComputerDefault(String page) {
         return GUI_COMPUTER_DEFAULT.replace("%page%",page);
     }
@@ -130,7 +131,7 @@ public class LanguageFile extends YamlConfigurationFile {
     public String getGuiComputerSetGroup(String page) {
         return GUI_COMPUTER_SET_GROUP.replace("%page%",page);
     }
-    public final String GUI_COMPUTER_REMOVE_PLAYER = get("gui.computer.remove-player", "&cRemove player (page: %page%)");
+    private final String GUI_COMPUTER_REMOVE_PLAYER = get("gui.computer.remove-player", "&cRemove player (page: %page%)");
     public String getGuiComputerRemovePlayer(String page) {
         return GUI_COMPUTER_REMOVE_PLAYER.replace("%page%",page);
     }
@@ -149,10 +150,11 @@ public class LanguageFile extends YamlConfigurationFile {
     public final String CAMERA_VIEW_PREVIOUS = get("camera-view.previous", "&bPrevious Camera");
     public final String CAMERA_VIEW_NEXT = get("camera-view.next", "&bNext Camera");
     public final String CAMERA_VIEW_EXIT = get("camera-view.exit", "&4Exit");
-    public final String CAMERA_VIEW_ZOOM = get("camera-view.zoom", "&6Zoom: &a%level%x");
+    private final String CAMERA_VIEW_ZOOM = get("camera-view.zoom", "&6Zoom: &a%level%x");
     public String getCameraViewZoom(int zoom) {
         return CAMERA_VIEW_ZOOM.replace("%level%",zoom+"");
     }
+    public final String CAMERA_VIEW_OPTIONS_TITLE = get("camera-view.options.title", "&eSettings");
     public final String CAMERA_VIEW_OPTIONS_NIGHTVISION_OFF = get("camera-view.options.nightvision-off", "&6Night-Vision: &4Off");
     public final String CAMERA_VIEW_OPTIONS_NIGHTVISION_ON = get("camera-view.options.nightvision-on", "&6Night-Vision: &aOn");
     public final String CAMERA_VIEW_OPTIONS_ZOOM_OFF = get("camera-view.options.zoom-off", "&6Zoom: &4Off");

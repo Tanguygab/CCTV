@@ -4,7 +4,6 @@ import io.github.tanguygab.cctv.entities.CameraGroup;
 import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.menus.ComputerMenu;
 import io.github.tanguygab.cctv.utils.Heads;
-import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -23,15 +22,15 @@ public class ComputerMainMenu extends ComputerMenu {
         inv = Bukkit.getServer().createInventory(null, 54, lang.getGuiComputerDefault(page+""));
 
         fillSlots(9,18);
-        inv.setItem(0, Utils.getItem(Heads.OPTIONS,lang.GUI_COMPUTER_DEFAULT_ITEM_OPTION));
+        inv.setItem(0, getItem(Heads.OPTIONS,lang.GUI_COMPUTER_DEFAULT_ITEM_OPTION));
         inv.setItem(27, Heads.COMPUTER_NEXT.get());
         inv.setItem(36, Heads.COMPUTER_PREVIOUS.get());
-        inv.setItem(45, Utils.getItem(Heads.EXIT,lang.GUI_COMPUTER_DEFAULT_ITEM_EXIT));
+        inv.setItem(45, getItem(Heads.EXIT,lang.GUI_COMPUTER_DEFAULT_ITEM_EXIT));
 
         CameraGroup group = computer.getCameraGroup();
         if (group == null) return;
         for (int a = (page - 1) * 48; a < 48 * page && a < group.getCameras().size(); a++)
-            inv.addItem(Utils.getItem(Heads.CAMERA, "&eCamera: " + group.getCameras().get(a).getId()));
+            inv.addItem(getItem(Heads.CAMERA, "&eCamera: " + group.getCameras().get(a).getId()));
 
         p.openInventory(inv);
     }

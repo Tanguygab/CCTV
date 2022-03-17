@@ -58,10 +58,10 @@ computers:
   item-name: "&9Computer"
 gui:
   camera:
-    settings: "&eSettings"
-    delete: "&eDelete camera %cameraID%"
-    delete-item-cancel: "&cCancel"
-    delete-item-delete: "&2Delete"
+    title: "&eCamera %cameraID%"
+    change-skin: "&aChange Camera Skin"
+    delete: "&4Delete"
+    exit: "&cExit"
   computer:
     default: "&eCCTV (page: %page%)"
     options-item: "&eOptions"
@@ -86,6 +86,7 @@ camera-view:
   exit: "&4Exit"
   zoom: "&6Zoom: &a%level%x"
   options:
+    title: "&eSettings"
     nightvision-off: "&6Night-Vision: &4Off"
     nightvision-on: "&6Night-Vision: &aOn"
     zoom-off: "&6Zoom: &4Off"

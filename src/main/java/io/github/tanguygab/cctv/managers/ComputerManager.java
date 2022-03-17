@@ -45,20 +45,6 @@ public class ComputerManager extends Manager<Computer> {
     }
 
     @Override
-    public void unload() {
-        map.forEach((id, computer)->{
-            Location loc = computer.getLocation();
-            file.set(id+".owner", computer.getOwner());
-            file.set(id + ".world", loc.getWorld().getName());
-            file.set(id + ".x", loc.getX());
-            file.set(id + ".y", loc.getY());
-            file.set(id + ".z", loc.getZ());
-            if (computer.getCameraGroup() != null) file.set(id + ".camera-group", computer.getCameraGroup().getId());
-            if (!computer.getAllowedPlayers().isEmpty()) file.set(id + ".allowed-players", computer.getAllowedPlayers());
-        });
-    }
-
-    @Override
     public void delete(String name, Player player) {
         Computer computer = get(name);
         if (computer == null) {

@@ -120,7 +120,7 @@ public class Listener implements org.bukkit.event.Listener {
             p.sendMessage(lang.PLAYER_ALREADY_ADDED);
             return;
         }
-        computer.getAllowedPlayers().add(uuid);
+        computer.addPlayer(uuid);
         p.sendMessage(lang.PLAYER_ADDED);
     }
 

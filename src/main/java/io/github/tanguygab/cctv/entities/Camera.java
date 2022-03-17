@@ -2,8 +2,6 @@ package io.github.tanguygab.cctv.entities;
 
 import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.config.LanguageFile;
-import io.github.tanguygab.cctv.utils.CustomHeads;
-import io.github.tanguygab.cctv.utils.Heads;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
@@ -22,20 +20,31 @@ public class Camera extends ID {
     private final ArmorStand armorStand;
 
     public Camera(String name, String owner, Location loc, boolean enabled, boolean shown, ArmorStand armorStand, String skin) {
-        super(name);
-        this.owner = owner;
-        this.loc = loc;
-        this.enabled = enabled;
-        this.shown = shown;
+        super(name,CCTV.get().getCameras());
+        setOwner(owner);
         this.armorStand = armorStand;
-        this.skin = skin;
+        setLocation(loc);
+        setEnabled(enabled);
+        setShown(shown);
+        setSkin(skin);
     }
+
+    @Override
+    protected void save() {
+        setOwner(owner);
+        setLocation(loc);
+        setEnabled(enabled);
+        setShown(shown);
+        setSkin(skin);
+    }
+
 
     public String getOwner() {
         return owner;
     }
     public void setOwner(String owner) {
         this.owner = owner;
+        set("owner",owner);
     }
 
     public Location getLocation() {
@@ -43,6 +52,12 @@ public class Camera extends ID {
     }
     public void setLocation(Location loc) {
         this.loc = loc;
+        set("world", loc.getWorld().getName());
+        set("x", loc.getX());
+        set("y", loc.getY());
+        set("z", loc.getZ());
+        set("pitch", loc.getPitch());
+        set("yaw", loc.getYaw());
         armorStand.teleport(loc);
         armorStand.setHeadPose(new EulerAngle(Math.toRadians(loc.getPitch()), 0.0D, 0.0D));
         for (Viewer viewer : CCTV.get().getViewers().values()) {
@@ -57,6 +72,7 @@ public class Camera extends ID {
     }
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+        set("enabled", enabled);
         if (enabled) return;
         LanguageFile lang = CCTV.get().getLang();
         for (Viewer viewer : CCTV.get().getViewers().values()) {
@@ -76,8 +92,9 @@ public class Camera extends ID {
         return shown;
     }
     public void setShown(boolean shown) {
-        armorStand.getEquipment().setHelmet(shown ? CCTV.get().getCustomHeads().get(skin) : null);
         this.shown = shown;
+        set("shown",shown);
+        armorStand.getEquipment().setHelmet(shown ? CCTV.get().getCustomHeads().get(skin) : null);
     }
 
     public ArmorStand getArmorStand() {
@@ -89,6 +106,7 @@ public class Camera extends ID {
     }
     public void setSkin(String skin) {
         this.skin = skin;
+        set("skin",skin);
         setShown(true);
     }
 }

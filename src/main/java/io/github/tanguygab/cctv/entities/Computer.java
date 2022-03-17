@@ -14,11 +14,28 @@ public class Computer extends ID {
     private final List<String> allowedPlayers;
 
     public Computer(String name, Location loc, String owner, String group, List<String> allowedPlayers) {
-        super(name);
+        super(name,CCTV.get().getComputers());
         this.loc = loc;
-        this.owner = owner;
-        this.cameraGroup = CCTV.get().getCameraGroups().get(group);
+        set("world", loc.getWorld().getName());
+        set("x", loc.getX());
+        set("y", loc.getY());
+        set("z", loc.getZ());
+        setOwner(owner);
+        setCameraGroup(CCTV.get().getCameraGroups().get(group));
         this.allowedPlayers = allowedPlayers;
+        set("allowed-players", allowedPlayers.isEmpty() ? null : allowedPlayers);
+    }
+
+    @Override
+    protected void save() {
+        set("world", loc.getWorld().getName());
+        set("x", loc.getX());
+        set("y", loc.getY());
+        set("z", loc.getZ());
+        setOwner(owner);
+        setCameraGroup(cameraGroup);
+        set("allowed-players", allowedPlayers.isEmpty() ? null : allowedPlayers);
+
     }
 
     public Location getLocation() {
@@ -30,6 +47,7 @@ public class Computer extends ID {
     }
     public void setOwner(String owner) {
         this.owner = owner;
+        set("owner",owner);
     }
 
     public CameraGroup getCameraGroup() {
@@ -37,10 +55,19 @@ public class Computer extends ID {
     }
     public void setCameraGroup(CameraGroup cameraGroup) {
         this.cameraGroup = cameraGroup;
+        set("camera-group",cameraGroup.getId());
     }
 
     public List<String> getAllowedPlayers() {
         return allowedPlayers;
+    }
+    public void addPlayer(String player) {
+        allowedPlayers.add(player);
+        set("allowed-players", allowedPlayers);
+    }
+    public void removePlayer(String player) {
+        allowedPlayers.remove(player);
+        set("allowed-players", allowedPlayers.isEmpty() ? null : allowedPlayers);
     }
 
     public boolean canUse(OfflinePlayer player) {

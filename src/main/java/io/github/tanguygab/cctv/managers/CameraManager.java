@@ -37,7 +37,7 @@ public class CameraManager extends Manager<Camera> {
         cams.forEach((id,cfg)->{
             Map<String,Object> config = (Map<String, Object>) cfg;
             String owner = config.get("owner")+"";
-            String skin = config.get("skin")+"";
+            String skin = config.getOrDefault("skin","_DEFAULT_")+"";
             boolean enabled = (boolean) config.get("enabled");
             boolean shown = (boolean) config.get("shown");
 
@@ -61,21 +61,8 @@ public class CameraManager extends Manager<Camera> {
         });
     }
 
-    @Override
     public void unload() {
-        map.forEach((id, cam)->{
-            cam.getArmorStand().remove();
-            file.set(id + ".owner", cam.getOwner());
-            file.set(id + ".enabled", cam.isEnabled());
-            file.set(id + ".shown", cam.isShown());
-            Location loc = cam.getLocation();
-            file.set(id + ".world", loc.getWorld().getName());
-            file.set(id + ".x", loc.getX());
-            file.set(id + ".y", loc.getY());
-            file.set(id + ".z", loc.getZ());
-            file.set(id + ".pitch", loc.getPitch());
-            file.set(id + ".yaw", loc.getYaw());
-        });
+        map.forEach((id, cam)-> cam.getArmorStand().remove());
     }
 
     @Override
@@ -89,7 +76,7 @@ public class CameraManager extends Manager<Camera> {
         player.sendMessage(lang.CAMERA_DELETE);
         player.sendMessage(lang.getCameraID(cam.getId()));
         cctv.getViewers().values().stream().filter(p -> p.getCamera() == cam).forEach(p -> unviewCamera(Bukkit.getPlayer(p.getId())));
-        cctv.getCameraGroups().values().forEach(g->g.getCameras().remove(cam));
+        cctv.getCameraGroups().values().forEach(g->g.removeCamera(cam));
         map.remove(cam.getId());
         if (player.getGameMode() == GameMode.SURVIVAL) player.getInventory().addItem(Heads.CAMERA.get());
     }

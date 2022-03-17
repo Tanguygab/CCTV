@@ -1,5 +1,6 @@
 package io.github.tanguygab.cctv.entities;
 
+import io.github.tanguygab.cctv.CCTV;
 import net.minecraft.server.level.EntityPlayer;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -16,7 +17,7 @@ public class Viewer extends ID {
     private final Location loc;
 
     public Viewer(Player p, Camera camera, CameraGroup group) {
-        super(p.getUniqueId().toString());
+        super(p.getUniqueId().toString(),CCTV.get().getViewers());
         inv = p.getInventory().getContents().clone();
         gm = p.getGameMode();
         this.camera = camera;

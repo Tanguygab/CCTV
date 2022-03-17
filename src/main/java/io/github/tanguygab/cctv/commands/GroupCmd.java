@@ -122,7 +122,7 @@ public class GroupCmd extends Command {
                     p.sendMessage(lang.GROUP_CAMERA_ALREADY_ADDED);
                     return;
                 }
-                group.getCameras().add(camera);
+                group.addCamera(camera);
                 p.sendMessage(lang.GROUP_CAMERA_ADDED);
             }
             case "removecamera" -> {
@@ -153,7 +153,7 @@ public class GroupCmd extends Command {
                     p.sendMessage(lang.GROUP_DOES_NOT_CONTAIN_CAMERA);
                     return;
                 }
-                group.getCameras().remove(camera);
+                group.removeCamera(camera);
                 p.sendMessage(lang.GROUP_REMOVE_CAMERA);
             }
             case "rename" -> {
