@@ -102,15 +102,23 @@ public class CCTV extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new ViewersEvents(),this);
         Bukkit.getPluginManager().registerEvents(new ComputersEvents(),this);
 
-        getLogger().info(".-==--+]- CCTV -[+--==-.");
-        getLogger().info("This is the CCTV plugin!");
-        getLogger().info("Authors: Timdecoole123, Streampy");
-        getLogger().info("For updates check our spigot page");
-        getLogger().info("Spigot: https://www.spigotmc.org/resources/cctv.60310/");
-        getLogger().info("To report bugs go to the spigot page and send us a message!");
-        getLogger().info("NOTE: This plugin is discontinued. There will only be small improvements.");
-        getLogger().info("NOTE 2: Hey, I'm Tanguygab, and I'm stupid =) This plugin's code is so weird btw ;-;");
-        getLogger().info(".-==--+]-      -[+--==-.");
+        getLogger().info(".-----====--------+]-   -----+[====]+-----   -[+--------====-----.");
+        getLogger().info("");
+        getLogger().info("   _____ _____ _________      __  _____  _             _        ");
+        getLogger().info("  / ____/ ____|__   __\\ \\    / / |  __ \\| |           (_)      ");
+        getLogger().info(" | |   | |       | |   \\ \\  / /  | |__) | |_   _  __ _ _ _ __  ");
+        getLogger().info(" | |   | |       | |    \\ \\/ /   |  ___/| | | | |/ _` | |  _ \\ ");
+        getLogger().info(" | |___| |____   | |     \\  /    | |    | | |_| | (_| | | | | |");
+        getLogger().info("  \\_____\\_____|  |_|      \\/     |_|    |_|\\__,_|\\__, |_|_| |_|");
+        getLogger().info("                                                  __/ |        ");
+        getLogger().info("                                                 |___/         ");
+        getLogger().info(".-----====--------+]-   -----+[====]+-----   -[+--------====-----.");
+        getLogger().info(" > Thank you for downloading the CCTV Plugin!!");
+        getLogger().info(" > Authors: Timdecoole123, Streampy, Tanguygab");
+        getLogger().info(" > For updates check our spigot page");
+        getLogger().info("   Spigot: https://www.spigotmc.org/resources/cctv.60310/");
+        getLogger().info(" > To report bugs go to our discord and send us a message!");
+        getLogger().info(".-----====--------+]-   -----+[====]+-----   -[+--------====-----.");
     }
 
     @Override
