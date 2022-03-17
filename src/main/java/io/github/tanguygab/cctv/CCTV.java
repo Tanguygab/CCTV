@@ -173,6 +173,11 @@ public class CCTV extends JavaPlugin {
             case "camera" -> cameraCmd.onCommand(sender,args);
             case "group" -> groupCmd.onCommand(sender,args);
             case "computer" -> computerCmd.onCommand(sender,args);
+            case "reload" -> {
+                onDisable();
+                onEnable();
+                sender.sendMessage("Plugin reloaded!");
+            }
             case "debug" -> debug = !debug;
             default -> sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
                     "&6&m                                        \n"
