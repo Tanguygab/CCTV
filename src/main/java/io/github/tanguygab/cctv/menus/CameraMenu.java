@@ -26,33 +26,35 @@ public class CameraMenu extends CCTVMenu {
     public void open() {
         inv = Bukkit.getServer().createInventory(null, InventoryType.HOPPER, lang.getGuiCamera(camera.getId()));
 
-        ItemStack skin = cctv.getCustomHeads().get(camera.getSkin());
-        ItemMeta meta = skin.getItemMeta();
-        List<String> lore = new ArrayList<>();
-        cctv.getCustomHeads().heads.forEach((name,item)-> {
-            p.sendMessage(name.equals(camera.getSkin())+" "+camera.getSkin()+" "+name);
-            lore.add(ChatColor.translateAlternateColorCodes('&',
-                    "&8\u00BB "
-                            +(name.equals(camera.getSkin()) ? "&6" : "&e")
-                            +(name.equals("_DEFAULT_") ? "Default" : name)
-            ));
-        });
-        meta.setLore(lore);
-        meta.setDisplayName(lang.GUI_CAMERA_CHANGE_SKIN);
-        skin.setItemMeta(meta);
 
-        inv.setItem(0,skin);
+
+        inv.setItem(0,getCameraItem());
         inv.setItem(2, getItem(Material.BARRIER,lang.GUI_CAMERA_DELETE));
         inv.setItem(4, getItem(Heads.EXIT,lang.GUI_CAMERA_EXIT));
         p.openInventory(inv);
+    }
+
+    private ItemStack getCameraItem() {
+        ItemStack item = cctv.getCustomHeads().get(camera.getSkin());
+        ItemMeta meta = item.getItemMeta();
+        List<String> lore = new ArrayList<>();
+        cctv.getCustomHeads().heads.forEach((name,i)-> lore.add(ChatColor.translateAlternateColorCodes('&',
+                "&8\u00BB "
+                        +(name.equals(camera.getSkin()) ? "&6" : "&e")
+                        +(name.equals("_DEFAULT_") ? "Default" : name)
+        )));
+        meta.setLore(lore);
+        meta.setDisplayName(lang.GUI_CAMERA_CHANGE_SKIN);
+        item.setItemMeta(meta);
+        return item;
     }
 
     @Override
     public void onClick(ItemStack item, int slot) {
         switch (slot) {
             case 0 -> {
-
-                p.sendMessage("WIP!");
+                camera.setSkin(cctv.getCustomHeads().findNext(camera.getSkin()));
+                inv.setItem(0,getCameraItem());
             }
             case 2 -> {
                 p.closeInventory();
