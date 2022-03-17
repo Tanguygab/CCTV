@@ -174,6 +174,10 @@ public class CCTV extends JavaPlugin {
             case "group" -> groupCmd.onCommand(sender,args);
             case "computer" -> computerCmd.onCommand(sender,args);
             case "reload" -> {
+                if (!sender.hasPermission("cctv.reload")) {
+                    sender.sendMessage(lang.NO_PERMISSIONS);
+                    return true;
+                }
                 onDisable();
                 onEnable();
                 sender.sendMessage("Plugin reloaded!");
@@ -190,6 +194,8 @@ public class CCTV extends JavaPlugin {
                     + "   &8| &eCamera Group commands\n"
                     + " &7- &6/cctv computer\n"
                     + "   &8| &eComputer commands\n"
+                    + " &7- &6/cctv reload\n"
+                    + "   &8| &eReload the plugin\n"
                     + "&6&m                                        "));
         }
         return true;
@@ -201,7 +207,7 @@ public class CCTV extends JavaPlugin {
             case "camera" -> cameraCmd.onTabComplete(sender,args);
             case "group" -> groupCmd.onTabComplete(sender,args);
             case "computer" -> computerCmd.onTabComplete(sender,args);
-            default -> List.of("camera","group","computer");
+            default -> List.of("camera","group","computer","reload");
         };
     }
 }
