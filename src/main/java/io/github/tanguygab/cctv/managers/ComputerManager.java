@@ -51,7 +51,7 @@ public class ComputerManager extends Manager<Computer> {
             player.sendMessage(lang.COMPUTER_NOT_FOUND);
             return;
         }
-        map.remove(name);
+        delete(name);
         player.sendMessage(lang.COMPUTER_DELETE);
     }
 

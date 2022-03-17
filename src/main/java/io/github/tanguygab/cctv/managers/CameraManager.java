@@ -77,7 +77,7 @@ public class CameraManager extends Manager<Camera> {
         player.sendMessage(lang.getCameraID(cam.getId()));
         cctv.getViewers().values().stream().filter(p -> p.getCamera() == cam).forEach(p -> unviewCamera(Bukkit.getPlayer(p.getId())));
         cctv.getCameraGroups().values().forEach(g->g.removeCamera(cam));
-        map.remove(cam.getId());
+        delete(cam.getId());
         if (player.getGameMode() == GameMode.SURVIVAL) player.getInventory().addItem(Heads.CAMERA.get());
     }
 
