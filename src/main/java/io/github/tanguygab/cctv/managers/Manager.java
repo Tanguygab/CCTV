@@ -48,7 +48,7 @@ public abstract class Manager<T> {
     }
     public void delete(String id) {
         map.remove(id);
-        file.set(id,null);
+        if (file != null) file.set(id,null);
     }
     public void delete(String id, Player player) {}
 }

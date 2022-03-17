@@ -63,7 +63,7 @@ public class ViewerManager extends Manager<Viewer> {
         playerSetMode(p,false, viewer.getGameMode());
         for (Player online : Bukkit.getOnlinePlayers()) online.showPlayer(cctv,p);
         p.teleport(viewer.getLoc());
-        map.remove(id);
+        delete(id);
     }
 
     public void delete(Player p) {delete(p.getUniqueId().toString(),null);}
