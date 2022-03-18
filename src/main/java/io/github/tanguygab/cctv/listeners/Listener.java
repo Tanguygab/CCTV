@@ -78,9 +78,12 @@ public class Listener implements org.bukkit.event.Listener {
         CameraManager cm = CCTV.get().getCameras();
 
         Camera camera = null;
-        for (Camera cam : cm.values())
-            if (cam.getArmorStand().getLocation().equals(as.getLocation()) && customName.equals(cam.getArmorStand().getCustomName()))
+        for (Camera cam : cm.values()) {
+            if (cam.getArmorStand().getUniqueId().equals(as.getUniqueId())) {
+                if (cam.getArmorStand() != as) cam.setArmorStand(as);
                 camera = cam;
+            }
+        }
 
         if (camera == null) {
             as.remove();

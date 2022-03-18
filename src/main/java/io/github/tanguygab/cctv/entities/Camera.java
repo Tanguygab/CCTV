@@ -17,7 +17,7 @@ public class Camera extends ID {
     private boolean enabled;
     private boolean shown;
     private String skin;
-    private final ArmorStand armorStand;
+    private ArmorStand armorStand;
 
     public Camera(String name, String owner, Location loc, boolean enabled, boolean shown, ArmorStand armorStand, String skin) {
         super(name,CCTV.get().getCameras());
@@ -99,6 +99,10 @@ public class Camera extends ID {
 
     public ArmorStand getArmorStand() {
         return armorStand;
+    }
+
+    public void setArmorStand(ArmorStand armorStand) {
+        this.armorStand = armorStand;
     }
 
     public String getSkin() {
