@@ -79,7 +79,7 @@ public class Listener implements org.bukkit.event.Listener {
 
         Camera camera = null;
         for (Camera cam : cm.values())
-            if (cam.getArmorStand() == as)
+            if (cam.getArmorStand().getLocation().equals(as.getLocation()) && customName.equals(cam.getArmorStand().getCustomName()))
                 camera = cam;
 
         if (camera == null) {
