@@ -28,9 +28,9 @@ public class ComputerMainMenu extends ComputerMenu {
         inv.setItem(45, getItem(Heads.EXIT,lang.GUI_COMPUTER_DEFAULT_ITEM_EXIT));
 
         CameraGroup group = computer.getCameraGroup();
-        if (group == null) return;
-        for (int a = (page - 1) * 48; a < 48 * page && a < group.getCameras().size(); a++)
-            inv.addItem(getItem(Heads.CAMERA, "&eCamera: " + group.getCameras().get(a).getId()));
+        if (group == null)
+            for (int a = (page - 1) * 48; a < 48 * page && a < group.getCameras().size(); a++)
+                inv.addItem(getItem(Heads.CAMERA, "&eCamera: " + group.getCameras().get(a).getId()));
 
         p.openInventory(inv);
     }

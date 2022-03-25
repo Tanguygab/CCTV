@@ -26,8 +26,6 @@ public class CameraMenu extends CCTVMenu {
     public void open() {
         inv = Bukkit.getServer().createInventory(null, InventoryType.HOPPER, lang.getGuiCamera(camera.getId()));
 
-
-
         inv.setItem(0,getCameraItem());
         inv.setItem(2, getItem(Material.BARRIER,lang.GUI_CAMERA_DELETE));
         inv.setItem(4, getItem(Heads.EXIT,lang.GUI_CAMERA_EXIT));
