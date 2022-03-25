@@ -180,6 +180,10 @@ public class GroupCmd extends Command {
                     return;
                 }
                 group.setId(newName);
+                cctv.getComputers().values().forEach(g->{
+                    if (g.getCameraGroup() == group)
+                        g.setCameraGroup(group);
+                });
                 p.sendMessage(lang.getGroupRenamed(newName));
             }
             case "setowner" -> {

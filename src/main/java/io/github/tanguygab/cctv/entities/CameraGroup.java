@@ -39,12 +39,15 @@ public class CameraGroup extends ID {
     public List<Camera> getCameras() {
         return cameras;
     }
+    public void saveCams() {
+        set("cameras", cameras.isEmpty() ? null : Utils.list(cameras));
+    }
     public void addCamera(Camera cam) {
         cameras.add(cam);
-        set("cameras", Utils.list(cameras));
+        saveCams();
     }
     public void removeCamera(Camera cam) {
         cameras.remove(cam);
-        set("cameras", cameras.isEmpty() ? null : Utils.list(cameras));
+        saveCams();
     }
 }

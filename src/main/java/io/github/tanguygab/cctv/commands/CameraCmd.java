@@ -77,6 +77,10 @@ public class CameraCmd extends Command {
                     p.sendMessage(ChatColor.RED + "You already watching a camera!");
                     return;
                 }
+                if (args.length < 3) {
+                    p.sendMessage(ChatColor.RED + "Please specify a camera name!");
+                    return;
+                }
                 cm.viewCamera(p, args[2], null);
             }
             case "connected" -> {
@@ -243,6 +247,10 @@ public class CameraCmd extends Command {
                     return;
                 }
                 camera.setId(newName);
+                cctv.getCameraGroups().values().forEach(g->{
+                    if (g.getCameras().contains(camera))
+                        g.saveCams();
+                });
                 p.sendMessage(lang.getCameraRenamed(newName));
             }
             case "setowner" -> {

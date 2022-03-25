@@ -135,21 +135,6 @@ public class CameraManager extends Manager<Camera> {
         return null;
     }
 
-    public void renameCamera(String id, String rename, Player player) {
-        LanguageFile lang = cctv.getLang();
-        if (!exists(id)) {
-            player.sendMessage(lang.CAMERA_NOT_FOUND);
-            return;
-        }
-        if (exists(rename)) {
-            player.sendMessage(lang.CAMERA_ALREADY_EXISTS);
-            return;
-        }
-        Camera cam = map.get(id);
-        cam.setId(rename);
-        player.sendMessage(lang.getCameraRenamed(rename));
-    }
-
     public void viewCamera(Player p, String id, CameraGroup group) {
         LanguageFile lang = cctv.getLang();
         Camera cam = get(id);
