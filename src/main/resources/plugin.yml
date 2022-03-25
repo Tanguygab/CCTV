@@ -1,7 +1,7 @@
 name: CCTV
 version: 7.0
 main: io.github.tanguygab.cctv.CCTV
-api-version: 1.18
+api-version: 1.13
 loadbefore: [ WorldGuard ]
 softdepend: [ Multiverse-Core, multiworld ]
 authors: [ Streampy, Timdecoole123, Tanguygab ]
