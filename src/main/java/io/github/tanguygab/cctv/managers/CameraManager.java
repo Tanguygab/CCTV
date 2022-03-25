@@ -6,7 +6,7 @@ import io.github.tanguygab.cctv.entities.Camera;
 import io.github.tanguygab.cctv.entities.CameraGroup;
 import io.github.tanguygab.cctv.entities.Viewer;
 import io.github.tanguygab.cctv.utils.Heads;
-import io.github.tanguygab.cctv.utils.NPCUtils;
+import io.github.tanguygab.cctv.utils.NMSUtils;
 import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
@@ -116,7 +116,7 @@ public class CameraManager extends Manager<Camera> {
         ViewerManager vm = cctv.getViewers();
         Viewer p = vm.get(player);
         if (p == null) return;
-        NPCUtils.despawn(player,p.getNpc());
+        NMSUtils.despawnNPC(player,p.getNpc());
         vm.delete(player);
     }
 
@@ -172,7 +172,7 @@ public class CameraManager extends Manager<Camera> {
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(cctv,  () -> {
             vm.createPlayer(p, cam, group);
-            NPCUtils.spawn(p, p.getLocation());
+            NMSUtils.spawnNPC(p, p.getLocation());
             teleport(cam, p);
             PotionEffect invisibility = new PotionEffect(PotionEffectType.INVISIBILITY, 60000000, 0, false, false);
             p.addPotionEffect(invisibility);

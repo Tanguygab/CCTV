@@ -9,7 +9,7 @@ import io.github.tanguygab.cctv.managers.ViewerManager;
 import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.menus.CCTVMenu;
 import io.github.tanguygab.cctv.menus.CameraMenu;
-import io.github.tanguygab.cctv.utils.NPCUtils;
+import io.github.tanguygab.cctv.utils.NMSUtils;
 import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
@@ -136,7 +136,7 @@ public class Listener implements org.bukkit.event.Listener {
         vm.values().forEach(player->{
             Player p = Bukkit.getServer().getPlayer(UUID.fromString(player.getId()));
             joined.hidePlayer(CCTV.get(),p);
-            NPCUtils.spawnForTarget(joined,p);
+            NMSUtils.spawnNPCForTarget(joined,p);
         });
     }
 
