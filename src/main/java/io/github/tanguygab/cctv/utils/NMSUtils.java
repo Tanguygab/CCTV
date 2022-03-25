@@ -17,7 +17,7 @@ import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
 
 public class NMSUtils {
 
-    public static void sendPacket(Player player, Packet<?> packet) {
+    private static void sendPacket(Player player, Packet<?> packet) {
         ((CraftPlayer) player).getHandle().b.a(packet);
     }
 
