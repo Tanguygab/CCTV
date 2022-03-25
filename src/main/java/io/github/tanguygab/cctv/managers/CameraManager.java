@@ -116,7 +116,7 @@ public class CameraManager extends Manager<Camera> {
         ViewerManager vm = cctv.getViewers();
         Viewer p = vm.get(player);
         if (p == null) return;
-        NMSUtils.despawnNPC(player,p.getNpc());
+        NMSUtils.despawnNPC(player,p);
         vm.delete(player);
     }
 

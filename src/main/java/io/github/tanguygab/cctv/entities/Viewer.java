@@ -1,7 +1,6 @@
 package io.github.tanguygab.cctv.entities;
 
 import io.github.tanguygab.cctv.CCTV;
-import net.minecraft.server.level.EntityPlayer;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -13,7 +12,7 @@ public class Viewer extends ID {
     private final GameMode gm;
     private Camera camera;
     private CameraGroup group;
-    private EntityPlayer npc;
+    private Object npc;
     private final Location loc;
 
     public Viewer(Player p, Camera camera, CameraGroup group) {
@@ -47,10 +46,10 @@ public class Viewer extends ID {
         this.group = group;
     }
 
-    public EntityPlayer getNpc() {
+    public Object getNpc() {
         return npc;
     }
-    public void setNpc(EntityPlayer npc) {
+    public void setNpc(Object npc) {
         this.npc = npc;
     }
 

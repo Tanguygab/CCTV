@@ -3,18 +3,23 @@ package io.github.tanguygab.cctv.utils;
 import com.mojang.authlib.GameProfile;
 import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.entities.Viewer;
-import net.minecraft.network.protocol.game.*;
-import net.minecraft.server.level.EntityPlayer;
-import net.minecraft.server.network.PlayerConnection;
-import net.minecraft.world.level.World;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
+
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.*;
+import net.minecraft.server.level.EntityPlayer;
+import net.minecraft.world.level.World;
 import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
 import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
-import org.bukkit.entity.Player;
 
 public class NMSUtils {
+
+    public static void sendPacket(Player player, Packet<?> packet) {
+        ((CraftPlayer) player).getHandle().b.a(packet);
+    }
 
     public static void glow(Player viewer, Player viewed, boolean glow) {
         try {
@@ -24,9 +29,7 @@ public class NMSUtils {
                 viewed.setSneaking(true); // yeah, I'm doing that because it doesn't want to work with PacketPlayOutEntityMetadata...
                 viewed.setSneaking(false);
             }
-            PlayerConnection connection = ((CraftPlayer) viewer).getHandle().b;
-            PacketPlayOutEntityMetadata packet = new PacketPlayOutEntityMetadata(viewedNMS.ae(), viewedNMS.ai(), true);
-            connection.a(packet);
+            sendPacket(viewer,new PacketPlayOutEntityMetadata(viewedNMS.ae(), viewedNMS.ai(), true));
         } catch (Exception e) {
             // unsupported version
         }
@@ -48,16 +51,16 @@ public class NMSUtils {
         }
     }
 
-    public static void despawnNPC(Player p, EntityPlayer npc) {
+    public static void despawnNPC(Player p, Viewer viewer) {
         try {
-            PacketPlayOutEntityDestroy packet = null;
-            packet = (PacketPlayOutEntityDestroy) Class.forName("net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy").getConstructor(int[].class).newInstance(new int[]{npc.ae()});
+            EntityPlayer npc = (EntityPlayer) viewer.getNpc();
+            PacketPlayOutEntityDestroy packet = (PacketPlayOutEntityDestroy) Class.forName("net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy")
+                    .getConstructor(int[].class)
+                    .newInstance(new int[]{npc.ae()});
 
             for (Player online : Bukkit.getOnlinePlayers()) {
                 if (p == online) continue;
-                EntityPlayer playerNMS = ((CraftPlayer)online).getHandle();
-                PlayerConnection connection = playerNMS.b;
-                connection.a(packet);
+                sendPacket(online,packet);
                 online.showPlayer(CCTV.get(),p);
             }
         } catch (Exception e) {
@@ -69,18 +72,10 @@ public class NMSUtils {
         if (player == target) return;
         try {
             Viewer p = CCTV.get().getViewers().get(target);
-            EntityPlayer nmsPlayer = ((CraftPlayer) player).getHandle();
-            PlayerConnection connection = nmsPlayer.b;
-            EntityPlayer npc = p.getNpc();
-
-            PacketPlayOutPlayerInfo infoPacket = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.a, npc);
-            connection.a(infoPacket);
-
-            PacketPlayOutNamedEntitySpawn namedEntitySpawn = new PacketPlayOutNamedEntitySpawn(npc);
-            connection.a(namedEntitySpawn);
-
-            PacketPlayOutEntityHeadRotation entityHeadRotation = new PacketPlayOutEntityHeadRotation(npc, (byte) (int) (p.getLoc().getYaw() * 256.0F / 360.0F));
-            connection.a(entityHeadRotation);
+            EntityPlayer npc = (EntityPlayer) p.getNpc();
+            sendPacket(player,new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.a, npc));
+            sendPacket(player,new PacketPlayOutNamedEntitySpawn(npc));
+            sendPacket(player,new PacketPlayOutEntityHeadRotation(npc, (byte) (int) (p.getLoc().getYaw() * 256.0F / 360.0F)));
         } catch (Exception e) {
             // unsupported version
         }
