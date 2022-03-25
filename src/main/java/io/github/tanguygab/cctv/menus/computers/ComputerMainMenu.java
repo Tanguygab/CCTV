@@ -1,5 +1,6 @@
 package io.github.tanguygab.cctv.menus.computers;
 
+import io.github.tanguygab.cctv.entities.Camera;
 import io.github.tanguygab.cctv.entities.CameraGroup;
 import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.menus.ComputerMenu;
@@ -29,8 +30,10 @@ public class ComputerMainMenu extends ComputerMenu {
 
         CameraGroup group = computer.getCameraGroup();
         if (group != null)
-            for (int a = (page - 1) * 48; a < 48 * page && a < group.getCameras().size(); a++)
-                inv.addItem(getItem(Heads.CAMERA, "&eCamera: " + group.getCameras().get(a).getId()));
+            for (int a = (page - 1) * 48; a < 48 * page && a < group.getCameras().size(); a++) {
+                Camera cam = group.getCameras().get(a);
+                inv.addItem(getItem(cctv.getCustomHeads().get(cam.getSkin()), "&eCamera: " + cam.getId()));
+            }
 
         p.openInventory(inv);
     }
