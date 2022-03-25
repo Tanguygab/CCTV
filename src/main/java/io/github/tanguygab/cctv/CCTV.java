@@ -35,8 +35,6 @@ public class CCTV extends JavaPlugin {
         return instance;
     }
 
-    public boolean debug;
-
     private ConfigurationFile config;
     private LanguageFile lang;
     private CustomHeads customHeads;
@@ -182,7 +180,6 @@ public class CCTV extends JavaPlugin {
                 onEnable();
                 sender.sendMessage("Plugin reloaded!");
             }
-            case "debug" -> debug = !debug;
             default -> sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
                     "&6&m                                        \n"
                     + "&6[CCTV] &7" + getDescription().getVersion() + "\n"

@@ -94,7 +94,6 @@ public class CameraManager extends Manager<Camera> {
         if (shown) as.getEquipment().setHelmet(Heads.CAMERA.get());
         Camera camera = new Camera(id,owner,loc,enabled,shown,as,skin);
         map.put(id,camera);
-        if (cctv.debug) as.setCustomNameVisible(true);
     }
 
     public void create(String id, Location loc, Player player) {
