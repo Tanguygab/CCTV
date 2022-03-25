@@ -251,6 +251,7 @@ public class CameraCmd extends Command {
                     if (g.getCameras().contains(camera))
                         g.saveCams();
                 });
+                camera.getArmorStand().setCustomName("CAM-"+camera.getId());
                 p.sendMessage(lang.getCameraRenamed(newName));
             }
             case "setowner" -> {
