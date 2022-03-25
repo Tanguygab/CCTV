@@ -55,7 +55,7 @@ public class Computer extends ID {
     }
     public void setCameraGroup(CameraGroup cameraGroup) {
         this.cameraGroup = cameraGroup;
-        set("camera-group",cameraGroup.getId());
+        set("camera-group",cameraGroup == null ? null : cameraGroup.getId());
     }
 
     public List<String> getAllowedPlayers() {
