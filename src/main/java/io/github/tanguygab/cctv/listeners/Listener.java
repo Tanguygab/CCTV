@@ -75,6 +75,7 @@ public class Listener implements org.bukkit.event.Listener {
 
         e.setCancelled(true);
         Player p = e.getPlayer();
+        if (vm.exists(p)) return;
         CameraManager cm = CCTV.get().getCameras();
 
         Camera camera = null;
