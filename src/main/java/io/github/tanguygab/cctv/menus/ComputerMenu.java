@@ -2,6 +2,7 @@ package io.github.tanguygab.cctv.menus;
 
 import io.github.tanguygab.cctv.entities.Computer;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 public class ComputerMenu extends CCTVMenu {
@@ -25,5 +26,5 @@ public class ComputerMenu extends CCTVMenu {
     }
 
     @Override
-    public void onClick(ItemStack item, int slot) {}
+    public void onClick(ItemStack item, int slot, ClickType click) {}
 }

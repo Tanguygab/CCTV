@@ -135,9 +135,8 @@ public class CameraManager extends Manager<Camera> {
         return null;
     }
 
-    public void viewCamera(Player p, String id, CameraGroup group) {
+    public void viewCamera(Player p, Camera cam, CameraGroup group) {
         LanguageFile lang = cctv.getLang();
-        Camera cam = get(id);
         if (cam == null) {
             p.sendMessage(lang.CAMERA_NOT_FOUND);
             return;

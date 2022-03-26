@@ -7,6 +7,7 @@ import io.github.tanguygab.cctv.utils.Heads;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -25,7 +26,7 @@ public abstract class CCTVMenu {
 
     public abstract void open();
 
-    public abstract void onClick(ItemStack item, int slot);
+    public abstract void onClick(ItemStack item, int slot, ClickType click);
 
     public void close() {
         if (renaming) {

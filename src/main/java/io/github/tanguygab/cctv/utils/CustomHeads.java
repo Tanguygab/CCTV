@@ -23,13 +23,13 @@ public class CustomHeads {
         return heads.getOrDefault(name,Heads.CAMERA.get()).clone();
     }
 
-    public String findNext(String skin) {
+    public String findNext(String skin, boolean previous) {
         List<String> names = new ArrayList<>(heads.keySet());
         int pos = names.indexOf(skin);
         if (pos == -1) return "_DEFAULT_";
-
-        pos++;
-        if (pos >= names.size()) pos = 0;
+        if (previous) pos--;
+        else pos++;
+        if (pos < 0 || pos >= names.size()) pos = 0;
         return names.get(pos);
     }
 }

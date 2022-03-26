@@ -6,6 +6,7 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -48,14 +49,15 @@ public class CameraMenu extends CCTVMenu {
     }
 
     @Override
-    public void onClick(ItemStack item, int slot) {
+    public void onClick(ItemStack item, int slot, ClickType click) {
         switch (slot) {
             case 0 -> {
-                camera.setSkin(cctv.getCustomHeads().findNext(camera.getSkin()));
+                camera.setSkin(cctv.getCustomHeads().findNext(camera.getSkin(),click.isRightClick()));
                 inv.setItem(0,getCameraItem());
             }
             case 2 -> {
                 p.closeInventory();
+                p.getInventory().addItem(cctv.getCustomHeads().get(camera.getSkin()));
                 cctv.getCameras().delete(camera.getId(), p);
             }
             case 4 -> p.closeInventory();

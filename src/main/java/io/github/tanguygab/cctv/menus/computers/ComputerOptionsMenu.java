@@ -6,6 +6,7 @@ import io.github.tanguygab.cctv.menus.ComputerMenu;
 import io.github.tanguygab.cctv.utils.Heads;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 
@@ -28,7 +29,7 @@ public class ComputerOptionsMenu extends ComputerMenu {
     }
 
     @Override
-    public void onClick(ItemStack item, int slot) {
+    public void onClick(ItemStack item, int slot, ClickType click) {
         switch (slot) {
             case 0 -> open(new ComputerMainMenu(p,computer));
             case 2 -> open(new ComputerSetGroupMenu(p,computer));

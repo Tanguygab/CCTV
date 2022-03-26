@@ -81,7 +81,12 @@ public class CameraCmd extends Command {
                     p.sendMessage(ChatColor.RED + "Please specify a camera name!");
                     return;
                 }
-                cm.viewCamera(p, args[2], null);
+                Camera camera = cm.get(args[2]);
+                if (camera == null || !canUse(p,camera.getOwner())) {
+                    p.sendMessage(lang.CAMERA_NOT_FOUND);
+                    return;
+                }
+                cm.viewCamera(p, camera, null);
             }
             case "connected" -> {
                 if (!hasPerm(p,"connected")) {

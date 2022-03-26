@@ -5,6 +5,7 @@ import io.github.tanguygab.cctv.utils.Heads;
 import io.github.tanguygab.cctv.utils.NMSUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -46,7 +47,7 @@ public class ViewerOptionsMenu extends CCTVMenu {
     }
 
     @Override
-    public void onClick(ItemStack item, int slot) {
+    public void onClick(ItemStack item, int slot, ClickType click) {
         switch (slot) {
             case 3 -> nightvision(p, !p.hasPotionEffect(PotionEffectType.NIGHT_VISION));
             case 4 -> {

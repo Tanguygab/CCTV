@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -39,7 +40,7 @@ public class ComputerSetGroupMenu extends ComputerMenu {
     }
 
     @Override
-    public void onClick(ItemStack item, int slot) {
+    public void onClick(ItemStack item, int slot, ClickType click) {
         switch (slot) {
             case 27,36 -> setPage(slot == 27 ? page+1 : page-1);
             case 45 -> open(new ComputerOptionsMenu(p,computer));

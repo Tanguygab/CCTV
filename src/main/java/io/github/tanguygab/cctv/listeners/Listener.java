@@ -145,7 +145,7 @@ public class Listener implements org.bukkit.event.Listener {
     public void on(InventoryClickEvent e) {
         if (!(e.getWhoClicked() instanceof Player p)) return;
         if (openedMenus.containsKey(p)) {
-            openedMenus.get(p).onClick(e.getCurrentItem(),e.getRawSlot());
+            openedMenus.get(p).onClick(e.getCurrentItem(),e.getRawSlot(),e.getClick());
             e.setCancelled(true);
             return;
         }
