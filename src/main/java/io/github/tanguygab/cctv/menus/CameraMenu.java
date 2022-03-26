@@ -84,7 +84,10 @@ public class CameraMenu extends CCTVMenu {
                 camera.setShown(!camera.isShown());
                 updateVisibilityItem();
             }
-            case 24 -> cm.viewCamera(p, camera, null);
+            case 24 -> {
+                p.closeInventory();
+                cm.viewCamera(p, camera, null);
+            }
             case 25 -> {
                 camera.setEnabled(!camera.isEnabled());
                 updateEnabledItem();
