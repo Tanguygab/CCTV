@@ -1,5 +1,5 @@
 name: CCTV
-version: 7.0
+version: 7.1
 main: io.github.tanguygab.cctv.CCTV
 api-version: 1.13
 loadbefore: [ WorldGuard ]
