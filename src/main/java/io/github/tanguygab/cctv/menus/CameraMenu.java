@@ -60,7 +60,7 @@ public class CameraMenu extends CCTVMenu {
                 p.getInventory().addItem(cctv.getCustomHeads().get(camera.getSkin()));
                 cctv.getCameras().delete(camera.getId(), p);
             }
-            case 4 -> p.closeInventory();
+            case 4 -> back();
         }
     }
 }

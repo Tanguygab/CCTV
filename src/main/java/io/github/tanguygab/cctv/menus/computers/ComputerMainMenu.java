@@ -15,9 +15,12 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 public class ComputerMainMenu extends ComputerMenu {
+
+    private static final DecimalFormat f = new DecimalFormat("#.##");
 
     public ComputerMainMenu(Player p, Computer computer) {
         super(p,computer);
@@ -41,9 +44,13 @@ public class ComputerMainMenu extends ComputerMenu {
                 Location loc = cam.getLocation();
                 ItemMeta meta = item.getItemMeta();
                 meta.setLore(List.of("",ChatColor.translateAlternateColorCodes('&',
-                        "&6X: &e"+loc.getX()
-                                +" &6Y: &e"+loc.getY()
-                                +" &6Z: &e"+loc.getZ())));
+                        "&6X: &7"+f.format(loc.getX())
+                                +" &6Y: &7"+f.format(loc.getY())
+                                +" &6Z: &7"+f.format(loc.getZ())
+                        ),""
+                        ,ChatColor.YELLOW+"Left-Click to View"
+                        ,ChatColor.YELLOW+"Right-Click to Edit"
+                ));
                 item.setItemMeta(meta);
                 inv.addItem(item);
             }
@@ -73,7 +80,12 @@ public class ComputerMainMenu extends ComputerMenu {
                     p.sendMessage(lang.CAMERA_NOT_FOUND);
                     return;
                 }
-                if (click.isRightClick()) open(new CameraMenu(p,camera));
+                if (click.isRightClick()) {
+                    if (!camera.getOwner().equals(p.getUniqueId().toString()) && !p.hasPermission("cctv.camera.other"))
+                        p.sendMessage(lang.NO_PERMISSIONS);
+                    else open(new CameraMenu(p,camera));
+                    return;
+                }
                 else cctv.getCameras().viewCamera(p, camera, computer.getCameraGroup());
                 p.closeInventory();
             }

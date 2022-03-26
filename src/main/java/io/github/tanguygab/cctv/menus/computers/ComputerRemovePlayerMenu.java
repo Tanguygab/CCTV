@@ -47,7 +47,7 @@ public class ComputerRemovePlayerMenu extends ComputerMenu {
     public void onClick(ItemStack item, int slot, ClickType click) {
         switch (slot) {
             case 27,36 -> setPage(slot == 27 ? page+1 : page-1);
-            case 45 -> open(new ComputerOptionsMenu(p,computer));
+            case 45 -> back();
             default -> {
                 if (item == null || item.getType() == Material.AIR) return;
                 ItemMeta meta = item.getItemMeta();

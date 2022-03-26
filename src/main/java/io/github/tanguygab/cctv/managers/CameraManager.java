@@ -96,7 +96,7 @@ public class CameraManager extends Manager<Camera> {
         map.put(id,camera);
     }
 
-    public void create(String id, Location loc, Player player) {
+    public void create(String id, Location loc, Player player, String skin) {
         LanguageFile lang = cctv.getLang();
         if (exists(id)) {
             player.sendMessage(lang.CAMERA_ALREADY_EXISTS);
@@ -104,7 +104,7 @@ public class CameraManager extends Manager<Camera> {
         }
         if (id == null) id = Utils.getRandomNumber(999999, "computer")+"";
 
-        create(id,player.getUniqueId().toString(),loc,true,true,"_DEFAULT_");
+        create(id,player.getUniqueId().toString(),loc,true,true,skin);
         player.sendMessage(lang.CAMERA_CREATE);
         player.sendMessage(lang.getCameraID(id));
     }

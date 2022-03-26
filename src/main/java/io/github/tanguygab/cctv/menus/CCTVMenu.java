@@ -19,6 +19,7 @@ public abstract class CCTVMenu {
     protected CCTV cctv = CCTV.get();
     protected LanguageFile lang = cctv.getLang();
     public boolean renaming = false;
+    private CCTVMenu previousMenu;
 
     protected CCTVMenu(Player p) {
         this.p = p;
@@ -36,6 +37,11 @@ public abstract class CCTVMenu {
         Listener.openedMenus.remove(p);
     }
 
+    public void back() {
+        if (previousMenu != null) open(previousMenu);
+        else p.closeInventory();
+    }
+
     public void fillSlots(int... slots) {
         ItemStack filler = getItem(Material.GRAY_STAINED_GLASS_PANE, " ");
         for (Integer slot : slots) inv.setItem(slot,filler);
@@ -43,6 +49,7 @@ public abstract class CCTVMenu {
 
     public void open(CCTVMenu menu) {
         cctv.openMenu(p,menu);
+        menu.previousMenu = this;
     }
 
     public static ItemStack getItem(ItemStack item, String name) {

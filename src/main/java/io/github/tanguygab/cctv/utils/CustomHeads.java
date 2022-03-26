@@ -23,6 +23,14 @@ public class CustomHeads {
         return heads.getOrDefault(name,Heads.CAMERA.get()).clone();
     }
 
+    public String get(ItemStack item) {
+        for (String name : heads.keySet()) {
+            if (item.equals(heads.get(name)))
+                return name;
+        }
+        return "_DEFAULT_";
+    }
+
     public String findNext(String skin, boolean previous) {
         List<String> names = new ArrayList<>(heads.keySet());
         int pos = names.indexOf(skin);

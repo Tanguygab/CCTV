@@ -99,7 +99,7 @@ public class InteractEvent {
                 loc.setYaw(0.0F);
             }
         }
-        CCTV.get().getCameras().create(null, loc, p);
+        CCTV.get().getCameras().create(null, loc, p,CCTV.get().getCustomHeads().get(item));
     }
 
 }

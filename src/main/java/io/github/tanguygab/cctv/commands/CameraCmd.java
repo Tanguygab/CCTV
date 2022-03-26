@@ -10,6 +10,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -34,7 +35,8 @@ public class CameraCmd extends Command {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
-                p.getInventory().addItem(Heads.CAMERA.get());
+                String skin = args.length > 2 ? args[2] : "_DEFAULT_";
+                p.getInventory().addItem(cctv.getCustomHeads().get(skin));
                 p.sendMessage(ChatColor.GREEN + "Place down this item to create a camera!");
             }
             case "create" -> {
@@ -42,7 +44,7 @@ public class CameraCmd extends Command {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
-                if (args.length > 2) cm.create(args[2],p.getLocation(),p);
+                if (args.length > 2) cm.create(args[2],p.getLocation(),p,"_DEFAULT_");
                 else p.sendMessage(ChatColor.RED + "Please specify a camera name!");
             }
             case "delete" -> {
@@ -313,7 +315,8 @@ public class CameraCmd extends Command {
         return switch (args.length) {
             case 2 -> List.of("get","create","delete","list","view","connected","return","teleport","enable","disable","show","hide","movehere","rename","setowner");
             case 3 -> switch (args[1].toLowerCase()) {
-                case "get","create","list","return" -> null;
+                case "create","list","return" -> null;
+                case "get" -> new ArrayList<>(cctv.getCustomHeads().heads.keySet());
                 default -> sender instanceof Player p ? cm.get(p) : Utils.list(cm.values());
             };
             case 4 -> args[1].equalsIgnoreCase("setowner") ? Arrays.stream(Bukkit.getOfflinePlayers()).map(OfflinePlayer::getName).toList() : null;

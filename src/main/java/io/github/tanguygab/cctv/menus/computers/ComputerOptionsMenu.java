@@ -31,7 +31,7 @@ public class ComputerOptionsMenu extends ComputerMenu {
     @Override
     public void onClick(ItemStack item, int slot, ClickType click) {
         switch (slot) {
-            case 0 -> open(new ComputerMainMenu(p,computer));
+            case 0 -> back();
             case 2 -> open(new ComputerSetGroupMenu(p,computer));
             case 3 -> {
                 Listener.chatInput.add(p);
