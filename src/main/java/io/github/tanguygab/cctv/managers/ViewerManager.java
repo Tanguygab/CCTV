@@ -9,7 +9,6 @@ import io.github.tanguygab.cctv.menus.ViewerOptionsMenu;
 import io.github.tanguygab.cctv.utils.Heads;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -124,31 +123,12 @@ public class ViewerManager extends Manager<Viewer> {
             return;
         }
         if (itemName.equals(lang.CAMERA_VIEW_OPTION)) cctv.openMenu(p,new ViewerOptionsMenu(p));
-        if (itemName.equals(lang.CAMERA_VIEW_ROTATE_LEFT)) rotateCamera(p, -18);
-        if (itemName.equals(lang.CAMERA_VIEW_ROTATE_RIGHT)) rotateCamera(p, 18);
+        if (itemName.equals(lang.CAMERA_VIEW_ROTATE_LEFT)) cm.rotateHorizontally(p,get(p).getCamera(), -18);
+        if (itemName.equals(lang.CAMERA_VIEW_ROTATE_RIGHT)) cm.rotateHorizontally(p,get(p).getCamera(), 18);
         if (itemName.equals(lang.CAMERA_VIEW_PREVIOUS)) switchCamera(p,true);
         if (itemName.equals(lang.CAMERA_VIEW_NEXT)) switchCamera(p,false);
     }
 
-    private void rotateCamera(Player p, int degrees) {
-        if (!p.hasPermission("cctv.view.move")) {
-            p.sendMessage(lang.NO_PERMISSIONS);
-            return;
-        }
-        Viewer viewer = get(p);
-        Location loc = viewer.getCamera().getArmorStand().getLocation();
-        float yaw = Math.round(loc.getYaw() + degrees);
-        Camera cam = viewer.getCamera();
-        float camYaw = cam.getLocation().getYaw();
-        if (yaw >= Math.round(((camYaw > 359.0F) ? (camYaw - 360.0F) : camYaw) - 36.0F) && yaw <= Math.round(((camYaw > 359.0F) ? (camYaw - 360.0F) : camYaw) + 36.0F)) {
-            loc.setYaw(yaw);
-            cam.getArmorStand().teleport(loc);
-            for (Viewer otherViewer : values())
-                if (otherViewer.getCamera() == viewer.getCamera())
-                    cm.teleport(viewer.getCamera(), get(otherViewer));
-        } else p.sendMessage(lang.MAX_ROTATION);
-
-    }
     private void switchCamera(final Player p, boolean previous) {
         if (!p.hasPermission("cctv.view.switch")) {
             p.sendMessage(lang.NO_PERMISSIONS);

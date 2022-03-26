@@ -79,8 +79,10 @@ gui:
       remove-player: "&cRemove player"
 camera-view:
   option: "&eOptions"
+  rotate-up: "&6Rotate Up"
   rotate-left: "&6Rotate Left"
   rotate-right: "&6Rotate Right"
+  rotate-down: "&6Rotate Down"
   previous: "&bPrevious Camera"
   next: "&bNext Camera"
   exit: "&4Exit"

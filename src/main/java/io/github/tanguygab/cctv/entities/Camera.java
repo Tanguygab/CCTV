@@ -60,11 +60,37 @@ public class Camera extends ID {
         set("yaw", loc.getYaw());
         armorStand.teleport(loc);
         armorStand.setHeadPose(new EulerAngle(Math.toRadians(loc.getPitch()), 0.0D, 0.0D));
+        tpViewers();
+    }
+    private void tpViewers() {
         for (Viewer viewer : CCTV.get().getViewers().values()) {
             if (viewer.getCamera() != this) continue;
             Player target = Bukkit.getServer().getPlayer(UUID.fromString(viewer.getId()));
             if (target != null) CCTV.get().getCameras().teleport(this, target);
         }
+    }
+
+    public boolean rotateHorizontally(int degrees) {
+        Location asLoc = armorStand.getLocation();
+        float newYaw = Math.round(asLoc.getYaw() + degrees);
+        float yaw = loc.getYaw();
+        float check = yaw > 359.0F
+                ? yaw - 360.0F
+                : yaw;
+
+        if (newYaw < Math.round(check-36.0F) || newYaw > Math.round(check+36.0F)) return false;
+        asLoc.setYaw(newYaw);
+        armorStand.teleport(asLoc);
+        tpViewers();
+        return true;
+    }
+    public boolean rotateVertically(int degrees) {
+        float pitch = loc.getPitch();
+        float newPitch = Math.round(pitch + degrees);
+        if (newPitch < -45 || newPitch > 45) return false;
+        loc.setPitch(newPitch);
+        setLocation(loc);
+        return true;
     }
 
     public boolean isEnabled() {

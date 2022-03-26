@@ -145,8 +145,10 @@ public class LanguageFile extends YamlConfigurationFile {
     public final String GUI_COMPUTER_OPTIONS_REMOVE_PLAYER = get("gui.computer.options.remove-player", "&cRemove player");
 
     public final String CAMERA_VIEW_OPTION = get("camera-view.option", "&eOptions");
+    public final String CAMERA_VIEW_ROTATE_UP = get("camera-view.rotate-up", "&6Rotate Up");
     public final String CAMERA_VIEW_ROTATE_LEFT = get("camera-view.rotate-left", "&6Rotate Left");
     public final String CAMERA_VIEW_ROTATE_RIGHT = get("camera-view.rotate-right", "&6Rotate Right");
+    public final String CAMERA_VIEW_ROTATE_DOWN = get("camera-view.rotate-down", "&6Rotate Down");
     public final String CAMERA_VIEW_PREVIOUS = get("camera-view.previous", "&bPrevious Camera");
     public final String CAMERA_VIEW_NEXT = get("camera-view.next", "&bNext Camera");
     public final String CAMERA_VIEW_EXIT = get("camera-view.exit", "&4Exit");

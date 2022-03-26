@@ -210,4 +210,21 @@ public class CameraManager extends Manager<Camera> {
         Location loc = new Location(asLoc.getWorld(), asLoc.getX() + x2 + x3, asLoc.getY() + 0.115D + y2 + y3 - radius_head, asLoc.getZ() + z2 + z3, asLoc.getYaw(), asLoc.getPitch());
         player.teleport(loc);
     }
+
+    public void rotateHorizontally(Player p, Camera camera, int degrees) {
+        if (!p.hasPermission("cctv.view.move")) {
+            p.sendMessage(lang.NO_PERMISSIONS);
+            return;
+        }
+        if (!camera.rotateHorizontally(degrees))
+            p.sendMessage(lang.MAX_ROTATION);
+    }
+    public void rotateVertically(Player p, Camera camera, int degrees) {
+        if (!p.hasPermission("cctv.view.move")) {
+            p.sendMessage(lang.NO_PERMISSIONS);
+            return;
+        }
+        if (!camera.rotateVertically(degrees))
+            p.sendMessage(lang.MAX_ROTATION);
+    }
 }
