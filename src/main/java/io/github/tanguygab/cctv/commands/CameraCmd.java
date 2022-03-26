@@ -35,7 +35,11 @@ public class CameraCmd extends Command {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
-                String skin = args.length > 2 ? args[2] : "_DEFAULT_";
+                String skin = "_DEFAULT_";
+                if (args.length > 2) {
+                    String[] skinArg = Arrays.copyOfRange(args,2,args.length);
+                    skin = String.join(" ",skinArg).replace("Default","_DEFAULT_");
+                }
                 p.getInventory().addItem(cctv.getCustomHeads().get(skin));
                 p.sendMessage(ChatColor.GREEN + "Place down this item to create a camera!");
             }
@@ -316,11 +320,19 @@ public class CameraCmd extends Command {
             case 2 -> List.of("get","create","delete","list","view","connected","return","teleport","enable","disable","show","hide","movehere","rename","setowner");
             case 3 -> switch (args[1].toLowerCase()) {
                 case "create","list","return" -> null;
-                case "get" -> new ArrayList<>(cctv.getCustomHeads().heads.keySet());
+                case "get" -> cctv.getCustomHeads().heads.keySet().stream().map(n->n.replace("_DEFAULT_","Default")).toList();
                 default -> sender instanceof Player p ? cm.get(p) : Utils.list(cm.values());
             };
-            case 4 -> args[1].equalsIgnoreCase("setowner") ? Arrays.stream(Bukkit.getOfflinePlayers()).map(OfflinePlayer::getName).toList() : null;
-            default -> null;
+            case 4 -> switch (args[1].toLowerCase()) {
+                case "setowner" -> Arrays.stream(Bukkit.getOfflinePlayers()).map(OfflinePlayer::getName).toList();
+                case "get" -> cctv.getCustomHeads().heads.keySet().stream().map(n->n.replace("_DEFAULT_","Default")).toList();
+                default -> null;
+            };
+            default -> {
+                if (args[1].equalsIgnoreCase("get"))
+                    yield cctv.getCustomHeads().heads.keySet().stream().map(n->n.replace("_DEFAULT_","Default")).toList();
+                yield null;
+            }
         };
     }
 
