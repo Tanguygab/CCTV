@@ -32,7 +32,7 @@ public class Utils {
                 CameraManager manager = CCTV.get().getCameras();
                 if (manager.values().size() >= size) size *= 10;
                 for (Camera cam : manager.values()) {
-                    if (Integer.parseInt(cam.getId()) == number)
+                    if (cam.getId().equals(number+""))
                         number = getRandomNumber(size, type);
                 }
                 return number;
@@ -41,7 +41,7 @@ public class Utils {
                 ComputerManager manager = CCTV.get().getComputers();
                 if (manager.values().size() >= size) size *= 10;
                 for (Computer computer : manager.values()) {
-                    if (Integer.parseInt(computer.getId()) == number)
+                    if (computer.getId().equals(number+""))
                         number = getRandomNumber(size, type);
                 }
                 return number;
@@ -50,7 +50,7 @@ public class Utils {
                 CameraGroupManager manager = CCTV.get().getCameraGroups();
                 if (manager.values().size() >= size) size *= 10;
                 for (CameraGroup group : manager.values()) {
-                    if (Integer.parseInt(group.getId()) == number)
+                    if (group.getId().equals(number+""))
                         number = getRandomNumber(size, type);
                 }
                 return number;

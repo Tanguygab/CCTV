@@ -34,7 +34,7 @@ public class GroupCmd extends Command {
 
         switch (arg) {
             case "create" -> {
-                if (!hasPerm(p,"create")) {
+                if (noPerm(p, "create")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
@@ -42,7 +42,7 @@ public class GroupCmd extends Command {
                 else p.sendMessage(ChatColor.RED + "Please specify a group name!");
             }
             case "delete" -> {
-                if (!hasPerm(p,"delete")) {
+                if (noPerm(p, "delete")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
@@ -51,7 +51,7 @@ public class GroupCmd extends Command {
                     return;
                 }
                 CameraGroup group = cgm.get(args[2]);
-                if (group == null || !canUse(p,group.getOwner())) {
+                if (group == null || cantUse(p, group.getOwner())) {
                     p.sendMessage(lang.GROUP_NOT_FOUND);
                     return;
                 }
@@ -59,14 +59,19 @@ public class GroupCmd extends Command {
                 cgm.delete(group.getId());
             }
             case "list" -> {
-                if (!hasPerm(p,"list")) {
+                if (noPerm(p, "list")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
-                p.spigot().sendMessage(list("Camera Groups",cgm.get(p),"info","Click to get its info!"));
+                int page = 1;
+                if (args.length > 2) {
+                    try {page = Integer.parseInt(args[2]);}
+                    catch (Exception ignored) {}
+                }
+                p.spigot().sendMessage(list("Camera Groups",cgm.get(p),"info","Click to get its info!",page));
             }
             case "info" -> {
-                if (!hasPerm(p,"info")) {
+                if (noPerm(p, "info")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
@@ -75,7 +80,7 @@ public class GroupCmd extends Command {
                     return;
                 }
                 CameraGroup group = cgm.get(args[2]);
-                if (group == null || !canUse(p,group.getOwner())) {
+                if (group == null || cantUse(p, group.getOwner())) {
                     p.sendMessage(lang.GROUP_NOT_FOUND);
                     return;
                 }
@@ -83,8 +88,8 @@ public class GroupCmd extends Command {
                 String owner = off.getName() == null ? "Unknown" : off.getName();
                 TextComponent comp = comp("Camera Group info:",ChatColor.GOLD);
                 comp.setBold(true);
-                comp.addExtra(comp("\nName: ",ChatColor.GOLD,group.getId(),ChatColor.YELLOW));
-                comp.addExtra(comp("\nOwner: ",ChatColor.GOLD,owner,ChatColor.YELLOW));
+                comp.addExtra(comp("\nName: ", group.getId()));
+                comp.addExtra(comp("\nOwner: ", owner));
                 comp.addExtra(comp("\nCameras:",ChatColor.GOLD));
 
                 for (Camera cam : group.getCameras()) {
@@ -95,7 +100,7 @@ public class GroupCmd extends Command {
                 p.spigot().sendMessage(comp);
             }
             case "addcamera" -> {
-                if (!hasPerm(p,"addcamera")) {
+                if (noPerm(p, "addcamera")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
@@ -104,7 +109,7 @@ public class GroupCmd extends Command {
                     return;
                 }
                 CameraGroup group = cgm.get(args[2]);
-                if (group == null || !canUse(p,group.getOwner())) {
+                if (group == null || cantUse(p, group.getOwner())) {
                     p.sendMessage(lang.GROUP_NOT_FOUND);
                     return;
                 }
@@ -126,7 +131,7 @@ public class GroupCmd extends Command {
                 p.sendMessage(lang.GROUP_CAMERA_ADDED);
             }
             case "removecamera" -> {
-                if (!hasPerm(p,"removecamera")) {
+                if (noPerm(p, "removecamera")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
@@ -135,7 +140,7 @@ public class GroupCmd extends Command {
                     return;
                 }
                 CameraGroup group = cgm.get(args[2]);
-                if (group == null || !canUse(p,group.getOwner())) {
+                if (group == null || cantUse(p, group.getOwner())) {
                     p.sendMessage(lang.GROUP_NOT_FOUND);
                     return;
                 }
@@ -157,7 +162,7 @@ public class GroupCmd extends Command {
                 p.sendMessage(lang.GROUP_REMOVE_CAMERA);
             }
             case "rename" -> {
-                if (!hasPerm(p,"rename")) {
+                if (noPerm(p, "rename")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
@@ -166,7 +171,7 @@ public class GroupCmd extends Command {
                     return;
                 }
                 CameraGroup group = cgm.get(args[2]);
-                if (group == null || !canUse(p,group.getOwner())) {
+                if (group == null || cantUse(p, group.getOwner())) {
                     p.sendMessage(lang.GROUP_NOT_FOUND);
                     return;
                 }
@@ -187,7 +192,7 @@ public class GroupCmd extends Command {
                 p.sendMessage(lang.getGroupRenamed(newName));
             }
             case "setowner" -> {
-                if (!hasPerm(p,"setowner")) {
+                if (noPerm(p, "setowner")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
@@ -196,7 +201,7 @@ public class GroupCmd extends Command {
                     return;
                 }
                 CameraGroup group = cgm.get(args[2]);
-                if (group == null || !canUse(p,group.getOwner())) {
+                if (group == null || cantUse(p, group.getOwner())) {
                     p.sendMessage(lang.GROUP_NOT_FOUND);
                     return;
                 }

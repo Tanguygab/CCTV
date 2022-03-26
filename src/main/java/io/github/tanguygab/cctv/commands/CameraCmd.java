@@ -2,7 +2,6 @@ package io.github.tanguygab.cctv.commands;
 
 import io.github.tanguygab.cctv.entities.Camera;
 import io.github.tanguygab.cctv.managers.CameraManager;
-import io.github.tanguygab.cctv.utils.Heads;
 import io.github.tanguygab.cctv.utils.Utils;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -10,7 +9,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,7 +29,7 @@ public class CameraCmd extends Command {
 
         switch (arg) {
             case "get" -> {
-                if (!hasPerm(p,"create")) {
+                if (noPerm(p, "create")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
@@ -44,7 +42,7 @@ public class CameraCmd extends Command {
                 p.sendMessage(ChatColor.GREEN + "Place down this item to create a camera!");
             }
             case "create" -> {
-                if (!hasPerm(p,"create")) {
+                if (noPerm(p, "create")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
@@ -52,7 +50,7 @@ public class CameraCmd extends Command {
                 else p.sendMessage(ChatColor.RED + "Please specify a camera name!");
             }
             case "delete" -> {
-                if (!hasPerm(p,"delete")) {
+                if (noPerm(p, "delete")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
@@ -61,21 +59,26 @@ public class CameraCmd extends Command {
                     return;
                 }
                 Camera camera = cm.get(args[2]);
-                if (camera == null || !canUse(p,camera.getOwner())) {
+                if (camera == null || cantUse(p, camera.getOwner())) {
                     p.sendMessage(lang.CAMERA_NOT_FOUND);
                     return;
                 }
                 cm.delete(camera.getId(),p);
             }
             case "list" -> {
-                if (!hasPerm(p,"list")) {
+                if (noPerm(p, "list")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
-                p.spigot().sendMessage(list("Cameras",cm.get(p),"view","Click to view!"));
+                int page = 1;
+                if (args.length > 2) {
+                    try {page = Integer.parseInt(args[2]);}
+                    catch (Exception ignored) {}
+                }
+                p.spigot().sendMessage(list("Cameras",cm.get(p),"view","Click to view!",page));
             }
             case "view" -> {
-                if (!hasPerm(p,"view")) {
+                if (noPerm(p, "view")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
@@ -88,14 +91,14 @@ public class CameraCmd extends Command {
                     return;
                 }
                 Camera camera = cm.get(args[2]);
-                if (camera == null || !canUse(p,camera.getOwner())) {
+                if (camera == null || cantUse(p, camera.getOwner())) {
                     p.sendMessage(lang.CAMERA_NOT_FOUND);
                     return;
                 }
                 cm.viewCamera(p, camera, null);
             }
             case "connected" -> {
-                if (!hasPerm(p,"connected")) {
+                if (noPerm(p, "connected")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
@@ -104,21 +107,21 @@ public class CameraCmd extends Command {
                     return;
                 }
                 Camera camera = cm.get(args[2]);
-                if (camera == null || !canUse(p,camera.getOwner())) {
+                if (camera == null || cantUse(p, camera.getOwner())) {
                     p.sendMessage(lang.CAMERA_NOT_FOUND);
                     return;
                 }
                 p.sendMessage(lang.getCameraViewCount(Math.toIntExact(cctv.getViewers().values().stream().filter(viewer->viewer.getCamera()==camera).count()),camera.getId()));
             }
             case "return" -> {
-                if (!hasPerm(p,"return")) {
+                if (noPerm(p, "return")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
                 cm.unviewCamera(p);
             }
             case "teleport" -> {
-                if (!hasPerm(p,"teleport")) {
+                if (noPerm(p, "teleport")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
@@ -127,14 +130,14 @@ public class CameraCmd extends Command {
                     return;
                 }
                 Camera camera = cm.get(args[2]);
-                if (camera == null || !canUse(p,camera.getOwner())) {
+                if (camera == null || cantUse(p, camera.getOwner())) {
                     p.sendMessage(lang.CAMERA_NOT_FOUND);
                     return;
                 }
                 cm.teleport(camera,p);
             }
             case "enable" -> {
-                if (!hasPerm(p,"enable")) {
+                if (noPerm(p, "enable")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
@@ -143,7 +146,7 @@ public class CameraCmd extends Command {
                     return;
                 }
                 Camera camera = cm.get(args[2]);
-                if (camera == null || !canUse(p,camera.getOwner())) {
+                if (camera == null || cantUse(p, camera.getOwner())) {
                     p.sendMessage(lang.CAMERA_NOT_FOUND);
                     return;
                 }
@@ -155,7 +158,7 @@ public class CameraCmd extends Command {
                 p.sendMessage(lang.getCameraEnabled(camera.getId()));
             }
             case "disable" -> {
-                if (!hasPerm(p,"disable")) {
+                if (noPerm(p, "disable")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
@@ -164,7 +167,7 @@ public class CameraCmd extends Command {
                     return;
                 }
                 Camera camera = cm.get(args[2]);
-                if (camera == null || !canUse(p,camera.getOwner())) {
+                if (camera == null || cantUse(p, camera.getOwner())) {
                     p.sendMessage(lang.CAMERA_NOT_FOUND);
                     return;
                 }
@@ -176,7 +179,7 @@ public class CameraCmd extends Command {
                 p.sendMessage(lang.getCameraDisabled(camera.getId()));
             }
             case "show" -> {
-                if (!hasPerm(p,"show")) {
+                if (noPerm(p, "show")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
@@ -185,7 +188,7 @@ public class CameraCmd extends Command {
                     return;
                 }
                 Camera camera = cm.get(args[2]);
-                if (camera == null || !canUse(p,camera.getOwner())) {
+                if (camera == null || cantUse(p, camera.getOwner())) {
                     p.sendMessage(lang.CAMERA_NOT_FOUND);
                     return;
                 }
@@ -197,7 +200,7 @@ public class CameraCmd extends Command {
                 p.sendMessage(lang.getCameraShown(camera.getId()));
             }
             case "hide" -> {
-                if (!hasPerm(p,"hide")) {
+                if (noPerm(p, "hide")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
@@ -206,7 +209,7 @@ public class CameraCmd extends Command {
                     return;
                 }
                 Camera camera = cm.get(args[2]);
-                if (camera == null || !canUse(p,camera.getOwner())) {
+                if (camera == null || cantUse(p, camera.getOwner())) {
                     p.sendMessage(lang.CAMERA_NOT_FOUND);
                     return;
                 }
@@ -218,7 +221,7 @@ public class CameraCmd extends Command {
                 p.sendMessage(lang.getCameraHidden(camera.getId()));
             }
             case "movehere" -> {
-                if (!hasPerm(p,"movehere")) {
+                if (noPerm(p, "movehere")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
@@ -227,7 +230,7 @@ public class CameraCmd extends Command {
                     return;
                 }
                 Camera camera = cm.get(args[2]);
-                if (camera == null || !canUse(p,camera.getOwner())) {
+                if (camera == null || cantUse(p, camera.getOwner())) {
                     p.sendMessage(lang.CAMERA_NOT_FOUND);
                     return;
                 }
@@ -235,7 +238,7 @@ public class CameraCmd extends Command {
                 p.sendMessage(lang.CAMERA_MOVED);
             }
             case "rename" -> {
-                if (!hasPerm(p,"rename")) {
+                if (noPerm(p, "rename")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
@@ -244,7 +247,7 @@ public class CameraCmd extends Command {
                     return;
                 }
                 Camera camera = cm.get(args[2]);
-                if (camera == null || !canUse(p,camera.getOwner())) {
+                if (camera == null || cantUse(p, camera.getOwner())) {
                     p.sendMessage(lang.CAMERA_NOT_FOUND);
                     return;
                 }
@@ -266,7 +269,7 @@ public class CameraCmd extends Command {
                 p.sendMessage(lang.getCameraRenamed(newName));
             }
             case "setowner" -> {
-                if (!hasPerm(p,"setowner")) {
+                if (noPerm(p, "setowner")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
@@ -275,7 +278,7 @@ public class CameraCmd extends Command {
                     return;
                 }
                 Camera camera = cm.get(args[2]);
-                if (camera == null || !canUse(p,camera.getOwner())) {
+                if (camera == null || cantUse(p, camera.getOwner())) {
                     p.sendMessage(lang.CAMERA_NOT_FOUND);
                     return;
                 }

@@ -102,7 +102,7 @@ public class CameraManager extends Manager<Camera> {
             player.sendMessage(lang.CAMERA_ALREADY_EXISTS);
             return;
         }
-        if (id == null) id = Utils.getRandomNumber(999999, "computer")+"";
+        if (id == null) id = Utils.getRandomNumber(999999, "camera")+"";
 
         create(id,player.getUniqueId().toString(),loc,true,true,skin);
         player.sendMessage(lang.CAMERA_CREATE);

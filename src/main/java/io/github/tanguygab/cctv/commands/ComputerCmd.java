@@ -29,7 +29,7 @@ public class ComputerCmd extends Command {
 
         switch (arg) {
             case "get" -> {
-                if (!hasPerm(p,"create")) {
+                if (noPerm(p, "create")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
@@ -37,14 +37,19 @@ public class ComputerCmd extends Command {
                 p.sendMessage(ChatColor.GREEN + "Place down this item to create a computer!");
             }
             case "list" -> {
-                if (!hasPerm(p,"list")) {
+                if (noPerm(p, "list")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
-                p.spigot().sendMessage(list("Computers",cpm.get(p),"open","Click to open!"));
+                int page = 1;
+                if (args.length > 2) {
+                    try {page = Integer.parseInt(args[2]);}
+                    catch (Exception ignored) {}
+                }
+                p.spigot().sendMessage(list("Computers",cpm.get(p),"open","Click to open!",page));
             }
             case "open" -> {
-                if (!hasPerm(p,"open")) {
+                if (noPerm(p, "open")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
@@ -53,14 +58,14 @@ public class ComputerCmd extends Command {
                     return;
                 }
                 Computer computer = cpm.get(args[2]);
-                if (computer == null || !canUse(p,computer.getOwner())) {
+                if (computer == null || cantUse(p, computer.getOwner())) {
                     p.sendMessage(lang.COMPUTER_NOT_FOUND);
                     return;
                 }
                 cpm.open(p,computer);
             }
             case "teleport" -> {
-                if (!hasPerm(p,"teleport")) {
+                if (noPerm(p, "teleport")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
@@ -69,14 +74,14 @@ public class ComputerCmd extends Command {
                     return;
                 }
                 Computer computer = cpm.get(args[2]);
-                if (computer == null || !canUse(p,computer.getOwner())) {
+                if (computer == null || cantUse(p, computer.getOwner())) {
                     p.sendMessage(lang.COMPUTER_NOT_FOUND);
                     return;
                 }
                 cpm.teleport(p,computer);
             }
             case "setowner" -> {
-                if (!hasPerm(p,"setowner")) {
+                if (noPerm(p, "setowner")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
@@ -85,7 +90,7 @@ public class ComputerCmd extends Command {
                     return;
                 }
                 Computer computer = cpm.get(args[2]);
-                if (computer == null || !canUse(p,computer.getOwner())) {
+                if (computer == null || cantUse(p, computer.getOwner())) {
                     p.sendMessage(lang.COMPUTER_NOT_FOUND);
                     return;
                 }

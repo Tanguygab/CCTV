@@ -11,7 +11,7 @@ import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.List;
+import java.util.*;
 
 public abstract class Command {
 
@@ -24,11 +24,11 @@ public abstract class Command {
         this.type = type;
     }
 
-    protected boolean hasPerm(Player p, String perm) {
-        return p.hasPermission("cctv."+type+perm);
+    protected boolean noPerm(Player p, String perm) {
+        return !p.hasPermission("cctv." + type + perm);
     }
-    protected boolean canUse(Player p, String owner) {
-        return owner.equals(p.getUniqueId().toString()) || hasPerm(p,".other");
+    protected boolean cantUse(Player p, String owner) {
+        return !owner.equals(p.getUniqueId().toString()) && noPerm(p, ".other");
     }
     protected TextComponent comp(String text, ChatColor color) {
         TextComponent comp = new TextComponent(text);
@@ -36,11 +36,11 @@ public abstract class Command {
         comp.setBold(false);
         return comp;
     }
-    protected TextComponent comp(String text, ChatColor color, String value, ChatColor valueColor) {
+    protected TextComponent comp(String text, String value) {
         TextComponent comp = new TextComponent(text);
-        comp.setColor(color);
+        comp.setColor(ChatColor.GOLD);
         TextComponent valueComp = new TextComponent(value);
-        valueComp.setColor(valueColor);
+        valueComp.setColor(ChatColor.YELLOW);
         comp.addExtra(valueComp);
         comp.setBold(false);
         return comp;
@@ -66,17 +66,46 @@ public abstract class Command {
         comp.addExtra(strikeThrough);
         return comp;
     }
-    protected TextComponent list(String name, List<String> list, String cmd, String hover) {
-        TextComponent comp = comp(name+":",ChatColor.GOLD);
+    protected TextComponent list(String name, List<String> list, String cmd, String hover, int page) {
+        Map<Integer,List<String>> pages = new HashMap<>();
+        if (list.size() < 10) pages.put(0,list);
+        else list.forEach(el->{
+            int pageIndex = list.indexOf(el)/10;
+            if (!pages.containsKey(pageIndex))
+                pages.put(pageIndex,new ArrayList<>());
+            pages.get(pageIndex).add(el);
+        });
+        TextComponent comp = comp(name+" ("+page+"/"+pages.size()+"):\n",ChatColor.GOLD);
         comp.setBold(true);
 
-        list.forEach(el->{
-            TextComponent subComp = comp("\n - "+el,ChatColor.YELLOW);
+        if (!pages.containsKey(page-1)) page = 1;
+
+        pages.get(page-1).forEach(el->{
+            TextComponent subComp = comp(" - "+el+"\n",ChatColor.YELLOW);
             subComp.setBold(false);
             subComp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,new Text(new BaseComponent[]{comp(hover,ChatColor.YELLOW)})));
             subComp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,"/cctv "+type+" "+cmd+" "+el));
             comp.addExtra(subComp);
         });
+
+        TextComponent filler = comp("        ",ChatColor.GOLD);
+        filler.setStrikethrough(true);
+        comp.addExtra(filler);
+
+        TextComponent previous = comp("\u00AB",page <= 1 ? ChatColor.DARK_GRAY : ChatColor.GRAY);
+        if (page > 1) {
+            previous.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(ChatColor.YELLOW+"Previous Page")));
+            previous.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cctv " + type + " list " + (page-1)));
+        }
+        comp.addExtra(previous);
+        TextComponent next = comp("\u00BB",page == pages.size() ? ChatColor.DARK_GRAY : ChatColor.GRAY);
+        if (page < pages.size()) {
+            next.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(ChatColor.YELLOW+"Next Page")));
+            next.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cctv " + type + " list " + (page+1)));
+        }
+        comp.addExtra(next);
+        comp.addExtra(filler);
+
         return comp;
     }
 

@@ -21,7 +21,7 @@ public class CameraGroupManager extends Manager<CameraGroup> {
         cams.forEach((id,cfg)-> {
             Map<String, Object> config = (Map<String, Object>) cfg;
             String owner = config.get("owner")+"";
-            List<String> cameras = (List<String>)config.get("cameras");
+            List<String> cameras = config.containsKey("cameras") ? (List<String>)config.get("cameras") : new ArrayList<>();
 
             CameraGroup group = new CameraGroup(id,owner,cameras);
             map.put(id,group);
