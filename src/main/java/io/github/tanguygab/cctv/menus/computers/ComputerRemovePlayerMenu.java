@@ -31,14 +31,15 @@ public class ComputerRemovePlayerMenu extends ComputerMenu {
         inv.setItem(36, Heads.COMPUTER_PREVIOUS.get());
         inv.setItem(45, Heads.COMPUTER_BACK.get());
 
-        for (int i = (page - 1) * 48; i < 48 * page && i < computer.getAllowedPlayers().size(); i++) {
-            OfflinePlayer off = Bukkit.getOfflinePlayer(UUID.fromString(computer.getAllowedPlayers().get(i)));
+        list(computer.getAllowedPlayers(),uuid->{
+            OfflinePlayer off = Bukkit.getOfflinePlayer(UUID.fromString(uuid));
             ItemStack item = getItem(Material.PLAYER_HEAD, ChatColor.YELLOW + "Player: " + off.getName());
             SkullMeta meta = (SkullMeta)item.getItemMeta();
             meta.setOwningPlayer(off);
             item.setItemMeta(meta);
             inv.addItem(item);
-        }
+        });
+
 
         p.openInventory(inv);
     }

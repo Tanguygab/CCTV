@@ -12,6 +12,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.List;
+import java.util.function.Consumer;
+
 public abstract class CCTVMenu {
 
     protected final Player p;
@@ -20,6 +23,7 @@ public abstract class CCTVMenu {
     protected LanguageFile lang = cctv.getLang();
     public boolean renaming = false;
     private CCTVMenu previousMenu;
+    protected int page = 1;
 
     protected CCTVMenu(Player p) {
         this.p = p;
@@ -45,6 +49,20 @@ public abstract class CCTVMenu {
     public void fillSlots(int... slots) {
         ItemStack filler = getItem(Material.GRAY_STAINED_GLASS_PANE, " ");
         for (Integer slot : slots) inv.setItem(slot,filler);
+    }
+
+
+    protected void setPage(int page) {
+        if (page < 1) return;
+        this.page = page;
+        renaming = true;
+        open();
+    }
+
+    public <T> void list(List<T> list, Consumer<T> run) {
+        for (int i = (page - 1) * 48; i < 48 * page && i < list.size(); i++) {
+            run.accept(list.get(i));
+        }
     }
 
     public void open(CCTVMenu menu) {

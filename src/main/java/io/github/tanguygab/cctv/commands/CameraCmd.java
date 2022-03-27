@@ -256,17 +256,9 @@ public class CameraCmd extends Command {
                     return;
                 }
                 String newName = args[3];
-                if (cm.exists(newName)) {
-                    p.sendMessage(lang.CAMERA_ALREADY_EXISTS);
-                    return;
-                }
-                camera.setId(newName);
-                cctv.getCameraGroups().values().forEach(g->{
-                    if (g.getCameras().contains(camera))
-                        g.saveCams();
-                });
-                camera.getArmorStand().setCustomName("CAM-"+camera.getId());
-                p.sendMessage(lang.getCameraRenamed(newName));
+                if (camera.rename(newName))
+                    p.sendMessage(lang.getCameraRenamed(newName));
+                else p.sendMessage(lang.CAMERA_ALREADY_EXISTS);
             }
             case "setowner" -> {
                 if (noPerm(p, "setowner")) {

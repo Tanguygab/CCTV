@@ -31,10 +31,8 @@ public class InteractEvent {
                 ComputerManager cpm = CCTV.get().getComputers();
                 Computer computer = cpm.get(block.getLocation());
                 if (computer != null) {
-                    if (computer.canUse(p)) {
-                        cpm.setLast(p, computer);
-                        cpm.open(p, computer);
-                    } else p.sendMessage(lang.COMPUTER_NOT_ALLOWED);
+                    if (computer.canUse(p)) cpm.open(p, computer);
+                    else p.sendMessage(lang.COMPUTER_NOT_ALLOWED);
                     e.setCancelled(true);
                     return;
                 }

@@ -1,6 +1,5 @@
 no-permissions: "&cYou don't have the right permission to do that!"
 player-not-found: "&cThis player doesn't exist."
-player-already-added: "&cThis player has already been added!"
 player-added: "&aThis player has been added!"
 player-removed: "&cThis player has been removed!"
 max-rotation: "&cThis is the limit of rotation!"
@@ -66,6 +65,7 @@ gui:
     default: "&eCCTV (page: %page%)"
     options-item: "&eOptions"
     set-group: "&eSet camera group (page: %page%)"
+    add-player: "&aAdd player (page: %page%)"
     remove-player: "&cRemove player (page: %page%)"
     default-item:
       option: "&6Options"
@@ -94,5 +94,5 @@ camera-view:
     zoom-off: "&6Zoom: &4Off"
     back: "&8Back"
     spot: "&6Spotting"
-chat-provide-player: "&aProvide the player that you would like to add in the chat!"
-chat-type-exit: "&aType 'exit' to exit player adding!"
+chat-provide-player: "&aProvide the new name you would like your camera to have!"
+chat-type-exit: "&aType 'cancel' to cancel!"

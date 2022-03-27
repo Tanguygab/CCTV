@@ -17,7 +17,6 @@ public class LanguageFile extends YamlConfigurationFile {
 
     public final String NO_PERMISSIONS = get("no-permissions","&cYou don't have the right permission to do that!");
     public final String PLAYER_NOT_FOUND = get("player-not-found","&cThis player doesn't exist.");
-    public final String PLAYER_ALREADY_ADDED = get("player-already-added","&cPlayer has already been added!");
     public final String PLAYER_ADDED = get("player-added","&aPlayer has been added!");
     public final String PLAYER_REMOVED = get("player-removed","&cPlayer has been removed!");
 
@@ -135,6 +134,10 @@ public class LanguageFile extends YamlConfigurationFile {
     public String getGuiComputerRemovePlayer(String page) {
         return GUI_COMPUTER_REMOVE_PLAYER.replace("%page%",page);
     }
+    private final String GUI_COMPUTER_ADD_PLAYER = get("gui.computer.add-player", "&aAdd player (page: %page%)");
+    public String getGuiComputerAddPlayer(String page) {
+        return GUI_COMPUTER_ADD_PLAYER.replace("%page%",page);
+    }
     public final String GUI_COMPUTER_DEFAULT_ITEM_OPTION = get("gui.computer.default-item.option", "&6Options");
     public final String GUI_COMPUTER_DEFAULT_ITEM_NEXT_PAGE = get("gui.computer.default-item.next-page", "&8Next Page");
     public final String GUI_COMPUTER_DEFAULT_ITEM_PREVIOUS_PAGE = get("gui.computer.default-item.previous-page", "&8Previous Page");
@@ -163,7 +166,7 @@ public class LanguageFile extends YamlConfigurationFile {
     public final String CAMERA_VIEW_OPTIONS_BACK = get("camera-view.options.back", "&8Back");
     public final String CAMERA_VIEW_OPTIONS_SPOT = get("camera-view.options.spot", "&6Spotting");
 
-    public final String CHAT_PROVIDE_PLAYER = get("chat-provide-player", "&aProvide the player that you would like to add in the chat!");
-    public final String CHAT_TYPE_EXIT = get("chat-type-exit", "&aType 'exit' to exit player adding!");
+    public final String CHAT_PROVIDE_NAME = get("chat-provide-name", "&aProvide the new name you would like your camera to have!");
+    public final String CHAT_TYPE_CANCEL = get("chat-type-cancel", "&aType 'cancel' to cancel!");
 
 }

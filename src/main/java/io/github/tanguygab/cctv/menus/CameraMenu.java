@@ -1,6 +1,7 @@
 package io.github.tanguygab.cctv.menus;
 
 import io.github.tanguygab.cctv.entities.Camera;
+import io.github.tanguygab.cctv.listeners.Listener;
 import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.utils.CustomHeads;
 import io.github.tanguygab.cctv.utils.Heads;
@@ -93,7 +94,10 @@ public class CameraMenu extends CCTVMenu {
                 updateEnabledItem();
             }
             case 33 -> {
-                p.sendMessage("WIP");
+                Listener.cameraRename.put(p,camera);
+                p.closeInventory();
+                p.sendMessage(lang.CHAT_PROVIDE_NAME);
+                p.sendMessage(lang.CHAT_TYPE_CANCEL);
             }
 
             case 11 -> cm.rotateVertically(p,camera, -9);

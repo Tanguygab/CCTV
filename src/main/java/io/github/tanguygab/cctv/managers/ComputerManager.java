@@ -1,7 +1,6 @@
 package io.github.tanguygab.cctv.managers;
 
 import io.github.tanguygab.cctv.entities.Computer;
-import io.github.tanguygab.cctv.listeners.Listener;
 import io.github.tanguygab.cctv.menus.computers.ComputerMainMenu;
 import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.Bukkit;
@@ -70,12 +69,6 @@ public class ComputerManager extends Manager<Computer> {
             if (computer.getOwner().equals(p.getUniqueId().toString()))
                 list.add(computer.getId());
         return list;
-    }
-    public Computer getLast(Player p) {
-        return Listener.lastClickedComputer.get(p);
-    }
-    public void setLast(Player p, Computer computer) {
-        Listener.lastClickedComputer.put(p,computer);
     }
 
     private Computer create(String id, String owner, Location loc, String group, List<String> allowedPlayers) {

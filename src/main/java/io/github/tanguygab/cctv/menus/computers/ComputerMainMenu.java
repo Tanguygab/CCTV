@@ -38,22 +38,21 @@ public class ComputerMainMenu extends ComputerMenu {
 
         CameraGroup group = computer.getCameraGroup();
         if (group != null)
-            for (int a = (page - 1) * 48; a < 48 * page && a < group.getCameras().size(); a++) {
-                Camera cam = group.getCameras().get(a);
+            list(group.getCameras(),cam->{
                 ItemStack item = getItem(cctv.getCustomHeads().get(cam.getSkin()), "&eCamera: " + cam.getId());
                 Location loc = cam.getLocation();
                 ItemMeta meta = item.getItemMeta();
                 meta.setLore(List.of("",ChatColor.translateAlternateColorCodes('&',
-                        "&6X: &7"+f.format(loc.getX())
-                                +" &6Y: &7"+f.format(loc.getY())
-                                +" &6Z: &7"+f.format(loc.getZ())
+                                "&6X: &7"+f.format(loc.getX())
+                                        +" &6Y: &7"+f.format(loc.getY())
+                                        +" &6Z: &7"+f.format(loc.getZ())
                         ),""
                         ,ChatColor.YELLOW+"Left-Click to View"
                         ,ChatColor.YELLOW+"Right-Click to Edit"
                 ));
                 item.setItemMeta(meta);
                 inv.addItem(item);
-            }
+            });
 
         p.openInventory(inv);
     }

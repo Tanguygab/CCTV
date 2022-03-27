@@ -27,18 +27,21 @@ import java.util.*;
 
 public class Listener implements org.bukkit.event.Listener {
 
+    private final CCTV cctv;
     private final LanguageFile lang;
+    private final CameraManager cm;
     private final ComputerManager cpm;
     private final ViewerManager vm;
 
-    public static final List<Player> chatInput = new ArrayList<>();
-    public static final Map<Player,Computer> lastClickedComputer = new HashMap<>();
+    public static final Map<Player,Camera> cameraRename = new HashMap<>();
     public static Map<Player,CCTVMenu> openedMenus = new HashMap<>();
 
     public Listener() {
-        lang = CCTV.get().getLang();
-        cpm = CCTV.get().getComputers();
-        vm = CCTV.get().getViewers();
+        cctv = CCTV.get();
+        lang = cctv.getLang();
+        cm = cctv.getCameras();
+        cpm = cctv.getComputers();
+        vm = cctv.getViewers();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -76,7 +79,6 @@ public class Listener implements org.bukkit.event.Listener {
         e.setCancelled(true);
         Player p = e.getPlayer();
         if (vm.exists(p)) return;
-        CameraManager cm = CCTV.get().getCameras();
 
         Camera camera = null;
         for (Camera cam : cm.values()) {
@@ -93,7 +95,7 @@ public class Listener implements org.bukkit.event.Listener {
         }
 
         if (!cm.get(p).contains(camera.getId())) return;
-        CCTV.get().openMenu(p,new CameraMenu(p,camera));
+        cctv.openMenu(p,new CameraMenu(p,camera));
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -101,31 +103,27 @@ public class Listener implements org.bukkit.event.Listener {
         Player p = e.getPlayer();
         String msg = e.getMessage();
 
-        if (!chatInput.contains(p)) return;
+        if (!cameraRename.containsKey(p)) return;
         e.setCancelled(true);
-        chatInput.remove(p);
+        Camera camera = cameraRename.get(p);
+        cameraRename.remove(p);
 
-        if (msg.equals("exit")) {
-            p.sendMessage(ChatColor.RED + "You have stopped adding players to the computer!");
+        if (msg.equals("cancel")) {
+            p.sendMessage(ChatColor.RED + "Camera renaming cancelled!");
             return;
         }
-        OfflinePlayer off = Utils.getOfflinePlayer(msg);
-        if (off == null) {
-            p.sendMessage(lang.PLAYER_NOT_FOUND);
+
+        if (msg.equals("")) {
+            p.sendMessage(ChatColor.RED + "Please specify a new name!");
             return;
         }
-        Computer computer = lastClickedComputer.get(p);
-        if (computer == null) {
-            p.sendMessage(lang.COMPUTER_NOT_FOUND);
+        String newName = msg.split(" ")[0];
+        if (camera.rename(newName)) {
+            p.sendMessage(lang.getCameraRenamed(newName));
+            Bukkit.getServer().getScheduler().runTask(cctv,()->cctv.openMenu(p,new CameraMenu(p,camera)));
             return;
         }
-        String uuid = off.getUniqueId().toString();
-        if (computer.canUse(off)) {
-            p.sendMessage(lang.PLAYER_ALREADY_ADDED);
-            return;
-        }
-        computer.addPlayer(uuid);
-        p.sendMessage(lang.PLAYER_ADDED);
+        p.sendMessage(lang.CAMERA_ALREADY_EXISTS);
     }
 
     @EventHandler
@@ -136,7 +134,7 @@ public class Listener implements org.bukkit.event.Listener {
 
         vm.values().forEach(player->{
             Player p = Bukkit.getServer().getPlayer(UUID.fromString(player.getId()));
-            joined.hidePlayer(CCTV.get(),p);
+            joined.hidePlayer(cctv,p);
             NMSUtils.spawnNPCForTarget(joined,p);
         });
     }

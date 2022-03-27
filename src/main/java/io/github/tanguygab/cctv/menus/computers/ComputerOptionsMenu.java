@@ -57,12 +57,7 @@ public class ComputerOptionsMenu extends ComputerMenu {
                 }
                 open(new ComputerSetGroupMenu(p,computer));
             }
-            case 3 -> {
-                Listener.chatInput.add(p);
-                p.closeInventory();
-                p.sendMessage(lang.CHAT_PROVIDE_PLAYER);
-                p.sendMessage(lang.CHAT_TYPE_EXIT);
-            }
+            case 3 -> open(new ComputerAddPlayersMenu(p,computer));
             case 4 -> open(new ComputerRemovePlayerMenu(p,computer));
         }
     }

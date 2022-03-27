@@ -1,39 +1,47 @@
 package io.github.tanguygab.cctv.menus.computers;
 
-import io.github.tanguygab.cctv.entities.CameraGroup;
 import io.github.tanguygab.cctv.entities.Computer;
-import io.github.tanguygab.cctv.managers.CameraGroupManager;
 import io.github.tanguygab.cctv.menus.ComputerMenu;
 import io.github.tanguygab.cctv.utils.Heads;
+import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
-public class ComputerSetGroupMenu extends ComputerMenu {
+public class ComputerAddPlayersMenu extends ComputerMenu {
 
-    private final CameraGroupManager cgm = cctv.getCameraGroups();
-
-    public ComputerSetGroupMenu(Player p, Computer computer) {
+    protected ComputerAddPlayersMenu(Player p, Computer computer) {
         super(p, computer);
     }
 
     @Override
     public void open() {
-        inv = Bukkit.getServer().createInventory(null, 54, lang.getGuiComputerSetGroup(page+""));
+        inv = Bukkit.getServer().createInventory(null, 54, lang.getGuiComputerAddPlayer(page+""));
 
         fillSlots(0,9,18);
         inv.setItem(27, Heads.COMPUTER_NEXT.get());
         inv.setItem(36, Heads.COMPUTER_PREVIOUS.get());
         inv.setItem(45, Heads.COMPUTER_BACK.get());
 
-        List<String> groups = cgm.get(p);
-        list(groups,group-> inv.addItem(getItem(Heads.CAMERA, ChatColor.GOLD + "Group: "+ChatColor.YELLOW+group)));
+        List<OfflinePlayer> list = Arrays.stream(Bukkit.getServer().getOfflinePlayers()).filter(off->!computer.getAllowedPlayers().contains(off.getUniqueId().toString())).toList();
+
+        list(list,off->{
+            ItemStack item = getItem(Material.PLAYER_HEAD, ChatColor.YELLOW + "Player: " + off.getName());
+            SkullMeta meta = (SkullMeta)item.getItemMeta();
+            meta.setOwningPlayer(off);
+            item.setItemMeta(meta);
+            inv.addItem(item);
+        });
 
         p.openInventory(inv);
     }
@@ -48,12 +56,12 @@ public class ComputerSetGroupMenu extends ComputerMenu {
                 ItemMeta meta = item.getItemMeta();
                 if (meta == null || !meta.hasDisplayName()) return;
                 String itemName = ChatColor.stripColor(meta.getDisplayName());
-                if (!itemName.startsWith("Group: ")) return;
-                String group = itemName.substring(7);
-                CameraGroup camGroup = cgm.get(group);
-                computer.setCameraGroup(camGroup);
-                open(new ComputerOptionsMenu(p,computer));
-                p.sendMessage(lang.GROUP_ASSIGNED_TO_COMPUTER);
+                if (!itemName.startsWith("Player: ")) return;
+                String player = itemName.substring(8);
+                OfflinePlayer off = Utils.getOfflinePlayer(player);
+                computer.addPlayer(off.getUniqueId().toString());
+                setPage(page);
+                p.sendMessage(lang.PLAYER_ADDED);
             }
         }
     }

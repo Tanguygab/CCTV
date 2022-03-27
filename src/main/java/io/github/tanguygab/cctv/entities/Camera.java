@@ -38,6 +38,18 @@ public class Camera extends ID {
         setSkin(skin);
     }
 
+    public boolean rename(String newName) {
+        if (CCTV.get().getCameras().exists(newName)) {
+            return false;
+        }
+        setId(newName);
+        CCTV.get().getCameraGroups().values().forEach(g->{
+            if (g.getCameras().contains(this))
+                g.saveCams();
+        });
+        armorStand.setCustomName("CAM-"+getId());
+        return true;
+    }
 
     public String getOwner() {
         return owner;
