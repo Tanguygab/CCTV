@@ -16,7 +16,6 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 public class ComputerAddPlayersMenu extends ComputerMenu {
 
@@ -29,8 +28,8 @@ public class ComputerAddPlayersMenu extends ComputerMenu {
         inv = Bukkit.getServer().createInventory(null, 54, lang.getGuiComputerAddPlayer(page+""));
 
         fillSlots(0,9,18);
-        inv.setItem(27, Heads.COMPUTER_NEXT.get());
-        inv.setItem(36, Heads.COMPUTER_PREVIOUS.get());
+        inv.setItem(27, Heads.MENU_NEXT.get());
+        inv.setItem(36, Heads.MENU_PREVIOUS.get());
         inv.setItem(45, Heads.COMPUTER_BACK.get());
 
         List<OfflinePlayer> list = Arrays.stream(Bukkit.getServer().getOfflinePlayers()).filter(off->!computer.getAllowedPlayers().contains(off.getUniqueId().toString())).toList();

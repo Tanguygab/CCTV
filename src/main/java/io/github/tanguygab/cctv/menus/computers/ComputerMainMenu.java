@@ -3,7 +3,7 @@ package io.github.tanguygab.cctv.menus.computers;
 import io.github.tanguygab.cctv.entities.Camera;
 import io.github.tanguygab.cctv.entities.CameraGroup;
 import io.github.tanguygab.cctv.entities.Computer;
-import io.github.tanguygab.cctv.menus.CameraMenu;
+import io.github.tanguygab.cctv.menus.cameras.CameraMenu;
 import io.github.tanguygab.cctv.menus.ComputerMenu;
 import io.github.tanguygab.cctv.utils.Heads;
 import org.bukkit.Bukkit;
@@ -32,8 +32,8 @@ public class ComputerMainMenu extends ComputerMenu {
 
         fillSlots(9,18);
         inv.setItem(0, getItem(Heads.OPTIONS,lang.GUI_COMPUTER_DEFAULT_ITEM_OPTION));
-        inv.setItem(27, Heads.COMPUTER_NEXT.get());
-        inv.setItem(36, Heads.COMPUTER_PREVIOUS.get());
+        inv.setItem(27, Heads.MENU_NEXT.get());
+        inv.setItem(36, Heads.MENU_PREVIOUS.get());
         inv.setItem(45, getItem(Heads.EXIT,lang.GUI_COMPUTER_DEFAULT_ITEM_EXIT));
 
         CameraGroup group = computer.getCameraGroup();

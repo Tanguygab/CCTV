@@ -27,8 +27,8 @@ public class ComputerRemovePlayerMenu extends ComputerMenu {
         inv = Bukkit.getServer().createInventory(null, 54, lang.getGuiComputerRemovePlayer(page+""));
 
         fillSlots(0,9,18);
-        inv.setItem(27, Heads.COMPUTER_NEXT.get());
-        inv.setItem(36, Heads.COMPUTER_PREVIOUS.get());
+        inv.setItem(27, Heads.MENU_NEXT.get());
+        inv.setItem(36, Heads.MENU_PREVIOUS.get());
         inv.setItem(45, Heads.COMPUTER_BACK.get());
 
         list(computer.getAllowedPlayers(),uuid->{

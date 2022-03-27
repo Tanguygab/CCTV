@@ -58,6 +58,7 @@ computers:
 gui:
   camera:
     title: "&eCamera %cameraID%"
+    skin-title: "&eCamera Skins (page: %page%)"
     change-skin: "&aChange Camera Skin"
     delete: "&4Delete"
     exit: "&cExit"

@@ -315,17 +315,17 @@ public class CameraCmd extends Command {
             case 2 -> List.of("get","create","delete","list","view","connected","return","teleport","enable","disable","show","hide","movehere","rename","setowner");
             case 3 -> switch (args[1].toLowerCase()) {
                 case "create","list","return" -> null;
-                case "get" -> cctv.getCustomHeads().heads.keySet().stream().map(n->n.replace("_DEFAULT_","Default")).toList();
+                case "get" -> cctv.getCustomHeads().getHeads();
                 default -> sender instanceof Player p ? cm.get(p) : Utils.list(cm.values());
             };
             case 4 -> switch (args[1].toLowerCase()) {
                 case "setowner" -> Arrays.stream(Bukkit.getOfflinePlayers()).map(OfflinePlayer::getName).toList();
-                case "get" -> cctv.getCustomHeads().heads.keySet().stream().map(n->n.replace("_DEFAULT_","Default")).toList();
+                case "get" -> cctv.getCustomHeads().getHeads();
                 default -> null;
             };
             default -> {
                 if (args[1].equalsIgnoreCase("get"))
-                    yield cctv.getCustomHeads().heads.keySet().stream().map(n->n.replace("_DEFAULT_","Default")).toList();
+                    yield cctv.getCustomHeads().getHeads();
                 yield null;
             }
         };

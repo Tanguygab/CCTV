@@ -10,7 +10,7 @@ import java.util.*;
 
 public class CustomHeads {
 
-    public final Map<String,ItemStack> heads = new LinkedHashMap<>();
+    private final Map<String,ItemStack> heads = new LinkedHashMap<>();
     private final NamespacedKey headKey = new NamespacedKey(CCTV.get(),"head");
 
     public CustomHeads() {
@@ -25,8 +25,8 @@ public class CustomHeads {
         });
     }
 
-    public List<ItemStack> getHeads() {
-        return new ArrayList<>(heads.values());
+    public List<String> getHeads() {
+        return heads.keySet().stream().map(n->n.replace("_DEFAULT_","Default")).toList();
     }
 
     public ItemStack get(String name) {
@@ -37,16 +37,6 @@ public class CustomHeads {
         ItemMeta meta = item.getItemMeta();
         if (!isCamera(item) || CCTV.get().getLang().CAMERA_ITEM_NAME.equals(meta.getDisplayName())) return "_DEFAULT_";
         return meta.getPersistentDataContainer().get(headKey, PersistentDataType.STRING);
-    }
-
-    public String findNext(String skin, boolean previous) {
-        List<String> names = new ArrayList<>(heads.keySet());
-        int pos = names.indexOf(skin);
-        if (pos == -1) return "_DEFAULT_";
-        if (previous) pos--;
-        else pos++;
-        if (pos < 0 || pos >= names.size()) pos = 0;
-        return names.get(pos);
     }
 
     public boolean isCamera(ItemStack item) {

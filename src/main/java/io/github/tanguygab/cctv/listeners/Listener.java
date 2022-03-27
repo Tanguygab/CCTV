@@ -8,7 +8,7 @@ import io.github.tanguygab.cctv.managers.ComputerManager;
 import io.github.tanguygab.cctv.managers.ViewerManager;
 import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.menus.CCTVMenu;
-import io.github.tanguygab.cctv.menus.CameraMenu;
+import io.github.tanguygab.cctv.menus.cameras.CameraMenu;
 import io.github.tanguygab.cctv.utils.NMSUtils;
 import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.*;
