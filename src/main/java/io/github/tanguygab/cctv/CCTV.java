@@ -129,7 +129,7 @@ public class CCTV extends JavaPlugin {
             cameraManager.unviewCamera(p);
             p.closeInventory();
         }
-        getLogger().info("CCTV Plugin has been succesfully Disabled!");
+        getLogger().info("CCTV Plugin has been successfully Disabled!");
     }
 
     private void loadRecipes() {
