@@ -16,6 +16,7 @@ import io.github.tanguygab.cctv.managers.ViewerManager;
 import io.github.tanguygab.cctv.menus.CCTVMenu;
 import io.github.tanguygab.cctv.utils.CustomHeads;
 import io.github.tanguygab.cctv.utils.Heads;
+import io.github.tanguygab.cctv.utils.NMSUtils;
 import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.*;
 import org.bukkit.command.Command;
@@ -73,6 +74,11 @@ public class CCTV extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+        try {Class.forName("org.bukkit.craftbukkit.v1_18_R2");}
+        catch (Exception e) {
+            // unsupported version
+            NMSUtils.isCompatible = false;
+        }
         try {
             config = new YamlConfigurationFile(getResource("config.yml"), new File(getDataFolder(), "config.yml"));
             lang = new LanguageFile(getResource("language.yml"), new File(getDataFolder(), "language.yml"));
