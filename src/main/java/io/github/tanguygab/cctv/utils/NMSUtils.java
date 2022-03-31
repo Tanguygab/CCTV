@@ -5,6 +5,8 @@ import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.entities.Viewer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_18_R2.entity.CraftEntity;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import net.minecraft.network.protocol.Packet;
@@ -77,6 +79,15 @@ public class NMSUtils {
             sendPacket(player,new PacketPlayOutNamedEntitySpawn(npc));
             sendPacket(player,new PacketPlayOutEntityHeadRotation(npc, (byte) (int) (p.getLoc().getYaw() * 256.0F / 360.0F)));
         } catch (Exception e) {
+            // unsupported version
+        }
+    }
+
+    public static void setCameraPacket(Player p, Entity entity) {
+        try {
+            sendPacket(p,new PacketPlayOutCamera(((CraftEntity)entity).getHandle()));
+        } catch (Exception e) {
+            p.sendMessage("oops");
             // unsupported version
         }
     }
