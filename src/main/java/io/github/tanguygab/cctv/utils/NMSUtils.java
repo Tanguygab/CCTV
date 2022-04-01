@@ -1,34 +1,99 @@
 package io.github.tanguygab.cctv.utils;
 
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.PacketPlayOutCamera;
-import net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata;
-import org.bukkit.craftbukkit.v1_18_R2.entity.CraftEntity;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import net.minecraft.server.level.EntityPlayer;
-import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 
 public class NMSUtils {
 
-    private static void sendPacket(Player player, Packet<?> packet) {
-        ((CraftPlayer) player).getHandle().b.a(packet);
-    }
 
-    public static void glow(Player viewer, Player viewed, boolean glow) {
-        EntityPlayer viewedNMS = ((CraftPlayer) viewed).getHandle();
-        viewedNMS.i(glow); //setGlowingTag(boolean)
-        if (!glow) {
-            viewed.setSneaking(true); // yeah, I'm doing that because it doesn't want to work with PacketPlayOutEntityMetadata...
-            viewed.setSneaking(false);
+    private Field getConnection;
+    private Method sendPacket;
+
+    private Method setGlow;
+    private Method getId;
+    private Method getDataWatcher;
+    private Constructor<?> newPacketPlayOutEntityMetadata;
+
+    private Method getEntityHandle;
+    private Constructor<?> newPacketPlayOutCameraClass;
+
+    public NMSUtils() {
+        String version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+        try {
+            getEntityHandle = Class.forName("org.bukkit.craftbukkit."+version+".entity.CraftEntity").getDeclaredMethod("getHandle");
+
+            Class<?> entityPlayerClass;
+            try {
+                Class<?> entityClass = Class.forName("net.minecraft.world.entity.Entity");
+                setGlow = entityClass.getDeclaredMethod("i",boolean.class);
+                getId = entityClass.getDeclaredMethod("ae");
+                getDataWatcher = entityClass.getDeclaredMethod("ai");
+
+                newPacketPlayOutCameraClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutCamera").getConstructor(entityClass);
+                newPacketPlayOutEntityMetadata = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata")
+                        .getConstructor(int.class, Class.forName("net.minecraft.network.syncher.DataWatcher"),boolean.class);
+                entityPlayerClass = Class.forName("net.minecraft.server.level.EntityPlayer");
+            }
+            catch (ClassNotFoundException e) {
+                Class<?> entityClass = Class.forName("net.minecraft.server."+version+".Entity");
+                setGlow = entityClass.getDeclaredMethod("setGlowingTag");
+                getId = entityClass.getDeclaredMethod("getId");
+                getDataWatcher = entityClass.getDeclaredMethod("getDataWatcher");
+
+                newPacketPlayOutCameraClass = Class.forName("net.minecraft.server."+version+".PacketPlayOutCamera").getConstructor(entityClass);
+                newPacketPlayOutEntityMetadata = Class.forName("net.minecraft.server."+version+".PacketPlayOutEntityMetadata")
+                        .getConstructor(int.class, Class.forName("net.minecraft.server."+version+".DataWatcher"),boolean.class);
+                entityPlayerClass = Class.forName("net.minecraft.server."+version+".EntityPlayer");
+            }
+
+            try {
+                getConnection = entityPlayerClass.getDeclaredField("b");
+                sendPacket = getConnection.getType().getDeclaredMethod("a",Class.forName("net.minecraft.network.protocol.Packet"));
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                getConnection = entityPlayerClass.getDeclaredField("connection");
+                sendPacket = getConnection.getType().getDeclaredMethod("sendPacket",Class.forName("net.minecraft.server."+version+".Packet"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        sendPacket(viewer,new PacketPlayOutEntityMetadata(viewedNMS.ae(), viewedNMS.ai(), true));
     }
 
-    public static void setCameraPacket(Player p, Entity entity) {
-        sendPacket(p,new PacketPlayOutCamera(((CraftEntity)entity).getHandle()));
+    private void sendPacket(Player player, Object packet) throws InvocationTargetException, IllegalAccessException {
+        Object handle = getEntityHandle.invoke(player);
+        Object connection = getConnection.get(handle);
+        sendPacket.invoke(connection,packet);
+    }
+
+    public void glow(Player viewer, Player viewed, boolean glow) {
+        try {
+            Object viewedNMS = getEntityHandle.invoke(viewed);
+            setGlow.invoke(viewedNMS,glow);
+            if (!glow) {
+                viewed.setSneaking(true); // yeah, I'm doing that because it doesn't want to work with PacketPlayOutEntityMetadata...
+                viewed.setSneaking(false);
+            }
+            sendPacket(viewer, newPacketPlayOutEntityMetadata.newInstance(getId.invoke(viewedNMS), getDataWatcher.invoke(viewedNMS), true));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setCameraPacket(Player p, Entity entity) {
+        try {
+            Object nmsEntity = getEntityHandle.invoke(entity);
+            sendPacket(p,newPacketPlayOutCameraClass.newInstance(nmsEntity));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

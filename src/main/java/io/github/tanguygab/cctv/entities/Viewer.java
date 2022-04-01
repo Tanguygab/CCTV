@@ -1,7 +1,6 @@
 package io.github.tanguygab.cctv.entities;
 
 import io.github.tanguygab.cctv.CCTV;
-import io.github.tanguygab.cctv.utils.NMSUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -42,13 +41,14 @@ public class Viewer extends ID {
     }
     public void setNightVision(boolean nightVision) {
         this.nightVision = nightVision;
-        Player p = CCTV.get().getViewers().get(this);
+        CCTV cctv = CCTV.get();
+        Player p = cctv.getViewers().get(this);
         if (nightVision) {
-            p.hideEntity(CCTV.get(), camera.getArmorStand());
-            NMSUtils.setCameraPacket(p,camera.getCreeper());
+            p.hideEntity(cctv, camera.getArmorStand());
+            cctv.getNMS().setCameraPacket(p,camera.getCreeper());
             return;
         }
-        p.showEntity(CCTV.get(), camera.getArmorStand());
-        NMSUtils.setCameraPacket(p, camera.getArmorStand());
+        p.showEntity(cctv, camera.getArmorStand());
+        cctv.getNMS().setCameraPacket(p, camera.getArmorStand());
     }
 }

@@ -81,7 +81,7 @@ public class ViewerOptionsMenu extends CCTVMenu {
     }
     private boolean spot(Player viewer, Player viewed, boolean glow) {
         if (!viewed.canSee(viewed)) return false;
-        NMSUtils.glow(viewer,viewed,glow);
+        cctv.getNMS().glow(viewer,viewed,glow);
         return true;
     }
     private void nightvision(Player p) {

@@ -16,6 +16,7 @@ import io.github.tanguygab.cctv.managers.ViewerManager;
 import io.github.tanguygab.cctv.menus.CCTVMenu;
 import io.github.tanguygab.cctv.utils.CustomHeads;
 import io.github.tanguygab.cctv.utils.Heads;
+import io.github.tanguygab.cctv.utils.NMSUtils;
 import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.*;
 import org.bukkit.command.Command;
@@ -38,6 +39,7 @@ public class CCTV extends JavaPlugin {
     private ConfigurationFile config;
     private LanguageFile lang;
     private CustomHeads customHeads;
+    private NMSUtils nms;
     public ConfigurationFile getConfiguration() {
         return config;
     }
@@ -46,6 +48,9 @@ public class CCTV extends JavaPlugin {
     }
     public CustomHeads getCustomHeads() {
         return customHeads;
+    }
+    public NMSUtils getNMS() {
+        return nms;
     }
 
     private CameraCmd cameraCmd;
@@ -85,6 +90,7 @@ public class CCTV extends JavaPlugin {
         }
 
         customHeads = new CustomHeads();
+        nms = new NMSUtils();
 
         cameraCmd = new CameraCmd();
         groupCmd = new GroupCmd();

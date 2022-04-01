@@ -126,7 +126,7 @@ public class CameraManager extends Manager<Camera> {
 
     public void unviewCamera(Player player) {
         if (player == null) return;
-        NMSUtils.setCameraPacket(player,player);
+        cctv.getNMS().setCameraPacket(player,player);
         cctv.getViewers().delete(player);
     }
 
@@ -164,7 +164,7 @@ public class CameraManager extends Manager<Camera> {
         connecting.add(p);
         Bukkit.getScheduler().scheduleSyncDelayedTask(cctv,  () -> {
             vm.createPlayer(p, cam, group);
-            NMSUtils.setCameraPacket(p,cam.getArmorStand());
+            cctv.getNMS().setCameraPacket(p,cam.getArmorStand());
             connecting.remove(p);
         }, vm.TIME_TO_CONNECT * 20L);
     }
@@ -175,7 +175,7 @@ public class CameraManager extends Manager<Camera> {
             p.sendMessage(lang.CAMERA_NOT_FOUND);
             return;
         }
-        NMSUtils.setCameraPacket(p,cam.getArmorStand());
+        cctv.getNMS().setCameraPacket(p,cam.getArmorStand());
     }
 
     public void rotateHorizontally(Player p, Camera camera, int degrees) {
