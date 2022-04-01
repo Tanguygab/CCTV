@@ -8,7 +8,6 @@ import io.github.tanguygab.cctv.menus.CCTVMenu;
 import io.github.tanguygab.cctv.menus.ViewerOptionsMenu;
 import io.github.tanguygab.cctv.utils.Heads;
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -53,12 +52,8 @@ public class ViewerManager extends Manager<Viewer> {
         Player p = get(viewer);
         p.getInventory().setContents(viewer.getInv());
 
-        p.removePotionEffect(PotionEffectType.NIGHT_VISION);
-        p.removePotionEffect(PotionEffectType.INVISIBILITY);
         p.removePotionEffect(PotionEffectType.SLOW);
-        playerSetMode(p,false, viewer.getGameMode());
-        for (Player online : Bukkit.getOnlinePlayers()) online.showPlayer(cctv,p);
-        p.teleport(viewer.getLoc());
+        p.setCanPickupItems(true);
         delete(id);
     }
 
@@ -74,22 +69,11 @@ public class ViewerManager extends Manager<Viewer> {
         return exists(p.getUniqueId().toString());
     }
 
-    private static void playerSetMode(Player p, boolean mode, GameMode gm) {
-        p.setCanPickupItems(!mode);
-        p.setGameMode(gm);
-        if (gm != GameMode.CREATIVE && gm != GameMode.SPECTATOR) {
-            p.setAllowFlight(mode);
-            p.setFlying(mode);
-        }
-        p.setCollidable(!mode);
-        p.setInvulnerable(mode);
-    }
-
     public void createPlayer(Player p, Camera cam, CameraGroup group) {
         Viewer viewer = new Viewer(p,cam,group);
         map.put(viewer.getId(),viewer);
 
-        playerSetMode(p,true, GameMode.ADVENTURE);
+        p.setCanPickupItems(false);
         giveViewerItems(p,group);
 
         for (Player online : Bukkit.getOnlinePlayers()) online.hidePlayer(cctv,p);

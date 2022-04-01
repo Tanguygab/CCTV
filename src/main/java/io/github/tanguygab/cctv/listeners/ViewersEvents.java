@@ -11,8 +11,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.event.player.*;
+
+import java.util.Arrays;
 
 public class ViewersEvents implements Listener {
 
@@ -73,7 +76,19 @@ public class ViewersEvents implements Listener {
             vm.onCameraItems(p, p.getInventory().getItemInMainHand());
             e.setCancelled(true);
         }
+    }
 
-
+    @EventHandler
+    public void on(PlayerDeathEvent e) {
+        Player p = e.getEntity();
+        if (vm.exists(p)) {
+            if (!e.getKeepInventory()) {
+                e.getDrops().clear();
+                e.getDrops().addAll(Arrays.asList(vm.get(p).getInv()));
+            }
+            vm.delete(p);
+            if (!e.getKeepInventory())
+                p.getInventory().clear();
+        }
     }
 }
