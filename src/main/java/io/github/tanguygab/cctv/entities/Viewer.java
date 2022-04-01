@@ -56,6 +56,13 @@ public class Viewer extends ID {
     }
     public void setNightVision(boolean nightVision) {
         this.nightVision = nightVision;
-        NMSUtils.setCameraPacket(CCTV.get().getViewers().get(this), nightVision ? camera.getCreeper() : camera.getArmorStand());
+        Player p = CCTV.get().getViewers().get(this);
+        if (nightVision) {
+            p.hideEntity(CCTV.get(), camera.getArmorStand());
+            NMSUtils.setCameraPacket(p,camera.getCreeper());
+            return;
+        }
+        p.showEntity(CCTV.get(), camera.getArmorStand());
+        NMSUtils.setCameraPacket(p, camera.getArmorStand());
     }
 }
