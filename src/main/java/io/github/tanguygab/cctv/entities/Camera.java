@@ -92,9 +92,9 @@ public class Camera extends ID {
         if (newYaw < Math.round(check-36.0F) || newYaw > Math.round(check+36.0F)) return false;
         asLoc.setYaw(newYaw);
         armorStand.teleport(asLoc);
-        loc.add(0,0.5,0);
-        creeper.teleport(loc);
-        loc.add(0,-0.5,0);
+        asLoc.add(0,0.5,0);
+        creeper.teleport(asLoc);
+        asLoc.add(0,-0.5,0);
         return true;
     }
     public boolean rotateVertically(int degrees) {
