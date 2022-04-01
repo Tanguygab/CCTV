@@ -5,6 +5,8 @@ import io.github.tanguygab.cctv.config.LanguageFile;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Creeper;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.EulerAngle;
 
@@ -18,11 +20,13 @@ public class Camera extends ID {
     private boolean shown;
     private String skin;
     private ArmorStand armorStand;
+    private Creeper creeper;
 
-    public Camera(String name, String owner, Location loc, boolean enabled, boolean shown, ArmorStand armorStand, String skin) {
+    public Camera(String name, String owner, Location loc, boolean enabled, boolean shown, ArmorStand armorStand, Creeper creeper, String skin) {
         super(name,CCTV.get().getCameras());
         setOwner(owner);
         this.armorStand = armorStand;
+        this.creeper = creeper;
         setLocation(loc);
         setEnabled(enabled);
         setShown(shown);
@@ -72,14 +76,9 @@ public class Camera extends ID {
         set("yaw", loc.getYaw());
         armorStand.teleport(loc);
         armorStand.setHeadPose(new EulerAngle(Math.toRadians(loc.getPitch()), 0.0D, 0.0D));
-        tpViewers();
-    }
-    private void tpViewers() {
-        for (Viewer viewer : CCTV.get().getViewers().values()) {
-            if (viewer.getCamera() != this) continue;
-            Player target = Bukkit.getServer().getPlayer(UUID.fromString(viewer.getId()));
-            if (target != null) CCTV.get().getCameras().teleport(this, target);
-        }
+        loc.add(0,0.5,0);
+        creeper.teleport(loc);
+        loc.add(0,-0.5,0);
     }
 
     public boolean rotateHorizontally(int degrees) {
@@ -93,7 +92,9 @@ public class Camera extends ID {
         if (newYaw < Math.round(check-36.0F) || newYaw > Math.round(check+36.0F)) return false;
         asLoc.setYaw(newYaw);
         armorStand.teleport(asLoc);
-        tpViewers();
+        loc.add(0,0.5,0);
+        creeper.teleport(loc);
+        loc.add(0,-0.5,0);
         return true;
     }
     public boolean rotateVertically(int degrees) {
@@ -138,9 +139,8 @@ public class Camera extends ID {
     public ArmorStand getArmorStand() {
         return armorStand;
     }
-
-    public void setArmorStand(ArmorStand armorStand) {
-        this.armorStand = armorStand;
+    public Creeper getCreeper() {
+        return creeper;
     }
 
     public String getSkin() {
@@ -150,5 +150,21 @@ public class Camera extends ID {
         this.skin = skin;
         set("skin",skin);
         setShown(true);
+    }
+
+    public boolean is(Entity entity) {
+        if (entity instanceof Creeper c) {
+            if (creeper.getUniqueId().equals(c.getUniqueId())) {
+                if (creeper != c) creeper = c;
+                return true;
+            }
+        }
+        if (entity instanceof ArmorStand as) {
+            if (armorStand.getUniqueId().equals(as.getUniqueId())) {
+                if (armorStand != as) armorStand = as;
+                return true;
+            }
+        }
+        return false;
     }
 }

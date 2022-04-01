@@ -16,12 +16,10 @@ import io.github.tanguygab.cctv.managers.ViewerManager;
 import io.github.tanguygab.cctv.menus.CCTVMenu;
 import io.github.tanguygab.cctv.utils.CustomHeads;
 import io.github.tanguygab.cctv.utils.Heads;
-import io.github.tanguygab.cctv.utils.NMSUtils;
 import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ShapedRecipe;
@@ -183,21 +181,6 @@ public class CCTV extends JavaPlugin {
                 onDisable();
                 onEnable();
                 sender.sendMessage("Plugin reloaded!");
-            }
-            case "test" -> {
-                if (sender instanceof Player p) {
-                    if (!cam) {
-                        p.sendMessage("cam armor stand");
-                        ArmorStand as = cameraManager.get(args[1]).getArmorStand();
-                        NMSUtils.setCameraPacket(p,as);
-                        cam = true;
-                        return true;
-                    }
-                    p.sendMessage("cam player");
-                    NMSUtils.setCameraPacket(p,p);
-                    cam = false;
-
-                }
             }
             default -> sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
                     "&6&m                                        \n"

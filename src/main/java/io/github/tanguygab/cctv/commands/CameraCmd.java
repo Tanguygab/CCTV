@@ -134,7 +134,7 @@ public class CameraCmd extends Command {
                     p.sendMessage(lang.CAMERA_NOT_FOUND);
                     return;
                 }
-                cm.teleport(camera,p);
+                p.teleport(camera.getArmorStand());
             }
             case "enable" -> {
                 if (noPerm(p, "enable")) {

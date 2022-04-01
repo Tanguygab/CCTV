@@ -33,16 +33,6 @@ public class ViewersEvents implements Listener {
     }
 
     @EventHandler
-    public void on(PlayerMoveEvent e) {
-        Player p = e.getPlayer();
-        if (!vm.exists(p)) return;
-
-        p.setAllowFlight(true);
-        p.setFlying(true);
-        cm.teleport(vm.get(p).getCamera(), p);
-    }
-
-    @EventHandler
     public void on(PlayerToggleSneakEvent e) {
         Player player = e.getPlayer();
         if (!vm.exists(player)) return;

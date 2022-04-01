@@ -1,5 +1,6 @@
 package io.github.tanguygab.cctv.menus;
 
+import io.github.tanguygab.cctv.entities.Viewer;
 import io.github.tanguygab.cctv.managers.ViewerManager;
 import io.github.tanguygab.cctv.utils.Heads;
 import io.github.tanguygab.cctv.utils.NMSUtils;
@@ -25,7 +26,7 @@ public class ViewerOptionsMenu extends CCTVMenu {
     @Override
     public void open() {
         inv = Bukkit.getServer().createInventory(null, 9, lang.CAMERA_VIEW_OPTIONS_TITLE);
-        if (hasItemPerm(p,"nightvision")) inv.setItem(3, p.hasPotionEffect(PotionEffectType.NIGHT_VISION) ? Heads.NIGHT_VISION_ON.get() : Heads.NIGHT_VISION_OFF.get());
+        if (hasItemPerm(p,"nightvision")) inv.setItem(3, vm.get(p).hasNightVision() ? Heads.NIGHT_VISION_ON.get() : Heads.NIGHT_VISION_OFF.get());
 
         if (hasItemPerm(p,"zoom")) {
             PotionEffect effect = p.getPotionEffect(PotionEffectType.SLOW);
@@ -49,7 +50,7 @@ public class ViewerOptionsMenu extends CCTVMenu {
     @Override
     public void onClick(ItemStack item, int slot, ClickType click) {
         switch (slot) {
-            case 3 -> nightvision(p, !p.hasPotionEffect(PotionEffectType.NIGHT_VISION));
+            case 3 -> nightvision(p);
             case 4 -> {
                 PotionEffect effect = p.getPotionEffect(PotionEffectType.SLOW);
                 if (effect == null) {
@@ -83,19 +84,15 @@ public class ViewerOptionsMenu extends CCTVMenu {
         NMSUtils.glow(viewer,viewed,glow);
         return true;
     }
-    private void nightvision(Player p, boolean vision) {
+    private void nightvision(Player p) {
         if (!p.hasPermission("cctv.view.nightvision")) {
             p.sendMessage(lang.NO_PERMISSIONS);
             return;
         }
         Inventory inv = p.getOpenInventory().getTopInventory();
-        if (vision) {
-            p.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 60000000, 0, false, false));
-            inv.setItem(3, Heads.NIGHT_VISION_ON.get());
-            return;
-        }
-        p.removePotionEffect(PotionEffectType.NIGHT_VISION);
-        inv.setItem(3, Heads.NIGHT_VISION_OFF.get());
+        Viewer v = vm.get(p);
+        v.setNightVision(!v.hasNightVision());
+        inv.setItem(3, v.hasNightVision() ? Heads.NIGHT_VISION_ON.get() : Heads.NIGHT_VISION_OFF.get());
     }
     private void zoom(Player p, int zoomlevel) {
         if (!p.hasPermission("cctv.view.zoom")) {

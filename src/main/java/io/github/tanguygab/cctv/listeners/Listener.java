@@ -9,10 +9,11 @@ import io.github.tanguygab.cctv.managers.ViewerManager;
 import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.menus.CCTVMenu;
 import io.github.tanguygab.cctv.menus.cameras.CameraMenu;
-import io.github.tanguygab.cctv.utils.NMSUtils;
 import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Creeper;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -21,6 +22,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
@@ -72,24 +74,28 @@ public class Listener implements org.bukkit.event.Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void on(PlayerInteractAtEntityEvent e) {
-        if (!(e.getRightClicked() instanceof ArmorStand as)) return;
-        String customName = as.getCustomName();
+        Entity entity = e.getRightClicked();
+        if (!(entity instanceof ArmorStand) && !(entity instanceof Creeper)) return;
+        String customName = entity.getCustomName();
         if (customName == null || !ChatColor.stripColor(customName).startsWith("CAM-")) return;
 
         e.setCancelled(true);
         Player p = e.getPlayer();
-        if (vm.exists(p)) return;
+        if (vm.exists(p)) {
+            if (e.getHand() == EquipmentSlot.HAND && entity instanceof ArmorStand)
+                vm.onCameraItems(p, p.getInventory().getItemInMainHand());
+            e.setCancelled(true);
+            return;
+        }
 
         Camera camera = null;
         for (Camera cam : cm.values()) {
-            if (cam.getArmorStand().getUniqueId().equals(as.getUniqueId())) {
-                if (cam.getArmorStand() != as) cam.setArmorStand(as);
+            if (cam.is(entity))
                 camera = cam;
-            }
         }
 
         if (camera == null) {
-            as.remove();
+            entity.remove();
             p.sendMessage(lang.CAMERA_DELETED_BECAUSE_BUGGED);
             return;
         }
@@ -131,12 +137,6 @@ public class Listener implements org.bukkit.event.Listener {
         Player joined = event.getPlayer();
         joined.discoverRecipe(Utils.cameraKey);
         joined.discoverRecipe(Utils.computerKey);
-
-        vm.values().forEach(player->{
-            Player p = Bukkit.getServer().getPlayer(UUID.fromString(player.getId()));
-            joined.hidePlayer(cctv,p);
-            NMSUtils.spawnNPCForTarget(joined,p);
-        });
     }
 
     @EventHandler
@@ -147,7 +147,10 @@ public class Listener implements org.bukkit.event.Listener {
             e.setCancelled(true);
             return;
         }
-        if (vm.exists(p)) vm.onCameraItems(p, e.getCurrentItem());
+        if (vm.exists(p)) {
+            e.setCancelled(true);
+            vm.onCameraItems(p, e.getCurrentItem());
+        }
     }
 
     @EventHandler

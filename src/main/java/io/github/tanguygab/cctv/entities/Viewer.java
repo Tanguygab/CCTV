@@ -1,6 +1,7 @@
 package io.github.tanguygab.cctv.entities;
 
 import io.github.tanguygab.cctv.CCTV;
+import io.github.tanguygab.cctv.utils.NMSUtils;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -12,8 +13,8 @@ public class Viewer extends ID {
     private final GameMode gm;
     private Camera camera;
     private CameraGroup group;
-    private Object npc;
     private final Location loc;
+    private boolean nightVision;
 
     public Viewer(Player p, Camera camera, CameraGroup group) {
         super(p.getUniqueId().toString(),CCTV.get().getViewers());
@@ -46,14 +47,15 @@ public class Viewer extends ID {
         this.group = group;
     }
 
-    public Object getNpc() {
-        return npc;
-    }
-    public void setNpc(Object npc) {
-        this.npc = npc;
-    }
-
     public Location getLoc() {
         return loc;
+    }
+
+    public boolean hasNightVision() {
+        return nightVision;
+    }
+    public void setNightVision(boolean nightVision) {
+        this.nightVision = nightVision;
+        NMSUtils.setCameraPacket(CCTV.get().getViewers().get(this), nightVision ? camera.getCreeper() : camera.getArmorStand());
     }
 }
