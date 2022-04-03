@@ -42,7 +42,6 @@ public class InteractEvent {
         if (item == null) return;
         ItemMeta meta = item.getItemMeta();
         if (meta == null || !meta.hasDisplayName()) return;
-        String itemName = meta.getDisplayName();
 
         if (rcb && item.getType() == Material.PLAYER_HEAD && CCTV.get().getCustomHeads().isCamera(item)) {
             createCamera(p,item,loc,e.getBlockFace());
@@ -58,46 +57,23 @@ public class InteractEvent {
 
     private static void createCamera(Player p, ItemStack item, Location loc, BlockFace face) {
         if (p.getGameMode() == GameMode.SURVIVAL || p.getGameMode() == GameMode.ADVENTURE)
-            item.setAmount(item.getAmount() - 1);
+            item.setAmount(item.getAmount()-1);
         switch (face) {
-            case UP -> {
-                loc.setX(loc.getX() + 0.5D);
-                loc.setZ(loc.getZ() + 0.5D);
-                loc.setY(loc.getY() - 0.47D);
-                loc.setYaw(p.getLocation().getYaw() + 180.0F);
-            }
-            case DOWN -> {
-                loc.setX(loc.getX() + 0.5D);
-                loc.setZ(loc.getZ() + 0.5D);
-                loc.setY(loc.getY() - 2.03D);
-                loc.setYaw(p.getLocation().getYaw() + 180.0F);
-            }
-            case EAST -> {
-                loc.setX(loc.getX() + 1.29D);
-                loc.setZ(loc.getZ() + 0.5D);
-                loc.setY(loc.getY() - 1.24D);
-                loc.setYaw(270.0F);
-            }
-            case WEST -> {
-                loc.setX(loc.getX() - 0.29D);
-                loc.setZ(loc.getZ() + 0.5D);
-                loc.setY(loc.getY() - 1.24D);
-                loc.setYaw(90.0F);
-            }
-            case NORTH -> {
-                loc.setX(loc.getX() + 0.5D);
-                loc.setZ(loc.getZ() - 0.29D);
-                loc.setY(loc.getY() - 1.24D);
-                loc.setYaw(180.0F);
-            }
-            case SOUTH -> {
-                loc.setX(loc.getX() + 0.5D);
-                loc.setZ(loc.getZ() + 1.29D);
-                loc.setY(loc.getY() - 1.24D);
-                loc.setYaw(0.0F);
-            }
+            case UP -> setLoc(loc,0.5D,0.5D,0.47D,loc.getYaw()+180.0F);
+            case DOWN -> setLoc(loc,0.5D,0.5D,2.03D,loc.getYaw()+180.0F);
+            case EAST -> setLoc(loc,1.29D,0.5D,1.24D,270.0F);
+            case WEST -> setLoc(loc,-0.29D,0.5D,1.24D,90.0F);
+            case NORTH -> setLoc(loc,0.5D,-0.29D,1.24D,180.0F);
+            case SOUTH -> setLoc(loc,0.5D,1.29D,1.24D,0.0F);
         }
         CCTV.get().getCameras().create(null, loc, p,CCTV.get().getCustomHeads().get(item));
+    }
+
+    private static void setLoc(Location loc, double x, double z, double y, float yaw) {
+        loc.setX(loc.getX()+x);
+        loc.setZ(loc.getZ()+z);
+        loc.setY(loc.getY()-y);
+        loc.setYaw(yaw);
     }
 
 }

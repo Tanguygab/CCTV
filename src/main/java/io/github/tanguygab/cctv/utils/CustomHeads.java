@@ -35,12 +35,13 @@ public class CustomHeads {
 
     public String get(ItemStack item) {
         ItemMeta meta = item.getItemMeta();
-        if (!isCamera(item) || CCTV.get().getLang().CAMERA_ITEM_NAME.equals(meta.getDisplayName())) return "_DEFAULT_";
+        if (meta == null || !isCamera(item) || CCTV.get().getLang().CAMERA_ITEM_NAME.equals(meta.getDisplayName())) return "_DEFAULT_";
         return meta.getPersistentDataContainer().get(headKey, PersistentDataType.STRING);
     }
 
     public boolean isCamera(ItemStack item) {
         ItemMeta meta = item.getItemMeta();
+        if (meta == null) return false;
         return CCTV.get().getLang().CAMERA_ITEM_NAME.equals(meta.getDisplayName()) || meta.getPersistentDataContainer().has(headKey,PersistentDataType.STRING);
     }
 }
