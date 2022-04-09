@@ -37,8 +37,8 @@ public class CameraManager extends Manager<Camera> {
             Map<String,Object> config = (Map<String, Object>) cfg;
             String owner = config.get("owner")+"";
             String skin = config.getOrDefault("skin","_DEFAULT_")+"";
-            boolean enabled = (boolean) config.get("enabled");
-            boolean shown = (boolean) config.get("shown");
+            boolean enabled = (boolean) config.getOrDefault("enabled",true);
+            boolean shown = (boolean) config.getOrDefault("shown",true);
 
             World world = Bukkit.getServer().getWorld(config.get("world")+"");
             double x = (double) config.get("x");
@@ -54,6 +54,10 @@ public class CameraManager extends Manager<Camera> {
                 if (entity instanceof ArmorStand as) {
                     if (as.getCustomName() != null && as.getCustomName().equals("CAM-" + id))
                         as.remove();
+                }
+                if (entity instanceof Creeper creeper) {
+                    if (creeper.getCustomName() != null && creeper.getCustomName().equals("CAM-" + id))
+                        creeper.remove();
                 }
             }
             create(id,owner,loc,enabled,shown,skin);
