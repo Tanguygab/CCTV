@@ -1,8 +1,9 @@
 package io.github.tanguygab.cctv.menus;
 
+import io.github.tanguygab.cctv.CCTV;
+import io.github.tanguygab.cctv.entities.Viewer;
 import io.github.tanguygab.cctv.managers.ViewerManager;
 import io.github.tanguygab.cctv.utils.Heads;
-import io.github.tanguygab.cctv.utils.NMSUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -16,6 +17,7 @@ import java.util.List;
 
 public class ViewerOptionsMenu extends CCTVMenu {
 
+    private final boolean oldCam = CCTV.get().getCameras().OLD_CAMERA_VIEW;
     private final ViewerManager vm = cctv.getViewers();
 
     public ViewerOptionsMenu(Player p) {
@@ -25,15 +27,17 @@ public class ViewerOptionsMenu extends CCTVMenu {
     @Override
     public void open() {
         inv = Bukkit.getServer().createInventory(null, 9, lang.CAMERA_VIEW_OPTIONS_TITLE);
-        if (hasItemPerm(p,"nightvision")) inv.setItem(3, p.hasPotionEffect(PotionEffectType.NIGHT_VISION) ? Heads.NIGHT_VISION_ON.get() : Heads.NIGHT_VISION_OFF.get());
+        if (hasItemPerm(p,"nightvision")) inv.setItem(3, vm.get(p).hasNightVision() ? Heads.NIGHT_VISION_ON.get() : Heads.NIGHT_VISION_OFF.get());
 
         if (hasItemPerm(p,"zoom")) {
-            PotionEffect effect = p.getPotionEffect(PotionEffectType.SLOW);
-            inv.setItem(4, getItem(Heads.ZOOM,
-                    effect != null
-                            ? lang.getCameraViewZoom(effect.getAmplifier()+1)
-                            : lang.CAMERA_VIEW_OPTIONS_ZOOM_OFF
-            ));
+            if (oldCam) {
+                PotionEffect effect = p.getPotionEffect(PotionEffectType.SLOW);
+                inv.setItem(4, getItem(Heads.ZOOM,
+                        effect != null
+                                ? lang.getCameraViewZoom(effect.getAmplifier() + 1)
+                                : lang.CAMERA_VIEW_OPTIONS_ZOOM_OFF
+                ));
+            } else inv.setItem(4,getItem(Heads.ZOOM,"&6Change your FOV!"));
         }
 
         if (hasItemPerm(p,"spot")) inv.setItem(5, getItem(Heads.SPOTTING,lang.CAMERA_VIEW_OPTIONS_SPOT));
@@ -49,8 +53,9 @@ public class ViewerOptionsMenu extends CCTVMenu {
     @Override
     public void onClick(ItemStack item, int slot, ClickType click) {
         switch (slot) {
-            case 3 -> nightvision(p, !p.hasPotionEffect(PotionEffectType.NIGHT_VISION));
+            case 3 -> nightvision(p);
             case 4 -> {
+                if (!oldCam) return;
                 PotionEffect effect = p.getPotionEffect(PotionEffectType.SLOW);
                 if (effect == null) {
                     zoom(p, 1);
@@ -80,22 +85,18 @@ public class ViewerOptionsMenu extends CCTVMenu {
     }
     private boolean spot(Player viewer, Player viewed, boolean glow) {
         if (!viewed.canSee(viewed)) return false;
-        NMSUtils.glow(viewer,viewed,glow);
+        cctv.getNMS().glow(viewer,viewed,glow);
         return true;
     }
-    private void nightvision(Player p, boolean vision) {
+    private void nightvision(Player p) {
         if (!p.hasPermission("cctv.view.nightvision")) {
             p.sendMessage(lang.NO_PERMISSIONS);
             return;
         }
         Inventory inv = p.getOpenInventory().getTopInventory();
-        if (vision) {
-            p.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 60000000, 0, false, false));
-            inv.setItem(3, Heads.NIGHT_VISION_ON.get());
-            return;
-        }
-        p.removePotionEffect(PotionEffectType.NIGHT_VISION);
-        inv.setItem(3, Heads.NIGHT_VISION_OFF.get());
+        Viewer v = vm.get(p);
+        v.setNightVision(!v.hasNightVision());
+        inv.setItem(3, v.hasNightVision() ? Heads.NIGHT_VISION_ON.get() : Heads.NIGHT_VISION_OFF.get());
     }
     private void zoom(Player p, int zoomlevel) {
         if (!p.hasPermission("cctv.view.zoom")) {

@@ -39,6 +39,7 @@ public class CCTV extends JavaPlugin {
     private ConfigurationFile config;
     private LanguageFile lang;
     private CustomHeads customHeads;
+    private NMSUtils nms;
     public ConfigurationFile getConfiguration() {
         return config;
     }
@@ -47,6 +48,9 @@ public class CCTV extends JavaPlugin {
     }
     public CustomHeads getCustomHeads() {
         return customHeads;
+    }
+    public NMSUtils getNMS() {
+        return nms;
     }
 
     private CameraCmd cameraCmd;
@@ -74,11 +78,6 @@ public class CCTV extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        try {Class.forName("org.bukkit.craftbukkit.v1_18_R2");}
-        catch (Exception e) {
-            // unsupported version
-            NMSUtils.isCompatible = false;
-        }
         try {
             config = new YamlConfigurationFile(getResource("config.yml"), new File(getDataFolder(), "config.yml"));
             lang = new LanguageFile(getResource("language.yml"), new File(getDataFolder(), "language.yml"));
@@ -91,6 +90,7 @@ public class CCTV extends JavaPlugin {
         }
 
         customHeads = new CustomHeads();
+        nms = new NMSUtils();
 
         cameraCmd = new CameraCmd();
         groupCmd = new GroupCmd();
@@ -130,11 +130,8 @@ public class CCTV extends JavaPlugin {
         HandlerList.unregisterAll(this);
 
         cameraManager.unload();
-
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            cameraManager.unviewCamera(p);
-            p.closeInventory();
-        }
+        viewerManager.unload();
+        Listener.openedMenus.forEach((p,inv)->p.closeInventory());
         getLogger().info("CCTV Plugin has been successfully Disabled!");
     }
 
@@ -169,6 +166,8 @@ public class CCTV extends JavaPlugin {
         Listener.openedMenus.put(p,menu);
         menu.open();
     }
+
+    private boolean cam = false;
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {

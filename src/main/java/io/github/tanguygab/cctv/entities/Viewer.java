@@ -1,35 +1,27 @@
 package io.github.tanguygab.cctv.entities;
 
 import io.github.tanguygab.cctv.CCTV;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 public class Viewer extends ID {
 
     private final ItemStack[] inv;
-    private final GameMode gm;
     private Camera camera;
     private CameraGroup group;
-    private Object npc;
-    private final Location loc;
+    private boolean nightVision;
 
     public Viewer(Player p, Camera camera, CameraGroup group) {
         super(p.getUniqueId().toString(),CCTV.get().getViewers());
         inv = p.getInventory().getContents().clone();
-        gm = p.getGameMode();
         this.camera = camera;
         this.group = group;
-        loc = p.getLocation();
     }
 
     public ItemStack[] getInv() {
         return inv;
-    }
-
-    public GameMode getGameMode() {
-        return gm;
     }
 
     public Camera getCamera() {
@@ -46,14 +38,25 @@ public class Viewer extends ID {
         this.group = group;
     }
 
-    public Object getNpc() {
-        return npc;
+    public boolean hasNightVision() {
+        return nightVision;
     }
-    public void setNpc(Object npc) {
-        this.npc = npc;
+    public void setNightVision(boolean nightVision) {
+        this.nightVision = nightVision;
+        CCTV cctv = CCTV.get();
+        Player p = cctv.getViewers().get(this);
+        if (cctv.getCameras().OLD_CAMERA_VIEW) {
+            if (nightVision) p.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION,1000000,0));
+            else p.removePotionEffect(PotionEffectType.NIGHT_VISION);
+            return;
+        }
+        if (nightVision) {
+            p.hideEntity(cctv, camera.getArmorStand());
+            cctv.getNMS().setCameraPacket(p,camera.getCreeper());
+            return;
+        }
+        p.showEntity(cctv, camera.getArmorStand());
+        cctv.getNMS().setCameraPacket(p, camera.getArmorStand());
     }
 
-    public Location getLoc() {
-        return loc;
-    }
 }

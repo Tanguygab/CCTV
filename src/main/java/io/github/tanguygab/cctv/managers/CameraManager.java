@@ -1,19 +1,15 @@
 package io.github.tanguygab.cctv.managers;
 
 import io.github.tanguygab.cctv.CCTV;
-import io.github.tanguygab.cctv.config.LanguageFile;
 import io.github.tanguygab.cctv.entities.Camera;
 import io.github.tanguygab.cctv.entities.CameraGroup;
-import io.github.tanguygab.cctv.entities.Viewer;
 import io.github.tanguygab.cctv.utils.Heads;
-import io.github.tanguygab.cctv.utils.NMSUtils;
 import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.EulerAngle;
 
 import java.util.ArrayList;
@@ -23,6 +19,7 @@ import java.util.Map;
 public class CameraManager extends Manager<Camera> {
     
     public double CAMERA_HEAD_RADIUS;
+    public boolean OLD_CAMERA_VIEW;
     public List<Player> connecting = new ArrayList<>();
 
     public CameraManager() {
@@ -32,14 +29,15 @@ public class CameraManager extends Manager<Camera> {
     @Override
     public void load() {
         CAMERA_HEAD_RADIUS = cctv.getConfiguration().getDouble("camera_head_radius",0.35D);
+        OLD_CAMERA_VIEW = cctv.getConfiguration().getBoolean("old_camera_view",false);
         
         Map<String, Object> cams = file.getValues();
         cams.forEach((id,cfg)->{
             Map<String,Object> config = (Map<String, Object>) cfg;
             String owner = config.get("owner")+"";
             String skin = config.getOrDefault("skin","_DEFAULT_")+"";
-            boolean enabled = (boolean) config.get("enabled");
-            boolean shown = (boolean) config.get("shown");
+            boolean enabled = (boolean) config.getOrDefault("enabled",true);
+            boolean shown = (boolean) config.getOrDefault("shown",true);
 
             World world = Bukkit.getServer().getWorld(config.get("world")+"");
             double x = (double) config.get("x");
@@ -56,13 +54,20 @@ public class CameraManager extends Manager<Camera> {
                     if (as.getCustomName() != null && as.getCustomName().equals("CAM-" + id))
                         as.remove();
                 }
+                if (entity instanceof Creeper creeper) {
+                    if (creeper.getCustomName() != null && creeper.getCustomName().equals("CAM-" + id))
+                        creeper.remove();
+                }
             }
             create(id,owner,loc,enabled,shown,skin);
         });
     }
 
     public void unload() {
-        map.forEach((id, cam)-> cam.getArmorStand().remove());
+        map.forEach((id, cam)-> {
+            cam.getArmorStand().remove();
+            cam.getCreeper().remove();
+        });
     }
 
     @Override
@@ -92,12 +97,24 @@ public class CameraManager extends Manager<Camera> {
         as.setSilent(true);
         as.setHeadPose(new EulerAngle(Math.toRadians(loc.getPitch()), 0.0D, 0.0D));
         if (shown) as.getEquipment().setHelmet(Heads.CAMERA.get());
-        Camera camera = new Camera(id,owner,loc,enabled,shown,as,skin);
+
+        loc.add(0,0.5,0);
+        Creeper creeper = loc.getWorld().spawn(loc,Creeper.class);
+        loc.add(0,-0.5,0);
+        creeper.setCustomName("CAM-" + id);
+        creeper.setInvisible(true);
+        creeper.setAI(false);
+        creeper.setInvulnerable(true);
+        creeper.setGravity(false);
+        creeper.setSilent(true);
+        creeper.setCollidable(false);
+        creeper.setExplosionRadius(0);
+
+        Camera camera = new Camera(id,owner,loc,enabled,shown,as,creeper,skin);
         map.put(id,camera);
     }
 
     public void create(String id, Location loc, Player player, String skin) {
-        LanguageFile lang = cctv.getLang();
         if (exists(id)) {
             player.sendMessage(lang.CAMERA_ALREADY_EXISTS);
             return;
@@ -112,12 +129,9 @@ public class CameraManager extends Manager<Camera> {
 
     public void unviewCamera(Player player) {
         if (player == null) return;
-
-        ViewerManager vm = cctv.getViewers();
-        Viewer p = vm.get(player);
-        if (p == null) return;
-        NMSUtils.despawnNPC(player,p);
-        vm.delete(player);
+        if (!cctv.getViewers().exists(player)) return;
+        cctv.getNMS().setCameraPacket(player,player);
+        cctv.getViewers().delete(player);
     }
 
     public List<String> get(Player p) {
@@ -136,7 +150,6 @@ public class CameraManager extends Manager<Camera> {
     }
 
     public void viewCamera(Player p, Camera cam, CameraGroup group) {
-        LanguageFile lang = cctv.getLang();
         if (cam == null) {
             p.sendMessage(lang.CAMERA_NOT_FOUND);
             return;
@@ -153,62 +166,20 @@ public class CameraManager extends Manager<Camera> {
         ViewerManager vm = cctv.getViewers();
         p.sendTitle(" ", lang.CAMERA_CONNECTING, 0, vm.TIME_TO_CONNECT*20, 0);
         connecting.add(p);
-
         Bukkit.getScheduler().scheduleSyncDelayedTask(cctv,  () -> {
             vm.createPlayer(p, cam, group);
-            NMSUtils.spawnNPC(p, p.getLocation());
-            teleport(cam, p);
-            PotionEffect invisibility = new PotionEffect(PotionEffectType.INVISIBILITY, 60000000, 0, false, false);
-            p.addPotionEffect(invisibility);
-            if (group != null && vm.exists(p))
-                vm.get(p).setGroup(group);
+            cctv.getNMS().setCameraPacket(p,cam.getArmorStand());
             connecting.remove(p);
         }, vm.TIME_TO_CONNECT * 20L);
     }
 
     public void viewCameraInstant(Camera cam, Player p) {
         if (cam == null) {
-            CCTV.get().getViewers().delete(p);
-            p.sendMessage(CCTV.get().getLang().CAMERA_NOT_FOUND);
+            cctv.getViewers().delete(p);
+            p.sendMessage(lang.CAMERA_NOT_FOUND);
             return;
         }
-        teleport(cam, p);
-    }
-
-    public void teleport(Camera cam, Player player) {
-        if (cam == null) return;
-
-        ArmorStand as = cam.getArmorStand();
-        Location asLoc = as.getLocation();
-        double Degrees_Yaw = as.getEyeLocation().getYaw();
-        double Degrees_Pitch = as.getEyeLocation().getPitch();
-        double radian_yaw = Math.toRadians(Degrees_Yaw);
-        double radian_pitch = Math.toRadians(Degrees_Pitch);
-        double radius_head = 0.29D;
-        double radius = CAMERA_HEAD_RADIUS;
-
-        double l3 = radius_head * Math.sin(radian_pitch);
-        boolean b = Math.abs(Degrees_Yaw) > 90.0D && Math.abs(Degrees_Yaw) <= 270.0D;
-        if (b) l3 = -l3;
-
-        double x3 = l3 * Math.sin(radian_yaw);
-        double y3 = Math.sqrt(Math.pow(radius_head, 2.0D) - Math.pow(l3, 2.0D));
-        double z3 = Math.sqrt(Math.pow(l3, 2.0D) - Math.pow(x3, 2.0D));
-        if (Degrees_Pitch < 0.0D) z3 = -z3;
-        x3 = -x3;
-        if (b) {
-            x3 = -x3;
-            z3 = -z3;
-        }
-
-        double x2 = radius * Math.sin(radian_yaw);
-        double z2 = Math.sqrt(Math.pow(radius, 2.0D) - Math.pow(x2, 2.0D));
-        double y2 = radius * Math.sin(radian_pitch);
-        if (b) z2 = -z2;
-        y2 = -y2;
-        x2 = -x2;
-        Location loc = new Location(asLoc.getWorld(), asLoc.getX() + x2 + x3, asLoc.getY() + 0.115D + y2 + y3 - radius_head, asLoc.getZ() + z2 + z3, asLoc.getYaw(), asLoc.getPitch());
-        player.teleport(loc);
+        cctv.getNMS().setCameraPacket(p,cam.getArmorStand());
     }
 
     public void rotateHorizontally(Player p, Camera camera, int degrees) {
@@ -216,15 +187,27 @@ public class CameraManager extends Manager<Camera> {
             p.sendMessage(lang.NO_PERMISSIONS);
             return;
         }
-        if (!camera.rotateHorizontally(degrees))
+        if (!camera.rotateHorizontally(degrees)) {
             p.sendMessage(lang.MAX_ROTATION);
+            return;
+        }
+        if (OLD_CAMERA_VIEW) tp(p,camera);
     }
     public void rotateVertically(Player p, Camera camera, int degrees) {
         if (!p.hasPermission("cctv.view.move")) {
             p.sendMessage(lang.NO_PERMISSIONS);
             return;
         }
-        if (!camera.rotateVertically(degrees))
+        if (!camera.rotateVertically(degrees)) {
             p.sendMessage(lang.MAX_ROTATION);
+            return;
+        }
+        if (OLD_CAMERA_VIEW) tp(p,camera);
+    }
+
+    private void tp(Player p, Camera camera) {
+        Location loc = camera.getArmorStand().getLocation().clone();
+        loc.add(0,1,0);
+        p.teleport(loc);
     }
 }
