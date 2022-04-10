@@ -31,7 +31,7 @@ public class ViewersEvents implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void on(AsyncPlayerChatEvent e) {
-        if (vm.exists(e.getPlayer()) && vm.CAN_CHAT)
+        if (vm.exists(e.getPlayer()) && !vm.CAN_CHAT)
             e.setCancelled(true);
     }
 
