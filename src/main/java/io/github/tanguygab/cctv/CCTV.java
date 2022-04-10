@@ -18,16 +18,23 @@ import io.github.tanguygab.cctv.utils.CustomHeads;
 import io.github.tanguygab.cctv.utils.Heads;
 import io.github.tanguygab.cctv.utils.NMSUtils;
 import io.github.tanguygab.cctv.utils.Utils;
-import org.bukkit.*;
+
+import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CCTV extends JavaPlugin {
 
@@ -102,9 +109,10 @@ public class CCTV extends JavaPlugin {
         viewerManager.load();
 
         loadRecipes();
-        Bukkit.getPluginManager().registerEvents(new Listener(),this);
-        Bukkit.getPluginManager().registerEvents(new ViewersEvents(),this);
-        Bukkit.getPluginManager().registerEvents(new ComputersEvents(),this);
+        PluginManager plm = getServer().getPluginManager();
+        plm.registerEvents(new Listener(),this);
+        plm.registerEvents(new ViewersEvents(),this);
+        plm.registerEvents(new ComputersEvents(),this);
 
         getLogger().info(".-----====--------+]-   -----+[====]+-----   -[+--------====-----.");
         getLogger().info("");
@@ -136,30 +144,45 @@ public class CCTV extends JavaPlugin {
     }
 
     private void loadRecipes() {
-        NamespacedKey key = Utils.cameraKey;
-        if (Bukkit.getRecipe(key) == null) {
-            ShapedRecipe recipe = new ShapedRecipe(key, Heads.CAMERA.get());
-            recipe.shape("RPP", "PDG", "LCP");
-            recipe.setIngredient('R', Material.REDSTONE_BLOCK);
-            recipe.setIngredient('P', Material.HEAVY_WEIGHTED_PRESSURE_PLATE);
-            recipe.setIngredient('D', Material.DISPENSER);
-            recipe.setIngredient('G', Material.GLASS_PANE);
-            recipe.setIngredient('L', Material.DAYLIGHT_DETECTOR);
-            recipe.setIngredient('C', Material.COMPARATOR);
-            Bukkit.addRecipe(recipe);
+        Map<String,String> camItems = new HashMap<>();
+        camItems.put("R","REDSTONE_BLOCK");
+        camItems.put("P","HEAVY_WEIGHTED_PRESSURE_PLATE");
+        camItems.put("D","DISPENSER");
+        camItems.put("G","GLASS_PANE");
+        camItems.put("L","DAYLIGHT_DETECTOR");
+        camItems.put("C","COMPARATOR");
+        loadRecipe(Utils.cameraKey, Heads.CAMERA.get(),"camera",List.of("RPP","PDG","LCP"),camItems);
+
+        Map<String,String> computerItems = new HashMap<>();
+        computerItems.put("I","REDSTONE");
+        computerItems.put("P","HEAVY_WEIGHTED_PRESSURE_PLATE");
+        computerItems.put("G","GLASS_PANE");
+        computerItems.put("C","COMPARATOR");
+        computerItems.put("R","REPEATER");
+        computerItems.put("T","REDSTONE_TORCH");
+        loadRecipe(Utils.computerKey,Utils.getComputer(),"computer",List.of("ITI","PGP","RCR"),computerItems);
+    }
+    private void loadRecipe(NamespacedKey key, ItemStack item, String cfg, List<String> defShape, Map<String,String> defItems) {
+        if (!config.getBoolean(cfg+".craft.enabled",true)) return;
+        if (getServer().getRecipe(key) != null) getServer().removeRecipe(key);
+        ShapedRecipe recipe = new ShapedRecipe(key, item);
+        List<String> shape = config.getStringList(cfg+".craft.shape",defShape);
+        recipe.shape(shape.toArray(new String[]{}));
+        Map<String,String> items = config.getConfigurationSection(cfg+".craft.items");
+        if (items.isEmpty()) {
+            items = defItems;
+            config.set(cfg+".craft.items",items);
         }
-        NamespacedKey key2 = Utils.computerKey;
-        if (Bukkit.getRecipe(key2) == null) {
-            ShapedRecipe recipe2 = new ShapedRecipe(key2, Utils.getComputer());
-            recipe2.shape("ITI", "PGP", "RCR");
-            recipe2.setIngredient('I', Material.REDSTONE);
-            recipe2.setIngredient('P', Material.HEAVY_WEIGHTED_PRESSURE_PLATE);
-            recipe2.setIngredient('G', Material.GLASS_PANE);
-            recipe2.setIngredient('C', Material.COMPARATOR);
-            recipe2.setIngredient('R', Material.REPEATER);
-            recipe2.setIngredient('T', Material.REDSTONE_TORCH);
-            Bukkit.addRecipe(recipe2);
-        }
+        items.forEach((c,mat)->{
+            Material material = Material.getMaterial(mat);
+            if (material == null) {
+                getLogger().info("Invalid item material at "+cfg+".craft.items."+c+": \""+mat+"\"");
+                return;
+            }
+            recipe.setIngredient(c.charAt(0), material);
+        });
+        getServer().addRecipe(recipe);
+
     }
 
     public void openMenu(Player p, CCTVMenu menu) {
