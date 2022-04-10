@@ -34,11 +34,12 @@ public class ComputerManager extends Manager<Computer> {
             double x = (double) config.get("x");
             double y = (double) config.get("y");
             double z = (double) config.get("z");
+            boolean publik = (boolean) config.getOrDefault("public",false);
 
             String group = config.containsKey("camera-group") ? config.get("camera-group")+"" : null;
             List<String> allowedPlayers = config.containsKey("allowed-players") ? (List<String>) config.get("allowed-players") : new ArrayList<>();
 
-            create(id,owner,new Location(world,x,y,z),group,allowedPlayers);
+            create(id,owner,new Location(world,x,y,z),group,allowedPlayers,publik);
 
         });
     }
@@ -71,19 +72,19 @@ public class ComputerManager extends Manager<Computer> {
         return list;
     }
 
-    private Computer create(String id, String owner, Location loc, String group, List<String> allowedPlayers) {
+    private Computer create(String id, String owner, Location loc, String group, List<String> allowedPlayers,boolean publik) {
         for (Computer computer : values())
             if (loc.equals(computer.getLocation()) || computer.getId().equals(id))
                 return null;
 
         id = id == null || id.equals("") ? Utils.getRandomNumber(9999, "computer")+"" : id;
-        Computer computer = new Computer(id,loc,owner,group,allowedPlayers);
+        Computer computer = new Computer(id,loc,owner,group,allowedPlayers,publik);
         map.put(id,computer);
         return computer;
     }
 
     public void create(String id, Player p, Location loc) {
-        Computer computer = create(id,p.getUniqueId().toString(),loc, null, new ArrayList<>());
+        Computer computer = create(id,p.getUniqueId().toString(),loc, null, new ArrayList<>(),false);
         if (computer != null) {
             p.sendMessage(lang.COMPUTER_CREATE);
             p.sendMessage(lang.getComputerID(computer.getId()));

@@ -111,21 +111,25 @@ public class ComputerCmd extends Command {
                 computer.setOwner(uuid);
                 p.sendMessage(lang.getComputerOwnerChanged(newOwner.getName()));
             }
+            case "public" -> {
+
+            }
             default -> sender.spigot().sendMessage(helpPage("Computer commands",
                     "get:Get the computer item",
                     "list:Get the list of all computers",
                     "open <computer>:Open the computer's menu",
                     "teleport <computer>:Teleport to the computer",
-                    "setowner <computer> <player>:Set the computer's owner"));
+                    "setowner <computer> <player>:Set the computer's owner",
+                    "public <computer>: Toggle public access of the computer"));
         }
     }
 
     public List<String> onTabComplete(CommandSender sender, String[] args) {
         return switch (args.length) {
-            case 2 -> List.of("get","list","open","teleport","setowner");
+            case 2 -> List.of("get","list","open","teleport","setowner", "public");
             case 3 -> switch (args[1].toLowerCase()) {
-                case "open","teleport","setowner" -> sender instanceof Player p ? cpm.get(p) : Utils.list(cpm.values());
-                default -> null;
+                case "get","list" -> null;
+                default -> sender instanceof Player p ? cpm.get(p) : Utils.list(cpm.values());
             };
             case 4 -> args[1].equalsIgnoreCase("setowner") ? Arrays.stream(Bukkit.getOfflinePlayers()).map(OfflinePlayer::getName).toList() : null;
             default -> null;

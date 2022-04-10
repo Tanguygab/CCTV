@@ -66,8 +66,6 @@ gui:
     default: "&eCCTV (page: %page%)"
     options-item: "&eOptions"
     set-group: "&eSet camera group (page: %page%)"
-    add-player: "&aAdd player (page: %page%)"
-    remove-player: "&cRemove player (page: %page%)"
     default-item:
       option: "&6Options"
       next-page: "&8Next Page"
