@@ -163,8 +163,8 @@ public class CCTV extends JavaPlugin {
         loadRecipe(Utils.computerKey,Utils.getComputer(),"computer",List.of("ITI","PGP","RCR"),computerItems);
     }
     private void loadRecipe(NamespacedKey key, ItemStack item, String cfg, List<String> defShape, Map<String,String> defItems) {
-        if (!config.getBoolean(cfg+".craft.enabled",true)) return;
         if (getServer().getRecipe(key) != null) getServer().removeRecipe(key);
+        if (!config.getBoolean(cfg+".craft.enabled",true)) return;
         ShapedRecipe recipe = new ShapedRecipe(key, item);
         List<String> shape = config.getStringList(cfg+".craft.shape",defShape);
         recipe.shape(shape.toArray(new String[]{}));
