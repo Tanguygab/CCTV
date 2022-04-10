@@ -130,11 +130,8 @@ public class CCTV extends JavaPlugin {
         HandlerList.unregisterAll(this);
 
         cameraManager.unload();
-
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            cameraManager.unviewCamera(p);
-            p.closeInventory();
-        }
+        viewerManager.unload();
+        Listener.openedMenus.forEach((p,inv)->p.closeInventory());
         getLogger().info("CCTV Plugin has been successfully Disabled!");
     }
 

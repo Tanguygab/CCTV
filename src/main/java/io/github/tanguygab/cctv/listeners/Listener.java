@@ -160,4 +160,10 @@ public class Listener implements org.bukkit.event.Listener {
         if (menu != null && menu.inv.equals(e.getInventory())) openedMenus.get(p).close();
     }
 
+    @EventHandler
+    public void on(PlayerMoveEvent e) {
+        if (vm.exists(e.getPlayer()))
+            e.setCancelled(true);
+    }
+
 }

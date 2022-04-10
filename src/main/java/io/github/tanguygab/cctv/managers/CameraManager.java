@@ -1,12 +1,9 @@
 package io.github.tanguygab.cctv.managers;
 
 import io.github.tanguygab.cctv.CCTV;
-import io.github.tanguygab.cctv.config.LanguageFile;
 import io.github.tanguygab.cctv.entities.Camera;
 import io.github.tanguygab.cctv.entities.CameraGroup;
-import io.github.tanguygab.cctv.entities.Viewer;
 import io.github.tanguygab.cctv.utils.Heads;
-import io.github.tanguygab.cctv.utils.NMSUtils;
 import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
@@ -22,6 +19,7 @@ import java.util.Map;
 public class CameraManager extends Manager<Camera> {
     
     public double CAMERA_HEAD_RADIUS;
+    public boolean OLD_CAMERA_VIEW;
     public List<Player> connecting = new ArrayList<>();
 
     public CameraManager() {
@@ -31,6 +29,7 @@ public class CameraManager extends Manager<Camera> {
     @Override
     public void load() {
         CAMERA_HEAD_RADIUS = cctv.getConfiguration().getDouble("camera_head_radius",0.35D);
+        OLD_CAMERA_VIEW = cctv.getConfiguration().getBoolean("old_camera_view",false);
         
         Map<String, Object> cams = file.getValues();
         cams.forEach((id,cfg)->{
@@ -130,6 +129,7 @@ public class CameraManager extends Manager<Camera> {
 
     public void unviewCamera(Player player) {
         if (player == null) return;
+        if (!cctv.getViewers().exists(player)) return;
         cctv.getNMS().setCameraPacket(player,player);
         cctv.getViewers().delete(player);
     }
@@ -187,15 +187,27 @@ public class CameraManager extends Manager<Camera> {
             p.sendMessage(lang.NO_PERMISSIONS);
             return;
         }
-        if (!camera.rotateHorizontally(degrees))
+        if (!camera.rotateHorizontally(degrees)) {
             p.sendMessage(lang.MAX_ROTATION);
+            return;
+        }
+        if (OLD_CAMERA_VIEW) tp(p,camera);
     }
     public void rotateVertically(Player p, Camera camera, int degrees) {
         if (!p.hasPermission("cctv.view.move")) {
             p.sendMessage(lang.NO_PERMISSIONS);
             return;
         }
-        if (!camera.rotateVertically(degrees))
+        if (!camera.rotateVertically(degrees)) {
             p.sendMessage(lang.MAX_ROTATION);
+            return;
+        }
+        if (OLD_CAMERA_VIEW) tp(p,camera);
+    }
+
+    private void tp(Player p, Camera camera) {
+        Location loc = camera.getArmorStand().getLocation().clone();
+        loc.add(0,1,0);
+        p.teleport(loc);
     }
 }

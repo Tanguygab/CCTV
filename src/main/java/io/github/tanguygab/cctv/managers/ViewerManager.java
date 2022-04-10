@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class ViewerManager extends Manager<Viewer> {
-
     public boolean CISWP;
+
     public int TIME_TO_CONNECT;
     public int TIME_TO_DISCONNECT;
     public int TIME_FOR_SPOT;
@@ -42,6 +42,10 @@ public class ViewerManager extends Manager<Viewer> {
         TIME_FOR_SPOT = config.getInt("time_for_spot",5);
     }
 
+    public void unload() {
+        values().forEach(v-> cctv.getCameras().unviewCamera(get(v)));
+    }
+
     @Override
     public void delete(String id, Player player) {
         Viewer viewer = get(id);
@@ -56,11 +60,11 @@ public class ViewerManager extends Manager<Viewer> {
         p.setCanPickupItems(true);
         delete(id);
     }
-
     public void delete(Player p) {delete(p.getUniqueId().toString(),null);}
     public Viewer get(Player p) {
         return get(p.getUniqueId().toString());
     }
+
     public Player get(Viewer viewer) {
         return Bukkit.getServer().getPlayer(UUID.fromString(viewer.getId()));
     }
@@ -139,6 +143,5 @@ public class ViewerManager extends Manager<Viewer> {
         cm.viewCameraInstant(cam, p);
         viewer.setCamera(cam);
     }
-
 
 }

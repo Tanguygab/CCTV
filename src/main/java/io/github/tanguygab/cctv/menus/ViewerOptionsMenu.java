@@ -1,9 +1,9 @@
 package io.github.tanguygab.cctv.menus;
 
+import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.entities.Viewer;
 import io.github.tanguygab.cctv.managers.ViewerManager;
 import io.github.tanguygab.cctv.utils.Heads;
-import io.github.tanguygab.cctv.utils.NMSUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -17,6 +17,7 @@ import java.util.List;
 
 public class ViewerOptionsMenu extends CCTVMenu {
 
+    private final boolean oldCam = CCTV.get().getCameras().OLD_CAMERA_VIEW;
     private final ViewerManager vm = cctv.getViewers();
 
     public ViewerOptionsMenu(Player p) {
@@ -29,12 +30,14 @@ public class ViewerOptionsMenu extends CCTVMenu {
         if (hasItemPerm(p,"nightvision")) inv.setItem(3, vm.get(p).hasNightVision() ? Heads.NIGHT_VISION_ON.get() : Heads.NIGHT_VISION_OFF.get());
 
         if (hasItemPerm(p,"zoom")) {
-            PotionEffect effect = p.getPotionEffect(PotionEffectType.SLOW);
-            inv.setItem(4, getItem(Heads.ZOOM,
-                    effect != null
-                            ? lang.getCameraViewZoom(effect.getAmplifier()+1)
-                            : lang.CAMERA_VIEW_OPTIONS_ZOOM_OFF
-            ));
+            if (oldCam) {
+                PotionEffect effect = p.getPotionEffect(PotionEffectType.SLOW);
+                inv.setItem(4, getItem(Heads.ZOOM,
+                        effect != null
+                                ? lang.getCameraViewZoom(effect.getAmplifier() + 1)
+                                : lang.CAMERA_VIEW_OPTIONS_ZOOM_OFF
+                ));
+            } else inv.setItem(4,getItem(Heads.ZOOM,"&6Change your FOV!"));
         }
 
         if (hasItemPerm(p,"spot")) inv.setItem(5, getItem(Heads.SPOTTING,lang.CAMERA_VIEW_OPTIONS_SPOT));
@@ -52,6 +55,7 @@ public class ViewerOptionsMenu extends CCTVMenu {
         switch (slot) {
             case 3 -> nightvision(p);
             case 4 -> {
+                if (!oldCam) return;
                 PotionEffect effect = p.getPotionEffect(PotionEffectType.SLOW);
                 if (effect == null) {
                     zoom(p, 1);

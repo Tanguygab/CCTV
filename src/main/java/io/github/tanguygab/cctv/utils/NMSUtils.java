@@ -1,6 +1,8 @@
 package io.github.tanguygab.cctv.utils;
 
+import io.github.tanguygab.cctv.CCTV;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
@@ -8,6 +10,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class NMSUtils {
@@ -87,7 +91,26 @@ public class NMSUtils {
         }
     }
 
+    private final Map<Player, Location> oldLoc = new HashMap<>();
+
     public void setCameraPacket(Player p, Entity entity) {
+        if (CCTV.get().getCameras().OLD_CAMERA_VIEW) {
+            boolean view = p != entity;
+            Location loc = oldLoc.get(p);
+            if (view) {
+                oldLoc.putIfAbsent(p,p.getLocation());
+                loc = entity.getLocation().clone();
+                loc.add(0,1,0);
+            }
+            else oldLoc.remove(p);
+            p.teleport(loc);
+            p.setInvisible(view);
+            p.setAllowFlight(view);
+            p.setInvulnerable(view);
+            p.setCollidable(!view);
+            p.setGravity(!view);
+            return;
+        }
         try {
             Object nmsEntity = getEntityHandle.invoke(entity);
             sendPacket(p,newPacketPlayOutCameraClass.newInstance(nmsEntity));

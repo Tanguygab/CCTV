@@ -3,6 +3,8 @@ package io.github.tanguygab.cctv.entities;
 import io.github.tanguygab.cctv.CCTV;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 public class Viewer extends ID {
 
@@ -43,6 +45,11 @@ public class Viewer extends ID {
         this.nightVision = nightVision;
         CCTV cctv = CCTV.get();
         Player p = cctv.getViewers().get(this);
+        if (cctv.getCameras().OLD_CAMERA_VIEW) {
+            if (nightVision) p.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION,1000000,0));
+            else p.removePotionEffect(PotionEffectType.NIGHT_VISION);
+            return;
+        }
         if (nightVision) {
             p.hideEntity(cctv, camera.getArmorStand());
             cctv.getNMS().setCameraPacket(p,camera.getCreeper());
@@ -51,4 +58,5 @@ public class Viewer extends ID {
         p.showEntity(cctv, camera.getArmorStand());
         cctv.getNMS().setCameraPacket(p, camera.getArmorStand());
     }
+
 }
