@@ -94,7 +94,7 @@ public class NMSUtils {
     private final Map<Player, Location> oldLoc = new HashMap<>();
 
     public void setCameraPacket(Player p, Entity entity) {
-        if (CCTV.get().getCameras().OLD_CAMERA_VIEW) {
+        if (CCTV.get().getCameras().OLD_VIEW) {
             boolean view = p != entity;
             Location loc = oldLoc.get(p);
             if (view) {

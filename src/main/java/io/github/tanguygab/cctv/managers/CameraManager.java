@@ -1,6 +1,5 @@
 package io.github.tanguygab.cctv.managers;
 
-import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.entities.Camera;
 import io.github.tanguygab.cctv.entities.CameraGroup;
 import io.github.tanguygab.cctv.utils.Heads;
@@ -17,9 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 public class CameraManager extends Manager<Camera> {
-    
-    public double CAMERA_HEAD_RADIUS;
-    public boolean OLD_CAMERA_VIEW;
+
+    public boolean OLD_VIEW;
     public List<Player> connecting = new ArrayList<>();
 
     public CameraManager() {
@@ -28,8 +26,7 @@ public class CameraManager extends Manager<Camera> {
 
     @Override
     public void load() {
-        CAMERA_HEAD_RADIUS = cctv.getConfiguration().getDouble("camera_head_radius",0.35D);
-        OLD_CAMERA_VIEW = cctv.getConfiguration().getBoolean("old_camera_view",false);
+        OLD_VIEW = cctv.getConfiguration().getBoolean("camera.old_view",false);
         
         Map<String, Object> cams = file.getValues();
         cams.forEach((id,cfg)->{
@@ -191,7 +188,7 @@ public class CameraManager extends Manager<Camera> {
             p.sendMessage(lang.MAX_ROTATION);
             return;
         }
-        if (OLD_CAMERA_VIEW) tp(p,camera);
+        if (OLD_VIEW) tp(p,camera);
     }
     public void rotateVertically(Player p, Camera camera, int degrees) {
         if (!p.hasPermission("cctv.view.move")) {
@@ -202,7 +199,7 @@ public class CameraManager extends Manager<Camera> {
             p.sendMessage(lang.MAX_ROTATION);
             return;
         }
-        if (OLD_CAMERA_VIEW) tp(p,camera);
+        if (OLD_VIEW) tp(p,camera);
     }
 
     private void tp(Player p, Camera camera) {

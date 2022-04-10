@@ -15,7 +15,7 @@ public class CustomHeads {
 
     public CustomHeads() {
         heads.put("_DEFAULT_",Heads.CAMERA.get());
-        Map<String,String> textures = CCTV.get().getConfiguration().getConfigurationSection("camera-skins");
+        Map<String,String> textures = CCTV.get().getConfiguration().getConfigurationSection("camera.skins");
         textures.forEach((name,base64)-> {
             ItemStack item = Heads.createSkull(base64,name);
             ItemMeta meta = item.getItemMeta();

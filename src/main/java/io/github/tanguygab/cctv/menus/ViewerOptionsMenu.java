@@ -17,7 +17,7 @@ import java.util.List;
 
 public class ViewerOptionsMenu extends CCTVMenu {
 
-    private final boolean oldCam = CCTV.get().getCameras().OLD_CAMERA_VIEW;
+    private final boolean oldCam = CCTV.get().getCameras().OLD_VIEW;
     private final ViewerManager vm = cctv.getViewers();
 
     public ViewerOptionsMenu(Player p) {
@@ -47,7 +47,7 @@ public class ViewerOptionsMenu extends CCTVMenu {
     }
 
     private boolean hasItemPerm(Player p, String perm) {
-        return vm.CISWP || p.hasPermission("cctv.view."+perm);
+        return vm.GWIP || p.hasPermission("cctv.view."+perm);
     }
 
     @Override

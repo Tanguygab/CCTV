@@ -1,5 +1,6 @@
 package io.github.tanguygab.cctv.managers;
 
+import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.config.ConfigurationFile;
 import io.github.tanguygab.cctv.entities.Camera;
 import io.github.tanguygab.cctv.entities.CameraGroup;
@@ -21,7 +22,9 @@ import java.util.List;
 import java.util.UUID;
 
 public class ViewerManager extends Manager<Viewer> {
-    public boolean CISWP;
+
+    public boolean CAN_CHAT;
+    public boolean GWIP;
 
     public int TIME_TO_CONNECT;
     public int TIME_TO_DISCONNECT;
@@ -36,10 +39,11 @@ public class ViewerManager extends Manager<Viewer> {
     @Override
     public void load() {
         ConfigurationFile config = cctv.getConfiguration();
-        CISWP = config.getBoolean("camera_inventory_show_item_without_permissions");
-        TIME_TO_CONNECT = config.getInt("time_to_connect",3);
-        TIME_TO_DISCONNECT = config.getInt("time_to_disconnect",3);
-        TIME_FOR_SPOT = config.getInt("time_for_spot",5);
+        CAN_CHAT = config.getBoolean("viewers.can_chat",true);
+        GWIP = config.getBoolean("viewers.get_items_without_permission",true);
+        TIME_TO_CONNECT = config.getInt("viewers.timed-actions.connect",3);
+        TIME_TO_DISCONNECT = config.getInt("viewers.timed-actions.disconnect",3);
+        TIME_FOR_SPOT = config.getInt("viewers.timed-actions.spot",5);
     }
 
     public void unload() {
@@ -86,13 +90,13 @@ public class ViewerManager extends Manager<Viewer> {
     private void giveViewerItems(Player p, CameraGroup group) {
         PlayerInventory inv = p.getInventory();
         inv.clear();
-        if (CISWP || p.hasPermission("cctv.view.zoom") || p.hasPermission("cctv.view.nightvision") || p.hasPermission("cctv.view.spot"))
+        if (GWIP || p.hasPermission("cctv.view.zoom") || p.hasPermission("cctv.view.nightvision") || p.hasPermission("cctv.view.spot"))
             inv.setItem(0, CCTVMenu.getItem(Heads.OPTIONS,lang.CAMERA_VIEW_OPTION));
-        if (CISWP || p.hasPermission("cctv.view.move")) {
+        if (GWIP || p.hasPermission("cctv.view.move")) {
             inv.setItem(3, Heads.ROTATE_LEFT.get());
             inv.setItem(group != null && group.getCameras().size() > 1 ? 4 : 5, Heads.ROTATE_RIGHT.get());
         }
-        if ((CISWP || p.hasPermission("cctv.view.switch")) && group != null && group.getCameras().size() > 1) {
+        if ((GWIP || p.hasPermission("cctv.view.switch")) && group != null && group.getCameras().size() > 1) {
             inv.setItem(6, Heads.CAM_PREVIOUS.get());
             inv.setItem(7, Heads.CAM_NEXT.get());
         }
