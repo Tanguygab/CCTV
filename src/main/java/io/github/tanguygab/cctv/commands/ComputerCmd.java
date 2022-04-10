@@ -112,7 +112,23 @@ public class ComputerCmd extends Command {
                 p.sendMessage(lang.getComputerOwnerChanged(newOwner.getName()));
             }
             case "public" -> {
-
+                if (noPerm(p, "setowner")) {
+                    p.sendMessage(lang.NO_PERMISSIONS);
+                    return;
+                }
+                if (args.length < 3) {
+                    p.sendMessage(ChatColor.RED + "Please specify a computer name!");
+                    return;
+                }
+                Computer computer = cpm.get(args[2]);
+                if (computer == null || cantUse(p, computer.getOwner())) {
+                    p.sendMessage(lang.COMPUTER_NOT_FOUND);
+                    return;
+                }
+                computer.setPublic(!computer.isPublic());
+                if (computer.isPublic())
+                    p.sendMessage(ChatColor.GREEN + "Computer now public!");
+                else p.sendMessage(ChatColor.RED + "Computer now private!");
             }
             default -> sender.spigot().sendMessage(helpPage("Computer commands",
                     "get:Get the computer item",
