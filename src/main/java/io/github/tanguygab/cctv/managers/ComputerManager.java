@@ -1,13 +1,18 @@
 package io.github.tanguygab.cctv.managers;
 
+import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.entities.Computer;
+import io.github.tanguygab.cctv.menus.CCTVMenu;
 import io.github.tanguygab.cctv.menus.computers.ComputerMainMenu;
+import io.github.tanguygab.cctv.utils.Heads;
 import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +20,7 @@ import java.util.Map;
 
 public class ComputerManager extends Manager<Computer> {
 
-    public static Material COMPUTER_MATERIAL;
+    public static ItemStack COMPUTER_ITEM;
     
     public ComputerManager() {
         super("computers.yml");
@@ -23,8 +28,11 @@ public class ComputerManager extends Manager<Computer> {
 
     @Override
     public void load() {
-        Material mat = Material.getMaterial(cctv.getConfiguration().getString("computer_block","NETHER_BRICK_STAIRS"));
-        ComputerManager.COMPUTER_MATERIAL = mat == null ? Material.NETHER_BRICK_STAIRS : mat;
+        String mat = cctv.getConfiguration().getString("computer.block","NETHER_BRICK_STAIRS");
+        if (!mat.startsWith("head:")) {
+            Material material = Material.getMaterial(mat);
+            COMPUTER_ITEM = CCTVMenu.getItem(material == null ? Material.NETHER_BRICK_STAIRS : material, CCTV.get().getLang().COMPUTER_ITEM_NAME);
+        } else COMPUTER_ITEM = Heads.createSkull(mat.substring(mat.indexOf(":")),CCTV.get().getLang().COMPUTER_ITEM_NAME);
         
         Map<String,Object> map = file.getValues();
         map.forEach((id,cfg)->{

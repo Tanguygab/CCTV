@@ -8,9 +8,7 @@ import io.github.tanguygab.cctv.entities.ID;
 import io.github.tanguygab.cctv.managers.CameraGroupManager;
 import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.managers.ComputerManager;
-import io.github.tanguygab.cctv.menus.CCTVMenu;
 import org.bukkit.*;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 import java.util.Random;
@@ -20,10 +18,6 @@ public class Utils {
     public static NamespacedKey cameraKey = new NamespacedKey(CCTV.get(), "camera");
     public static NamespacedKey computerKey = new NamespacedKey(CCTV.get(), "computer");
     private static final Random random = new Random();
-
-    public static ItemStack getComputer() {
-        return CCTVMenu.getItem(ComputerManager.COMPUTER_MATERIAL,CCTV.get().getLang().COMPUTER_ITEM_NAME);
-    }
 
     public static int getRandomNumber(int size, String type) {
         int number = random.nextInt(size);

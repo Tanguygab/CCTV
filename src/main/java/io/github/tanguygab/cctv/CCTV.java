@@ -160,7 +160,7 @@ public class CCTV extends JavaPlugin {
         computerItems.put("C","COMPARATOR");
         computerItems.put("R","REPEATER");
         computerItems.put("T","REDSTONE_TORCH");
-        loadRecipe(Utils.computerKey,Utils.getComputer(),"computer",List.of("ITI","PGP","RCR"),computerItems);
+        loadRecipe(Utils.computerKey,ComputerManager.COMPUTER_ITEM.clone(),"computer",List.of("ITI","PGP","RCR"),computerItems);
     }
     private void loadRecipe(NamespacedKey key, ItemStack item, String cfg, List<String> defShape, Map<String,String> defItems) {
         if (getServer().getRecipe(key) != null) getServer().removeRecipe(key);

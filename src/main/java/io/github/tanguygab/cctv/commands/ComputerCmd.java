@@ -33,7 +33,7 @@ public class ComputerCmd extends Command {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
-                p.getInventory().addItem(Utils.getComputer());
+                p.getInventory().addItem(ComputerManager.COMPUTER_ITEM.clone());
                 p.sendMessage(ChatColor.GREEN + "Place down this item to create a computer!");
             }
             case "list" -> {

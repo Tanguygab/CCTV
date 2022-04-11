@@ -53,14 +53,14 @@ public class Listener implements org.bukkit.event.Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST,ignoreCancelled = true)
     public void on(BlockBreakEvent e) {
-        if (!e.getBlock().getType().equals(ComputerManager.COMPUTER_MATERIAL)) return;
+        if (e.getBlock().getType() != ComputerManager.COMPUTER_ITEM.getType()) return;
         Player p = e.getPlayer();
         Computer rec = cpm.get(e.getBlock().getLocation());
         if (rec == null) return;
         if (!rec.getOwner().equals(p.getUniqueId().toString()) && !p.hasPermission("cctv.computer.other")) return;
         e.getBlock().setType(Material.AIR);
 
-        if (p.getGameMode() != GameMode.CREATIVE) p.getInventory().addItem(Utils.getComputer());
+        if (p.getGameMode() != GameMode.CREATIVE) p.getInventory().addItem(ComputerManager.COMPUTER_ITEM.clone());
         e.setCancelled(true);
         cpm.delete(rec.getId(),p);
     }

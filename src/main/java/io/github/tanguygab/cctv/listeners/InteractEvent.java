@@ -1,7 +1,6 @@
 package io.github.tanguygab.cctv.listeners;
 
 import io.github.tanguygab.cctv.CCTV;
-import io.github.tanguygab.cctv.config.LanguageFile;
 import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.managers.ComputerManager;
 import org.bukkit.GameMode;
@@ -33,7 +32,7 @@ public class InteractEvent {
         if (e.getAction() != Action.RIGHT_CLICK_BLOCK || block == null) return;
         Location loc = block.getLocation();
 
-        if (block.getType() == ComputerManager.COMPUTER_MATERIAL && e.getHand() != EquipmentSlot.OFF_HAND) {
+        if (block.getType() == ComputerManager.COMPUTER_ITEM.getType() && e.getHand() != EquipmentSlot.OFF_HAND) {
             ComputerManager cpm = CCTV.get().getComputers();
             Computer computer = cpm.get(block.getLocation());
             if (computer != null) {

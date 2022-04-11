@@ -35,8 +35,7 @@ public class ComputersEvents implements Listener {
         onExplosion(e.blockList());
     }
     private void onExplosion(List<Block> blocks) {
-        if (blocks.stream().anyMatch(block -> CCTV.get().getComputers().exists(block.getLocation())))
-            blocks.removeIf(block -> block.getType().equals(ComputerManager.COMPUTER_MATERIAL));
+        blocks.removeIf(block -> CCTV.get().getComputers().exists(block.getLocation()) && block.getType() == ComputerManager.COMPUTER_ITEM.getType());
     }
 
 }
