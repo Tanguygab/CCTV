@@ -19,39 +19,36 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class InteractEvent {
 
     public static void on(PlayerInteractEvent e) {
-        LanguageFile lang = CCTV.get().getLang();
         Player p = e.getPlayer();
         ItemStack item = e.getItem();
-        Block block = e.getClickedBlock();
-        Location loc = block == null ? null : block.getLocation();
-        boolean rcb = e.getAction() == Action.RIGHT_CLICK_BLOCK;
 
-        if (rcb && block != null) {
-            if (block.getType() == ComputerManager.COMPUTER_MATERIAL && e.getHand() != EquipmentSlot.OFF_HAND) {
-                ComputerManager cpm = CCTV.get().getComputers();
-                Computer computer = cpm.get(block.getLocation());
-                if (computer != null) {
-                    if (computer.canUse(p)) cpm.open(p, computer);
-                    else p.sendMessage(lang.COMPUTER_NOT_ALLOWED);
-                    e.setCancelled(true);
-                    return;
-                }
-            }
-        }
-
-        if (item == null) return;
-        ItemMeta meta = item.getItemMeta();
-        if (meta == null || !meta.hasDisplayName()) return;
-
-        if (rcb && item.getType() == Material.PLAYER_HEAD && CCTV.get().getCustomHeads().isCamera(item)) {
-            createCamera(p,item,loc,e.getBlockFace());
-            e.setCancelled(true);
-            return;
-        }
-        if ((rcb || e.getAction() == Action.RIGHT_CLICK_AIR) && CCTV.get().getViewers().exists(p)) {
+        if (CCTV.get().getViewers().exists(p)) {
             e.setCancelled(true);
             if (e.getHand() != EquipmentSlot.OFF_HAND)
                 CCTV.get().getViewers().onCameraItems(p, item);
+            return;
+        }
+
+        Block block = e.getClickedBlock();
+        if (e.getAction() != Action.RIGHT_CLICK_BLOCK || block == null) return;
+        Location loc = block.getLocation();
+
+        if (item != null) {
+            ItemMeta meta = item.getItemMeta();
+            if (meta != null && meta.hasDisplayName() && item.getType() == Material.PLAYER_HEAD && CCTV.get().getCustomHeads().isCamera(item)) {
+                createCamera(p, item, loc, e.getBlockFace());
+                e.setCancelled(true);
+                return;
+            }
+        }
+        if (block.getType() == ComputerManager.COMPUTER_MATERIAL && e.getHand() != EquipmentSlot.OFF_HAND) {
+            ComputerManager cpm = CCTV.get().getComputers();
+            Computer computer = cpm.get(block.getLocation());
+            if (computer != null) {
+                if (computer.canUse(p)) cpm.open(p, computer);
+                else p.sendMessage(CCTV.get().getLang().COMPUTER_NOT_ALLOWED);
+                e.setCancelled(true);
+            }
         }
     }
 
