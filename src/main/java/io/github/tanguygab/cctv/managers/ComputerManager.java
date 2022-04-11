@@ -10,6 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -32,7 +33,7 @@ public class ComputerManager extends Manager<Computer> {
         if (!mat.startsWith("head:")) {
             Material material = Material.getMaterial(mat);
             COMPUTER_ITEM = CCTVMenu.getItem(material == null ? Material.NETHER_BRICK_STAIRS : material, CCTV.get().getLang().COMPUTER_ITEM_NAME);
-        } else COMPUTER_ITEM = Heads.createSkull(mat.substring(mat.indexOf(":")),CCTV.get().getLang().COMPUTER_ITEM_NAME);
+        } else COMPUTER_ITEM = Heads.createSkull(mat.substring(mat.indexOf(":")+1),CCTV.get().getLang().COMPUTER_ITEM_NAME);
         
         Map<String,Object> map = file.getValues();
         map.forEach((id,cfg)->{
@@ -63,13 +64,16 @@ public class ComputerManager extends Manager<Computer> {
         player.sendMessage(lang.COMPUTER_DELETE);
     }
 
-    public boolean exists(Location loc) {
-        return get(loc) != null;
+    public boolean exists(Block block) {
+        return get(block) != null;
     }
-    public Computer get(Location loc) {
-        for (Computer computer : values())
-            if (computer.getLocation().equals(loc))
-                return computer;
+    public Computer get(Block block) {
+        if (block.getType() == ComputerManager.COMPUTER_ITEM.getType()
+                || (block.getType() == Material.PLAYER_WALL_HEAD
+                && ComputerManager.COMPUTER_ITEM.getType() == Material.PLAYER_HEAD))
+            for (Computer computer : values())
+                if (computer.getLocation().equals(block.getLocation()))
+                    return computer;
         return null;
     }
     public List<String> get(Player p) {

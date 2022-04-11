@@ -20,7 +20,6 @@ public class InteractEvent {
     public static void on(PlayerInteractEvent e) {
         Player p = e.getPlayer();
         ItemStack item = e.getItem();
-
         if (CCTV.get().getViewers().exists(p)) {
             e.setCancelled(true);
             if (e.getHand() != EquipmentSlot.OFF_HAND)
@@ -30,24 +29,21 @@ public class InteractEvent {
 
         Block block = e.getClickedBlock();
         if (e.getAction() != Action.RIGHT_CLICK_BLOCK || block == null) return;
-        Location loc = block.getLocation();
 
-        if (block.getType() == ComputerManager.COMPUTER_ITEM.getType() && e.getHand() != EquipmentSlot.OFF_HAND) {
-            ComputerManager cpm = CCTV.get().getComputers();
-            Computer computer = cpm.get(block.getLocation());
-            if (computer != null) {
-                if (computer.canUse(p)) cpm.open(p, computer);
-                else p.sendMessage(CCTV.get().getLang().COMPUTER_NOT_ALLOWED);
-                e.setCancelled(true);
-                return;
-            }
+        ComputerManager cpm = CCTV.get().getComputers();
+        Computer computer = cpm.get(block);
+        if (e.getHand() != EquipmentSlot.OFF_HAND && computer != null) {
+            if (computer.canUse(p)) cpm.open(p, computer);
+            else p.sendMessage(CCTV.get().getLang().COMPUTER_NOT_ALLOWED);
+            e.setCancelled(true);
+            return;
         }
-        if (item != null) {
-            ItemMeta meta = item.getItemMeta();
-            if (meta != null && meta.hasDisplayName() && item.getType() == Material.PLAYER_HEAD && CCTV.get().getCustomHeads().isCamera(item)) {
-                createCamera(p, item, loc, e.getBlockFace());
-                e.setCancelled(true);
-            }
+
+        if (item == null) return;
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null && meta.hasDisplayName() && item.getType() == Material.PLAYER_HEAD && CCTV.get().getCustomHeads().isCamera(item)) {
+            createCamera(p, item, block.getLocation(), e.getBlockFace());
+            e.setCancelled(true);
         }
     }
 

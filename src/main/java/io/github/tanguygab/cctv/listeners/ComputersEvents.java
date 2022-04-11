@@ -1,7 +1,6 @@
 package io.github.tanguygab.cctv.listeners;
 
 import io.github.tanguygab.cctv.CCTV;
-import io.github.tanguygab.cctv.managers.ComputerManager;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,7 +22,7 @@ public class ComputersEvents implements Listener {
         if (onMove(e.getBlocks())) e.setCancelled(true);
     }
     private boolean onMove(List<Block> blocks) {
-        return blocks.stream().anyMatch(block -> CCTV.get().getComputers().exists(block.getLocation()));
+        return blocks.stream().anyMatch(block -> CCTV.get().getComputers().exists(block));
     }
 
     @EventHandler
@@ -35,7 +34,7 @@ public class ComputersEvents implements Listener {
         onExplosion(e.blockList());
     }
     private void onExplosion(List<Block> blocks) {
-        blocks.removeIf(block -> CCTV.get().getComputers().exists(block.getLocation()) && block.getType() == ComputerManager.COMPUTER_ITEM.getType());
+        blocks.removeIf(block -> CCTV.get().getComputers().exists(block));
     }
 
 }
