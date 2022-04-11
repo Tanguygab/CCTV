@@ -48,7 +48,6 @@ public class InteractEvent {
             if (meta != null && meta.hasDisplayName() && item.getType() == Material.PLAYER_HEAD && CCTV.get().getCustomHeads().isCamera(item)) {
                 createCamera(p, item, loc, e.getBlockFace());
                 e.setCancelled(true);
-
             }
         }
     }
