@@ -1,5 +1,6 @@
 package io.github.tanguygab.cctv;
 
+import io.github.tanguygab.cctv.api.CCTVAPI;
 import io.github.tanguygab.cctv.commands.CameraCmd;
 import io.github.tanguygab.cctv.commands.ComputerCmd;
 import io.github.tanguygab.cctv.commands.GroupCmd;
@@ -85,6 +86,7 @@ public class CCTV extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+        new CCTVAPI(this);
         try {
             config = new YamlConfigurationFile(getResource("config.yml"), new File(getDataFolder(), "config.yml"));
             lang = new LanguageFile(getResource("language.yml"), new File(getDataFolder(), "language.yml"));

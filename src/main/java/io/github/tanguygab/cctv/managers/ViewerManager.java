@@ -121,7 +121,7 @@ public class ViewerManager extends Manager<Viewer> {
         if (itemName.equals(lang.CAMERA_VIEW_NEXT)) switchCamera(p,false);
     }
 
-    private void switchCamera(final Player p, boolean previous) {
+    public void switchCamera(Player p, boolean previous) {
         if (!p.hasPermission("cctv.view.switch")) {
             p.sendMessage(lang.NO_PERMISSIONS);
             return;

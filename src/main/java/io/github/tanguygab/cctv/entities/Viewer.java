@@ -12,12 +12,14 @@ public class Viewer extends ID {
     private Camera camera;
     private CameraGroup group;
     private boolean nightVision;
+    private boolean canExit;
 
     public Viewer(Player p, Camera camera, CameraGroup group) {
         super(p.getUniqueId().toString(),CCTV.get().getViewers());
         inv = p.getInventory().getContents().clone();
         this.camera = camera;
         this.group = group;
+        canExit = true;
     }
 
     public ItemStack[] getInv() {
@@ -59,4 +61,10 @@ public class Viewer extends ID {
         cctv.getNMS().setCameraPacket(p, camera.getArmorStand());
     }
 
+    public void setCanExit(boolean canExit) {
+        this.canExit = canExit;
+    }
+    public boolean canExit() {
+        return canExit;
+    }
 }
