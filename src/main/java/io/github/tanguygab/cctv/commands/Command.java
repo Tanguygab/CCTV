@@ -25,7 +25,7 @@ public abstract class Command {
     }
 
     protected boolean noPerm(Player p, String perm) {
-        return !p.hasPermission("cctv." + type + perm);
+        return !p.hasPermission("cctv." + type + "." + perm);
     }
     protected boolean cantUse(Player p, String owner) {
         return !owner.equals(p.getUniqueId().toString()) && noPerm(p, ".other");
