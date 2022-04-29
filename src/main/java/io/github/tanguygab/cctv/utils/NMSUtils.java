@@ -92,6 +92,7 @@ public class NMSUtils {
     }
 
     private final Map<Player, Location> oldLoc = new HashMap<>();
+    private final Map<Player, Entity> oldEntity = new HashMap<>();
 
     public void setCameraPacket(Player p, Entity entity) {
         if (CCTV.get().getCameras().OLD_VIEW) {
@@ -99,10 +100,16 @@ public class NMSUtils {
             Location loc = oldLoc.get(p);
             if (view) {
                 oldLoc.putIfAbsent(p,p.getLocation());
-                loc = entity.getLocation().clone();
-                loc.add(0,1,0);
+                if (oldEntity.containsKey(p))
+                    p.showEntity(CCTV.get(), oldEntity.get(p));
+                oldEntity.put(p,entity);
+                loc = entity.getLocation();
+                p.hideEntity(CCTV.get(),entity);
+            } else {
+                oldLoc.remove(p);
+                oldEntity.remove(p);
+                p.showEntity(CCTV.get(), entity);
             }
-            else oldLoc.remove(p);
             p.teleport(loc);
             p.setInvisible(view);
             p.setAllowFlight(view);

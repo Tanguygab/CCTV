@@ -13,7 +13,6 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,9 +106,4 @@ public class ComputerManager extends Manager<Computer> {
         cctv.openMenu(p,new ComputerMainMenu(p,computer));
     }
 
-    public void teleport(Player p, Computer computer) {
-        Location loc = computer.getLocation().clone();
-        loc.add(1.0D,0.5D,0.5D);
-        p.teleport(loc);
-    }
 }

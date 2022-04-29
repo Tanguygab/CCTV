@@ -5,6 +5,7 @@ import io.github.tanguygab.cctv.managers.ComputerManager;
 import io.github.tanguygab.cctv.utils.Utils;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -78,7 +79,9 @@ public class ComputerCmd extends Command {
                     p.sendMessage(lang.COMPUTER_NOT_FOUND);
                     return;
                 }
-                cpm.teleport(p,computer);
+                Location loc = computer.getLocation().clone();
+                loc.add(1.0D,0.5D,0.5D);
+                p.teleport(loc);
             }
             case "setowner" -> {
                 if (noPerm(p, "setowner")) {

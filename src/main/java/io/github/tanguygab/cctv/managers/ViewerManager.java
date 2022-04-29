@@ -50,21 +50,15 @@ public class ViewerManager extends Manager<Viewer> {
         values().forEach(v-> cctv.getCameras().unviewCamera(get(v)));
     }
 
-    @Override
-    public void delete(String id, Player player) {
-        Viewer viewer = get(id);
-        if (viewer == null) {
-            if (player != null) player.sendMessage("This player isn't viewing a camera!");
-            return;
-        }
-        Player p = get(viewer);
+    public void delete(Player p) {
+        Viewer viewer = get(p);
         p.getInventory().setContents(viewer.getInv());
 
         p.removePotionEffect(PotionEffectType.SLOW);
         p.setCanPickupItems(true);
-        delete(id);
+        p.showEntity(cctv, viewer.getCamera().getArmorStand());
+        delete(viewer.getId());
     }
-    public void delete(Player p) {delete(p.getUniqueId().toString(),null);}
     public Viewer get(Player p) {
         return get(p.getUniqueId().toString());
     }

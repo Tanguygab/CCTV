@@ -30,7 +30,10 @@ public class Viewer extends ID {
         return camera;
     }
     public void setCamera(Camera camera) {
+        boolean nv = nightVision;
+        if (nv) setNightVision(false);
         this.camera = camera;
+        if (nv) setNightVision(true);
     }
 
     public CameraGroup getGroup() {
