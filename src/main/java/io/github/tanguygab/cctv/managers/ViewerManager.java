@@ -55,6 +55,7 @@ public class ViewerManager extends Manager<Viewer> {
         p.getInventory().setContents(viewer.getInv());
 
         p.removePotionEffect(PotionEffectType.SLOW);
+        p.removePotionEffect(PotionEffectType.NIGHT_VISION);
         p.setCanPickupItems(true);
         p.showEntity(cctv, viewer.getCamera().getArmorStand());
         delete(viewer.getId());
