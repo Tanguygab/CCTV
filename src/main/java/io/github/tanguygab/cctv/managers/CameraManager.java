@@ -75,6 +75,7 @@ public class CameraManager extends Manager<Camera> {
             return;
         }
         cam.getArmorStand().remove();
+        cam.getCreeper().remove();
         player.sendMessage(lang.CAMERA_DELETE);
         player.sendMessage(lang.getCameraID(cam.getId()));
         cctv.getViewers().values().stream().filter(p -> p.getCamera() == cam).forEach(p -> unviewCamera(Bukkit.getPlayer(p.getId())));
