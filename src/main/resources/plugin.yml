@@ -2,10 +2,8 @@ name: CCTV
 version: 8.0
 main: io.github.tanguygab.cctv.CCTV
 api-version: 1.13
-loadbefore: [ WorldGuard ]
-softdepend: [ Multiverse-Core, multiworld ]
 authors: [ Streampy, Timdecoole123, Tanguygab ]
-description: A real CCTV plugin with working CCTV and NPC for a real usage and no invisable players. Updated by Tanguygab
+description: A real CCTV plugin with working CCTV and NPC for a real usage and no invisable players.
 commands:
   CCTV:
     description: Main command
