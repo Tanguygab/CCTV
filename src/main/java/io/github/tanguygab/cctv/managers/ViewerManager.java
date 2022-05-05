@@ -53,6 +53,8 @@ public class ViewerManager extends Manager<Viewer> {
     public void delete(Player p) {
         Viewer viewer = get(p);
         p.getInventory().setContents(viewer.getInv());
+        if (cm.OLD_VIEW)
+            for (Player online : Bukkit.getOnlinePlayers()) online.showPlayer(cctv,p);
 
         p.removePotionEffect(PotionEffectType.SLOW);
         p.removePotionEffect(PotionEffectType.NIGHT_VISION);
@@ -79,7 +81,8 @@ public class ViewerManager extends Manager<Viewer> {
         p.setCanPickupItems(false);
         giveViewerItems(p,group);
 
-        for (Player online : Bukkit.getOnlinePlayers()) online.hidePlayer(cctv,p);
+        if (cm.OLD_VIEW)
+            for (Player online : Bukkit.getOnlinePlayers()) online.hidePlayer(cctv,p);
     }
 
     private void giveViewerItems(Player p, CameraGroup group) {

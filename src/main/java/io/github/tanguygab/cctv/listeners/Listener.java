@@ -3,6 +3,7 @@ package io.github.tanguygab.cctv.listeners;
 import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.config.LanguageFile;
 import io.github.tanguygab.cctv.entities.Camera;
+import io.github.tanguygab.cctv.entities.Viewer;
 import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.managers.ComputerManager;
 import io.github.tanguygab.cctv.managers.ViewerManager;
@@ -133,9 +134,11 @@ public class Listener implements org.bukkit.event.Listener {
 
     @EventHandler
     public void on(PlayerJoinEvent event) {
-        Player joined = event.getPlayer();
-        joined.discoverRecipe(Utils.cameraKey);
-        joined.discoverRecipe(Utils.computerKey);
+        Player p = event.getPlayer();
+        p.discoverRecipe(Utils.cameraKey);
+        p.discoverRecipe(Utils.computerKey);
+        if (cm.OLD_VIEW)
+            for (Viewer viewer : vm.values()) p.hidePlayer(cctv,vm.get(viewer));
     }
 
     @EventHandler
