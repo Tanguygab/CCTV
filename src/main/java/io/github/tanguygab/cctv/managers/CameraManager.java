@@ -18,6 +18,8 @@ import java.util.Map;
 public class CameraManager extends Manager<Camera> {
 
     public boolean OLD_VIEW;
+    public boolean ZOOM_ITEM;
+
     public List<Player> connecting = new ArrayList<>();
 
     public CameraManager() {
@@ -27,6 +29,7 @@ public class CameraManager extends Manager<Camera> {
     @Override
     public void load() {
         OLD_VIEW = cctv.getConfiguration().getBoolean("camera.old_view",false);
+        ZOOM_ITEM = cctv.getConfiguration().getBoolean("camera.zoom_item",true);
         
         Map<String, Object> cams = file.getValues();
         cams.forEach((id,cfg)->{

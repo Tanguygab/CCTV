@@ -17,7 +17,6 @@ public class ComputerMenu extends CCTVMenu {
     @Override
     public void open() {}
 
-
     @Override
     public void onClick(ItemStack item, int slot, ClickType click) {}
 }

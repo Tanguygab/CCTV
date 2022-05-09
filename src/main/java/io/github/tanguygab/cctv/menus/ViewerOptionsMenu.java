@@ -7,6 +7,7 @@ import io.github.tanguygab.cctv.utils.Heads;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -17,7 +18,7 @@ import java.util.List;
 
 public class ViewerOptionsMenu extends CCTVMenu {
 
-    private final boolean oldCam = CCTV.get().getCameras().OLD_VIEW;
+    private final boolean oldCam = cctv.getCameras().OLD_VIEW;
     private final ViewerManager vm = cctv.getViewers();
 
     public ViewerOptionsMenu(Player p) {
@@ -26,23 +27,23 @@ public class ViewerOptionsMenu extends CCTVMenu {
 
     @Override
     public void open() {
-        inv = Bukkit.getServer().createInventory(null, 9, lang.CAMERA_VIEW_OPTIONS_TITLE);
-        if (hasItemPerm(p,"nightvision")) inv.setItem(3, vm.get(p).hasNightVision() ? Heads.NIGHT_VISION_ON.get() : Heads.NIGHT_VISION_OFF.get());
+        inv = Bukkit.getServer().createInventory(null, InventoryType.HOPPER, lang.CAMERA_VIEW_OPTIONS_TITLE);
+        if (hasItemPerm(p,"nightvision")) inv.setItem(0, vm.get(p).hasNightVision() ? Heads.NIGHT_VISION_ON.get() : Heads.NIGHT_VISION_OFF.get());
 
-        if (hasItemPerm(p,"zoom")) {
+        if (hasItemPerm(p,"spot")) inv.setItem(1, getItem(Heads.SPOTTING,lang.CAMERA_VIEW_OPTIONS_SPOT));
+
+        if (hasItemPerm(p,"zoom") && cctv.getCameras().ZOOM_ITEM) {
             if (oldCam) {
                 PotionEffect effect = p.getPotionEffect(PotionEffectType.SLOW);
-                inv.setItem(4, getItem(Heads.ZOOM,
+                inv.setItem(2, getItem(Heads.ZOOM,
                         effect != null
                                 ? lang.getCameraViewZoom(effect.getAmplifier() + 1)
                                 : lang.CAMERA_VIEW_OPTIONS_ZOOM_OFF
                 ));
-            } else inv.setItem(4,getItem(Heads.ZOOM,"&6Change your FOV!"));
+            } else inv.setItem(2,getItem(Heads.ZOOM,"&6Change your FOV!"));
         }
 
-        if (hasItemPerm(p,"spot")) inv.setItem(5, getItem(Heads.SPOTTING,lang.CAMERA_VIEW_OPTIONS_SPOT));
-
-        inv.setItem(8, getItem(Heads.EXIT,lang.CAMERA_VIEW_OPTIONS_BACK));
+        inv.setItem(4, getItem(Heads.EXIT,lang.CAMERA_VIEW_OPTIONS_BACK));
         p.openInventory(inv);
     }
 

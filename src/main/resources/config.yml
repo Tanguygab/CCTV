@@ -22,6 +22,7 @@ viewers:
     spot: 5
 camera:
   old_view: false
+  zoom_item: true
   craft:
     enabled: true
     shape:
