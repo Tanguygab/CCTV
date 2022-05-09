@@ -26,6 +26,8 @@ public class ComputerOptionsMenu extends ComputerMenu {
         inv = Bukkit.getServer().createInventory(null, InventoryType.HOPPER, lang.GUI_COMPUTER_OPTIONS_ITEM);
 
         inv.setItem(0, Heads.COMPUTER_BACK.get());
+
+        inv.setItem(2, getItem(Heads.CAMERA.get(),"&aAdd Cameras"));
         setPublicItem();
         setGroupItem();
 
@@ -38,10 +40,10 @@ public class ComputerOptionsMenu extends ComputerMenu {
         meta.setLore(List.of("",
                 ChatColor.GOLD+"Status: "+ChatColor.YELLOW+(computer.isPublic() ? "Public" : "Private"),
                 "",
-                ChatColor.YELLOW+"Left-Click to toggle",
-                ChatColor.YELLOW+"Middle-Click to add players",
-                ChatColor.YELLOW+"Right-Click to remove players")
-        );
+                ChatColor.YELLOW+"Left-Click to add players",
+                ChatColor.YELLOW+"Right-Click to remove players",
+                ChatColor.YELLOW+"Shift-Left to toggle"
+        ));
         item.setItemMeta(meta);
         inv.setItem(3, item);
     }
@@ -63,14 +65,15 @@ public class ComputerOptionsMenu extends ComputerMenu {
     public void onClick(ItemStack item, int slot, ClickType click) {
         switch (slot) {
             case 0 -> open(new ComputerMainMenu(p,computer));
+            case 2 -> open(new ComputerAddCamerasMenu(p,computer));
             case 3 -> {
                 switch (click) {
-                    case LEFT,SHIFT_LEFT -> {
+                    case LEFT -> open(new ComputerAddPlayersMenu(p,computer));
+                    case RIGHT -> open(new ComputerRemovePlayerMenu(p,computer));
+                    case SHIFT_LEFT -> {
                         computer.setPublic(!computer.isPublic());
                         setPublicItem();
                     }
-                    case MIDDLE -> open(new ComputerAddPlayersMenu(p,computer));
-                    case RIGHT,SHIFT_RIGHT -> open(new ComputerRemovePlayerMenu(p,computer));
                 }
             }
             case 4 -> {

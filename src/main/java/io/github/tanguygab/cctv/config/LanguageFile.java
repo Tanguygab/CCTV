@@ -142,6 +142,10 @@ public class LanguageFile extends YamlConfigurationFile {
     public String getGuiComputerAddPlayer(String page) {
         return GUI_COMPUTER_ADD_PLAYER.replace("%page%",page);
     }
+    private final String GUI_COMPUTER_ADD_CAMERA = get("gui.computer.add-camera", "&aAdd camera (page: %page%)");
+    public String getGuiComputerAddCamera(String page) {
+        return GUI_COMPUTER_ADD_CAMERA.replace("%page%",page);
+    }
     public final String GUI_COMPUTER_DEFAULT_ITEM_OPTION = get("gui.computer.default-item.option", "&6Options");
     public final String GUI_COMPUTER_DEFAULT_ITEM_NEXT_PAGE = get("gui.computer.default-item.next-page", "&8Next Page");
     public final String GUI_COMPUTER_DEFAULT_ITEM_PREVIOUS_PAGE = get("gui.computer.default-item.previous-page", "&8Previous Page");

@@ -15,12 +15,9 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.text.DecimalFormat;
 import java.util.List;
 
 public class ComputerMainMenu extends ComputerMenu {
-
-    private static final DecimalFormat f = new DecimalFormat("#.##");
 
     public ComputerMainMenu(Player p, Computer computer) {
         super(p,computer);
@@ -43,12 +40,16 @@ public class ComputerMainMenu extends ComputerMenu {
                 Location loc = cam.getLocation();
                 ItemMeta meta = item.getItemMeta();
                 meta.setLore(List.of("",ChatColor.translateAlternateColorCodes('&',
-                                "&6X: &7"+f.format(loc.getX())
-                                        +" &6Y: &7"+f.format(loc.getY())
-                                        +" &6Z: &7"+f.format(loc.getZ())
+                                "&6X: &7"+ posFormat.format(loc.getX())
+                                        +" &6Y: &7"+ posFormat.format(loc.getY())
+                                        +" &6Z: &7"+ posFormat.format(loc.getZ())
                         ),""
                         ,ChatColor.YELLOW+"Left-Click to View"
                         ,ChatColor.YELLOW+"Right-Click to Edit"
+                        ,""
+                        ,ChatColor.YELLOW+"Shift-Left to go up"
+                        ,ChatColor.YELLOW+"Shift-Right to go down"
+                        ,ChatColor.RED+"Drop to remove"
                 ));
                 item.setItemMeta(meta);
                 inv.addItem(item);
@@ -79,14 +80,34 @@ public class ComputerMainMenu extends ComputerMenu {
                     p.sendMessage(lang.CAMERA_NOT_FOUND);
                     return;
                 }
-                if (click.isRightClick()) {
-                    if (!camera.getOwner().equals(p.getUniqueId().toString()) && !p.hasPermission("cctv.camera.other"))
-                        p.sendMessage(lang.NO_PERMISSIONS);
-                    else open(new CameraMenu(p,camera));
-                    return;
+                switch (click) {
+                    case LEFT -> {
+                        cctv.getCameras().viewCamera(p, camera, computer.getCameraGroup());
+                        p.closeInventory();
+                    }
+                    case RIGHT -> {
+                        if (!camera.getOwner().equals(p.getUniqueId().toString()) && !p.hasPermission("cctv.camera.other")) {
+                            p.sendMessage(lang.NO_PERMISSIONS);
+                        }
+                        else open(new CameraMenu(p,camera));
+                    }
+                    case SHIFT_LEFT, SHIFT_RIGHT -> {
+                        CameraGroup g = computer.getCameraGroup();
+                        int bound = click == ClickType.SHIFT_LEFT ? 0 : g.getCameras().size()-1;
+                        int inc = click == ClickType.SHIFT_LEFT ? -1 : 1;
+
+                        int index = g.getCameras().indexOf(camera);
+                        if (index == bound) return;
+                        g.removeCamera(camera);
+                        g.getCameras().add(index+inc,camera);
+                        open();
+                    }
+                    case DROP -> {
+                        computer.getCameraGroup().removeCamera(camera);
+                        p.sendMessage(lang.GROUP_REMOVE_CAMERA);
+                        open();
+                    }
                 }
-                else cctv.getCameras().viewCamera(p, camera, computer.getCameraGroup());
-                p.closeInventory();
             }
         }
     }

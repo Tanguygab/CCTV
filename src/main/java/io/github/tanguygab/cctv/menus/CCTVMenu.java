@@ -12,10 +12,13 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.function.Consumer;
 
 public abstract class CCTVMenu {
+
+    protected static final DecimalFormat posFormat = new DecimalFormat("#.##");
 
     protected final Player p;
     public Inventory inv;
