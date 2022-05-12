@@ -1,5 +1,5 @@
 name: CCTV
-version: 8.0
+version: 8.1
 main: io.github.tanguygab.cctv.CCTV
 api-version: 1.13
 authors: [ Streampy, Timdecoole123, Tanguygab ]
