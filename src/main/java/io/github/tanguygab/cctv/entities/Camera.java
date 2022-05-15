@@ -149,7 +149,7 @@ public class Camera extends ID {
     public void setSkin(String skin) {
         this.skin = skin;
         set("skin",skin);
-        setShown(true);
+        setShown(shown);
     }
 
     public boolean is(Entity entity) {
