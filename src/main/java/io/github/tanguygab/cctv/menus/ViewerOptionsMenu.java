@@ -97,7 +97,7 @@ public class ViewerOptionsMenu extends CCTVMenu {
         Inventory inv = p.getOpenInventory().getTopInventory();
         Viewer v = vm.get(p);
         v.setNightVision(!v.hasNightVision());
-        inv.setItem(3, v.hasNightVision() ? Heads.NIGHT_VISION_ON.get() : Heads.NIGHT_VISION_OFF.get());
+        inv.setItem(0, v.hasNightVision() ? Heads.NIGHT_VISION_ON.get() : Heads.NIGHT_VISION_OFF.get());
     }
     private void zoom(Player p, int zoomlevel) {
         if (!p.hasPermission("cctv.view.zoom")) {
