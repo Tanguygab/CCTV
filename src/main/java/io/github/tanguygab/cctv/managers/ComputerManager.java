@@ -1,6 +1,6 @@
 package io.github.tanguygab.cctv.managers;
 
-import io.github.tanguygab.cctv.CCTV;
+import dev.lone.itemsadder.api.CustomStack;
 import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.menus.CCTVMenu;
 import io.github.tanguygab.cctv.menus.computers.ComputerMainMenu;
@@ -29,10 +29,9 @@ public class ComputerManager extends Manager<Computer> {
     @Override
     public void load() {
         String mat = cctv.getConfiguration().getString("computer.block","NETHER_BRICK_STAIRS");
-        if (!mat.startsWith("head:")) {
-            Material material = Material.getMaterial(mat);
-            COMPUTER_ITEM = CCTVMenu.getItem(material == null ? Material.NETHER_BRICK_STAIRS : material, CCTV.get().getLang().COMPUTER_ITEM_NAME);
-        } else COMPUTER_ITEM = Heads.createSkull(mat.substring(mat.indexOf(":")+1),CCTV.get().getLang().COMPUTER_ITEM_NAME);
+        COMPUTER_ITEM = loadComputerMat(mat);
+        if (COMPUTER_ITEM == null)
+            COMPUTER_ITEM = CCTVMenu.getItem(Material.NETHER_BRICK_STAIRS, lang.COMPUTER_ITEM_NAME);
         
         Map<String,Object> map = file.getValues();
         map.forEach((id,cfg)->{
@@ -50,6 +49,18 @@ public class ComputerManager extends Manager<Computer> {
             create(id,owner,new Location(world,x,y,z),group,allowedPlayers,publik);
 
         });
+    }
+
+    private ItemStack loadComputerMat(String mat) {
+        if (mat.startsWith("itemsadder:")) {
+            CustomStack stack = CustomStack.getInstance(mat.substring(11));
+            return stack == null ? null : stack.getItemStack();
+        }
+        if (mat.startsWith("head:"))
+            return Heads.createSkull(mat.substring(5),lang.COMPUTER_ITEM_NAME);
+
+        Material material = Material.getMaterial(mat);
+        return material == null ? null : CCTVMenu.getItem(material, lang.COMPUTER_ITEM_NAME);
     }
 
     @Override
