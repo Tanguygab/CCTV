@@ -67,8 +67,7 @@ public class Listener implements org.bukkit.event.Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST,ignoreCancelled = true)
     public void on(BlockPlaceEvent e) {
-        ItemStack item = e.getItemInHand();
-        if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().contains("Computer"))
+        if (e.getItemInHand().isSimilar(ComputerManager.COMPUTER_ITEM))
             cpm.create(null,e.getPlayer(), e.getBlock().getLocation());
     }
 

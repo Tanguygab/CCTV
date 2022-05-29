@@ -1,6 +1,8 @@
 package io.github.tanguygab.cctv.managers;
 
+import dev.lone.itemsadder.api.CustomBlock;
 import dev.lone.itemsadder.api.CustomStack;
+import dev.lone.itemsadder.api.ItemsAdder;
 import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.menus.CCTVMenu;
 import io.github.tanguygab.cctv.menus.computers.ComputerMainMenu;
@@ -29,9 +31,10 @@ public class ComputerManager extends Manager<Computer> {
     public void load() {
         String mat = cctv.getConfiguration().getString("computer.block","NETHER_BRICK_STAIRS");
         COMPUTER_ITEM = loadComputerMat(mat);
-        if (COMPUTER_ITEM == null)
+        if (COMPUTER_ITEM == null) {
+            cctv.getLogger().info("Defaulting to Nether Brick Stairs...");
             COMPUTER_ITEM = CCTVMenu.getItem(Material.NETHER_BRICK_STAIRS, lang.COMPUTER_ITEM_NAME);
-        
+        }
         Map<String,Object> map = file.getValues();
         map.forEach((id,cfg)->{
             Map<String,Object> config = (Map<String, Object>) cfg;
@@ -55,13 +58,25 @@ public class ComputerManager extends Manager<Computer> {
             if (!cctv.getServer().getPluginManager().isPluginEnabled("ItemsAdder"))
                 return null;
             CustomStack stack = CustomStack.getInstance(mat.substring(11));
-            return stack == null ? null : stack.getItemStack();
+            if (stack == null) {
+                cctv.getLogger().info("Invalid ItemsAdder block as computer!");
+                return null;
+            }
+            if (stack.isBlock()) {
+                cctv.getLogger().info("ItemsAdder item for computer is not a block!");
+                return null;
+            }
+            return stack.getItemStack();
         }
         if (mat.startsWith("head:"))
             return Heads.createSkull(mat.substring(5),lang.COMPUTER_ITEM_NAME);
 
         Material material = Material.getMaterial(mat);
-        return material == null ? null : CCTVMenu.getItem(material, lang.COMPUTER_ITEM_NAME);
+        if (material == null) {
+            cctv.getLogger().info("Invalid material for computer!");
+            return null;
+        }
+        return CCTVMenu.getItem(material, lang.COMPUTER_ITEM_NAME);
     }
 
     @Override
