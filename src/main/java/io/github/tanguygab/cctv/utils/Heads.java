@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.UUID;
 
 public enum Heads {
@@ -51,11 +52,30 @@ public enum Heads {
         SkullMeta meta = (SkullMeta)head.getItemMeta();
         GameProfile profile = new GameProfile(UUID.randomUUID(), null);
         profile.getProperties().put("textures", new Property("textures", base64));
+
+        Method setProfileMethod = null;
         try {
-            Field profileField = meta.getClass().getDeclaredField("profile");
-            profileField.setAccessible(true);
-            profileField.set(meta, profile);
-        } catch (Exception e) {e.printStackTrace();}
+            setProfileMethod = meta.getClass().getDeclaredMethod("setProfile", GameProfile.class);
+        } catch (Exception ignored) {}
+            try {
+                // if available, we use setProfile(GameProfile) so that it sets both the profile field and the
+                // serialized profile field for us. If the serialized profile field isn't set
+                // ItemStack#isSimilar() and ItemStack#equals() throw an error.
+                //
+                // credit to https://github.com/iSach/UltraCosmetics/commit/89ef1b85fad28cfe8f6471c779c815456e52906f
+                // thank you, I wouldn't have figured it out ;-;
+                if (setProfileMethod == null) {
+                    Field profileField = meta.getClass().getDeclaredField("profile");
+                    profileField.setAccessible(true);
+                    profileField.set(meta, profile);
+                } else {
+                    setProfileMethod.setAccessible(true);
+                    setProfileMethod.invoke(meta, profile);
+                }
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
+
         head.setItemMeta(meta);
         return head;
     }

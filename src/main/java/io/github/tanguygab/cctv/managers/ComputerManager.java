@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class ComputerManager extends Manager<Computer> {
 
-    public static ItemStack COMPUTER_ITEM;
+    public ItemStack COMPUTER_ITEM;
     
     public ComputerManager() {
         super("computers.yml");
@@ -91,13 +91,8 @@ public class ComputerManager extends Manager<Computer> {
         return get(block) != null;
     }
     public Computer get(Block block) {
-        if (block.getType() != ComputerManager.COMPUTER_ITEM.getType()) return null;
-        if (block.getType() == Material.PLAYER_WALL_HEAD && ComputerManager.COMPUTER_ITEM.getType() == Material.PLAYER_HEAD) return null;
-        return get(block.getLocation());
-    }
-    public Computer get(Location loc) {
         for (Computer computer : values())
-            if (computer.getLocation().equals(loc))
+            if (computer.getLocation().equals(block.getLocation()))
                 return computer;
         return null;
     }
