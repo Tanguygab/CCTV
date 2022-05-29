@@ -1,9 +1,8 @@
 package io.github.tanguygab.cctv.managers;
 
-import dev.lone.itemsadder.api.CustomBlock;
 import dev.lone.itemsadder.api.CustomStack;
-import dev.lone.itemsadder.api.ItemsAdder;
 import io.github.tanguygab.cctv.entities.Computer;
+import io.github.tanguygab.cctv.listeners.ItemsAdderEvents;
 import io.github.tanguygab.cctv.menus.CCTVMenu;
 import io.github.tanguygab.cctv.menus.computers.ComputerMainMenu;
 import io.github.tanguygab.cctv.utils.Heads;
@@ -31,10 +30,9 @@ public class ComputerManager extends Manager<Computer> {
     public void load() {
         String mat = cctv.getConfiguration().getString("computer.block","NETHER_BRICK_STAIRS");
         COMPUTER_ITEM = loadComputerMat(mat);
-        if (COMPUTER_ITEM == null) {
-            cctv.getLogger().info("Defaulting to Nether Brick Stairs...");
+        if (COMPUTER_ITEM == null)
             COMPUTER_ITEM = CCTVMenu.getItem(Material.NETHER_BRICK_STAIRS, lang.COMPUTER_ITEM_NAME);
-        }
+
         Map<String,Object> map = file.getValues();
         map.forEach((id,cfg)->{
             Map<String,Object> config = (Map<String, Object>) cfg;
@@ -57,23 +55,22 @@ public class ComputerManager extends Manager<Computer> {
         if (mat.startsWith("itemsadder:")) {
             if (!cctv.getServer().getPluginManager().isPluginEnabled("ItemsAdder"))
                 return null;
+
+            cctv.getServer().getPluginManager().registerEvents(new ItemsAdderEvents(this,mat.substring(11)),cctv);
             CustomStack stack = CustomStack.getInstance(mat.substring(11));
-            if (stack == null) {
-                cctv.getLogger().info("Invalid ItemsAdder block as computer!");
-                return null;
+            if (stack != null && stack.isBlock()) {
+                cctv.getLogger().info("ItemsAdder item "+stack.getNamespace()+" loaded!");
+                return stack.getItemStack();
             }
-            if (!stack.isBlock()) {
-                cctv.getLogger().info("ItemsAdder item for computer is not a block!");
-                return null;
-            }
-            return stack.getItemStack();
+            cctv.getLogger().info("Using ItemsAdder item for computer, waiting for ItemsAdder to load.");
+            return null;
         }
         if (mat.startsWith("head:"))
             return Heads.createSkull(mat.substring(5),lang.COMPUTER_ITEM_NAME);
 
         Material material = Material.getMaterial(mat);
         if (material == null) {
-            cctv.getLogger().info("Invalid material for computer!");
+            cctv.getLogger().info("Invalid material for computer! Defaulting to Nether Brick Stairs...");
             return null;
         }
         return CCTVMenu.getItem(material, lang.COMPUTER_ITEM_NAME);
@@ -94,12 +91,14 @@ public class ComputerManager extends Manager<Computer> {
         return get(block) != null;
     }
     public Computer get(Block block) {
-        if (block.getType() == ComputerManager.COMPUTER_ITEM.getType()
-                || (block.getType() == Material.PLAYER_WALL_HEAD
-                && ComputerManager.COMPUTER_ITEM.getType() == Material.PLAYER_HEAD))
-            for (Computer computer : values())
-                if (computer.getLocation().equals(block.getLocation()))
-                    return computer;
+        if (block.getType() != ComputerManager.COMPUTER_ITEM.getType()) return null;
+        if (block.getType() == Material.PLAYER_WALL_HEAD && ComputerManager.COMPUTER_ITEM.getType() == Material.PLAYER_HEAD) return null;
+        return get(block.getLocation());
+    }
+    public Computer get(Location loc) {
+        for (Computer computer : values())
+            if (computer.getLocation().equals(loc))
+                return computer;
         return null;
     }
     public List<String> get(Player p) {
