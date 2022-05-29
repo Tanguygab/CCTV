@@ -6,7 +6,6 @@ import io.github.tanguygab.cctv.menus.CCTVMenu;
 import io.github.tanguygab.cctv.menus.computers.ComputerMainMenu;
 import io.github.tanguygab.cctv.utils.Heads;
 import io.github.tanguygab.cctv.utils.Utils;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -37,7 +36,7 @@ public class ComputerManager extends Manager<Computer> {
         map.forEach((id,cfg)->{
             Map<String,Object> config = (Map<String, Object>) cfg;
             String owner = config.get("owner")+"";
-            World world = Bukkit.getServer().getWorld(config.get("world")+"");
+            World world = cctv.getServer().getWorld(config.get("world")+"");
             double x = (double) config.get("x");
             double y = (double) config.get("y");
             double z = (double) config.get("z");
@@ -53,6 +52,8 @@ public class ComputerManager extends Manager<Computer> {
 
     private ItemStack loadComputerMat(String mat) {
         if (mat.startsWith("itemsadder:")) {
+            if (!cctv.getServer().getPluginManager().isPluginEnabled("ItemsAdder"))
+                return null;
             CustomStack stack = CustomStack.getInstance(mat.substring(11));
             return stack == null ? null : stack.getItemStack();
         }
