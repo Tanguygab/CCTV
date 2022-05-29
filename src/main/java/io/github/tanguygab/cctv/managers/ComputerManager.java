@@ -62,7 +62,7 @@ public class ComputerManager extends Manager<Computer> {
                 cctv.getLogger().info("Invalid ItemsAdder block as computer!");
                 return null;
             }
-            if (stack.isBlock()) {
+            if (!stack.isBlock()) {
                 cctv.getLogger().info("ItemsAdder item for computer is not a block!");
                 return null;
             }
