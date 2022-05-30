@@ -81,11 +81,11 @@ public class NMSUtils {
         try {
             Object viewedNMS = getEntityHandle.invoke(viewed);
             setGlow.invoke(viewedNMS,glow);
+            sendPacket(viewer, newPacketPlayOutEntityMetadata.newInstance(getId.invoke(viewedNMS), getDataWatcher.invoke(viewedNMS), true));
             if (!glow) {
                 viewed.setSneaking(true); // yeah, I'm doing that because it doesn't want to work with PacketPlayOutEntityMetadata...
                 viewed.setSneaking(false);
             }
-            sendPacket(viewer, newPacketPlayOutEntityMetadata.newInstance(getId.invoke(viewedNMS), getDataWatcher.invoke(viewedNMS), true));
         } catch (Exception e) {
             e.printStackTrace();
         }

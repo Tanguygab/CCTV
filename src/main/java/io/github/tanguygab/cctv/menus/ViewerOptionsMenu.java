@@ -54,8 +54,9 @@ public class ViewerOptionsMenu extends CCTVMenu {
     @Override
     public void onClick(ItemStack item, int slot, ClickType click) {
         switch (slot) {
-            case 3 -> nightvision(p);
-            case 4 -> {
+            case 0 -> nightvision(p);
+            case 1 -> spotting(p);
+            case 2 -> {
                 if (!oldCam) return;
                 PotionEffect effect = p.getPotionEffect(PotionEffectType.SLOW);
                 if (effect == null) {
@@ -66,8 +67,7 @@ public class ViewerOptionsMenu extends CCTVMenu {
                 zoom(p, zoom == 6 ? 0 : zoom+1);
 
             }
-            case 5 -> spotting(p);
-            case 8 -> p.closeInventory();
+            case 4 -> p.closeInventory();
         }
     }
 
@@ -107,10 +107,10 @@ public class ViewerOptionsMenu extends CCTVMenu {
         Inventory inv = p.getOpenInventory().getTopInventory();
         if (zoomlevel == 0) {
             p.removePotionEffect(PotionEffectType.SLOW);
-            inv.setItem(4, Heads.ZOOM.get());
+            inv.setItem(2, Heads.ZOOM.get());
             return;
         }
         p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 60000000, zoomlevel - 1, false, false));
-        inv.setItem(4, getItem(Heads.ZOOM,lang.getCameraViewZoom(zoomlevel)));
+        inv.setItem(2, getItem(Heads.ZOOM,lang.getCameraViewZoom(zoomlevel)));
     }
 }
