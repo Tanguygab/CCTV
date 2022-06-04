@@ -84,7 +84,7 @@ public class CameraManager extends Manager<Camera> {
         cctv.getViewers().values().stream().filter(p -> p.getCamera() == cam).forEach(p -> unviewCamera(Bukkit.getPlayer(p.getId())));
         cctv.getCameraGroups().values().forEach(g->g.removeCamera(cam));
         delete(cam.getId());
-        if (player.getGameMode() == GameMode.SURVIVAL) player.getInventory().addItem(Heads.CAMERA.get());
+        if (player.getGameMode() == GameMode.SURVIVAL) player.getInventory().addItem(cctv.getCustomHeads().get(cam.getSkin()));
     }
 
     public void create(String id, String owner, Location loc, boolean enabled, boolean shown, String skin) {

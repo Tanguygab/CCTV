@@ -4,7 +4,6 @@ import io.github.tanguygab.cctv.entities.Camera;
 import io.github.tanguygab.cctv.listeners.Listener;
 import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.menus.CCTVMenu;
-import io.github.tanguygab.cctv.utils.CustomHeads;
 import io.github.tanguygab.cctv.utils.Heads;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -15,12 +14,10 @@ import org.bukkit.inventory.ItemStack;
 public class CameraMenu extends CCTVMenu {
 
     private final Camera camera;
-    private final CustomHeads heads;
 
     public CameraMenu(Player p, Camera camera) {
         super(p);
         this.camera = camera;
-        heads = cctv.getCustomHeads();
     }
 
     @Override
@@ -28,7 +25,7 @@ public class CameraMenu extends CCTVMenu {
         inv = Bukkit.getServer().createInventory(null, 45, lang.getGuiCamera(camera.getId()));
 
         fillSlots(0,1,2,3,4,5,6,7,8,9,17,18,26,27,35,36,37,38,39,41,42,43);
-        inv.setItem(15,getItem(heads.get(camera.getSkin()),lang.GUI_CAMERA_CHANGE_SKIN));
+        inv.setItem(15,getItem(cctv.getCustomHeads().get(camera.getSkin()),lang.GUI_CAMERA_CHANGE_SKIN));
         updateVisibilityItem();
         updateEnabledItem();
         inv.setItem(33,getItem(Material.NAME_TAG,"&aRename Camera"));
@@ -87,7 +84,6 @@ public class CameraMenu extends CCTVMenu {
             case 40 -> back();
             case 44 -> {
                 p.closeInventory();
-                p.getInventory().addItem(heads.get(camera.getSkin()));
                 cm.delete(camera.getId(), p);
             }
         }
