@@ -6,6 +6,7 @@ import net.minecraft.network.protocol.game.PacketListenerPlayOut;
 import net.minecraft.network.protocol.game.PacketPlayOutCamera;
 import net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata;
 import net.minecraft.server.level.EntityPlayer;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_19_R1.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
@@ -53,7 +54,8 @@ public class NMSUtils {
             }
             p.teleport(loc);
             p.setInvisible(view);
-            p.setAllowFlight(view);
+            if (p.getGameMode() != GameMode.CREATIVE && p.getGameMode() != GameMode.SPECTATOR)
+                p.setAllowFlight(view);
             p.setInvulnerable(view);
             p.setCollidable(!view);
             p.setGravity(!view);
