@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'io.github.tanguygab'
-version = '8.1'
+version = '8.2'
 
 repositories {
     mavenCentral()
@@ -27,7 +27,9 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT'
-    compileOnly 'com.mojang:authlib:3.3.39'
+    compileOnly 'org.spigotmc:spigot-api:1.19-R0.1-SNAPSHOT'
+    compileOnly 'com.mojang:authlib:3.5.41'
+    compileOnly 'com.mojang:brigadier:1.0.18'
     compileOnly 'com.github.LoneDev6:api-itemsadder:3.0.0'
+    compileOnly files('../nms-1.19.jar')
 }
