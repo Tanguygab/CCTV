@@ -50,7 +50,7 @@ public class Viewer extends ID {
         this.nightVision = nightVision;
         CCTV cctv = CCTV.get();
         Player p = cctv.getViewers().get(this);
-        if (cctv.getCameras().OLD_VIEW) {
+        if (!cctv.getCameras().EXPERIMENTAL_VIEW) {
             if (nightVision) p.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION,1000000,0));
             else p.removePotionEffect(PotionEffectType.NIGHT_VISION);
             return;

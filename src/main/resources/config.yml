@@ -21,7 +21,7 @@ viewers:
     disconnect: 3
     spot: 5
 camera:
-  old_view: false
+  experimental_view: false
   zoom_item: true
   craft:
     enabled: true

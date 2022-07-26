@@ -9,6 +9,7 @@ import io.github.tanguygab.cctv.managers.CameraGroupManager;
 import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.managers.ComputerManager;
 import org.bukkit.*;
+import org.bukkit.util.NumberConversions;
 
 import java.util.List;
 import java.util.Random;
@@ -63,5 +64,9 @@ public class Utils {
 
     public static List<String> list(List<?> list) {
         return list.stream().map(el->el instanceof ID id ? id.getId() : el+"").toList();
+    }
+
+    public static double distance(Location loc1, Location loc2) {
+        return Math.sqrt(NumberConversions.square(loc1.getX() - loc2.getX()) + NumberConversions.square(loc1.getZ() - loc2.getZ()));
     }
 }

@@ -1,6 +1,5 @@
 package io.github.tanguygab.cctv.menus;
 
-import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.entities.Viewer;
 import io.github.tanguygab.cctv.managers.ViewerManager;
 import io.github.tanguygab.cctv.utils.Heads;
@@ -18,7 +17,7 @@ import java.util.List;
 
 public class ViewerOptionsMenu extends CCTVMenu {
 
-    private final boolean oldCam = cctv.getCameras().OLD_VIEW;
+    private final boolean newCam = cctv.getCameras().EXPERIMENTAL_VIEW;
     private final ViewerManager vm = cctv.getViewers();
 
     public ViewerOptionsMenu(Player p) {
@@ -33,7 +32,7 @@ public class ViewerOptionsMenu extends CCTVMenu {
         if (hasItemPerm(p,"spot")) inv.setItem(1, getItem(Heads.SPOTTING,lang.CAMERA_VIEW_OPTIONS_SPOT));
 
         if (hasItemPerm(p,"zoom") && cctv.getCameras().ZOOM_ITEM) {
-            if (oldCam) {
+            if (!newCam) {
                 PotionEffect effect = p.getPotionEffect(PotionEffectType.SLOW);
                 inv.setItem(2, getItem(Heads.ZOOM,
                         effect != null
@@ -48,7 +47,7 @@ public class ViewerOptionsMenu extends CCTVMenu {
     }
 
     private boolean hasItemPerm(Player p, String perm) {
-        return vm.GWIP || p.hasPermission("cctv.view."+perm);
+        return vm.GIWP || p.hasPermission("cctv.view."+perm);
     }
 
     @Override
@@ -57,7 +56,7 @@ public class ViewerOptionsMenu extends CCTVMenu {
             case 0 -> nightvision(p);
             case 1 -> spotting(p);
             case 2 -> {
-                if (!oldCam) return;
+                if (newCam) return;
                 PotionEffect effect = p.getPotionEffect(PotionEffectType.SLOW);
                 if (effect == null) {
                     zoom(p, 1);

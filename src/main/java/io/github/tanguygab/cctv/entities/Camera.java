@@ -77,7 +77,8 @@ public class Camera extends ID {
         armorStand.teleport(loc);
         armorStand.setHeadPose(new EulerAngle(Math.toRadians(loc.getPitch()), 0.0D, 0.0D));
         loc.add(0,0.5,0);
-        creeper.teleport(loc);
+        if (creeper != null)
+            creeper.teleport(loc);
         loc.add(0,-0.5,0);
     }
 
@@ -93,7 +94,8 @@ public class Camera extends ID {
         asLoc.setYaw(newYaw);
         armorStand.teleport(asLoc);
         asLoc.add(0,0.5,0);
-        creeper.teleport(asLoc);
+        if (creeper != null)
+            creeper.teleport(asLoc);
         asLoc.add(0,-0.5,0);
         return true;
     }
@@ -153,7 +155,7 @@ public class Camera extends ID {
     }
 
     public boolean is(Entity entity) {
-        if (entity instanceof Creeper c) {
+        if (entity instanceof Creeper c && creeper != null) {
             if (creeper.getUniqueId().equals(c.getUniqueId())) {
                 if (creeper != c) creeper = c;
                 return true;

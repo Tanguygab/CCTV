@@ -30,6 +30,7 @@ cameras:
   view-count: "&aThere are currently &2%count%&a players watching camera &2%cameraID%&a!"
   deleted-because-bugged: "&cSorry but this camera was bugged, so we removed it!"
   item-name: "&9Camera"
+  too-far: "&cThis camera is too far away from you!"
 groups:
   create: "&aGroup created!"
   delete: "&aGroup deleted!"

@@ -24,7 +24,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
@@ -136,7 +135,7 @@ public class Listener implements org.bukkit.event.Listener {
         Player p = event.getPlayer();
         p.discoverRecipe(Utils.cameraKey);
         p.discoverRecipe(Utils.computerKey);
-        if (cm.OLD_VIEW)
+        if (!cm.EXPERIMENTAL_VIEW)
             for (Viewer viewer : vm.values()) p.hidePlayer(cctv,vm.get(viewer));
     }
 
@@ -163,7 +162,7 @@ public class Listener implements org.bukkit.event.Listener {
 
     @EventHandler
     public void on(PlayerMoveEvent e) {
-        if (vm.exists(e.getPlayer()))
+        if (cm.connecting.contains(e.getPlayer()) || vm.exists(e.getPlayer()))
             e.setCancelled(true);
     }
 

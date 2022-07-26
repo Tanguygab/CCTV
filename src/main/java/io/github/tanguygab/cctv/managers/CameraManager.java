@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class CameraManager extends Manager<Camera> {
 
-    public boolean OLD_VIEW;
+    public boolean EXPERIMENTAL_VIEW;
     public boolean ZOOM_ITEM;
 
     public List<Player> connecting = new ArrayList<>();
@@ -28,7 +28,7 @@ public class CameraManager extends Manager<Camera> {
 
     @Override
     public void load() {
-        OLD_VIEW = cctv.getConfiguration().getBoolean("camera.old_view",false);
+        EXPERIMENTAL_VIEW = cctv.getConfiguration().getBoolean("camera.experimental_view",false);
         ZOOM_ITEM = cctv.getConfiguration().getBoolean("camera.zoom_item",true);
         
         Map<String, Object> cams = file.getValues();
@@ -66,7 +66,8 @@ public class CameraManager extends Manager<Camera> {
     public void unload() {
         map.forEach((id, cam)-> {
             cam.getArmorStand().remove();
-            cam.getCreeper().remove();
+            if (cam.getCreeper() != null)
+                cam.getCreeper().remove();
         });
     }
 
@@ -78,7 +79,8 @@ public class CameraManager extends Manager<Camera> {
             return;
         }
         cam.getArmorStand().remove();
-        cam.getCreeper().remove();
+        if (cam.getCreeper() != null)
+            cam.getCreeper().remove();
         player.sendMessage(lang.CAMERA_DELETE);
         player.sendMessage(lang.getCameraID(cam.getId()));
         cctv.getViewers().values().stream().filter(p -> p.getCamera() == cam).forEach(p -> unviewCamera(Bukkit.getPlayer(p.getId())));
@@ -99,18 +101,20 @@ public class CameraManager extends Manager<Camera> {
         as.setHeadPose(new EulerAngle(Math.toRadians(loc.getPitch()), 0.0D, 0.0D));
         if (shown) as.getEquipment().setHelmet(Heads.CAMERA.get());
 
-        loc.add(0,0.5,0);
-        Creeper creeper = loc.getWorld().spawn(loc,Creeper.class);
-        loc.add(0,-0.5,0);
-        creeper.setCustomName("CAM-" + id);
-        creeper.setInvisible(true);
-        creeper.setAI(false);
-        creeper.setInvulnerable(true);
-        creeper.setGravity(false);
-        creeper.setSilent(true);
-        creeper.setCollidable(false);
-        creeper.setExplosionRadius(0);
-
+        Creeper creeper = null;
+        if (EXPERIMENTAL_VIEW) {
+            loc.add(0, 0.5, 0);
+            creeper = loc.getWorld().spawn(loc, Creeper.class);
+            loc.add(0, -0.5, 0);
+            creeper.setCustomName("CAM-" + id);
+            creeper.setInvisible(true);
+            creeper.setAI(false);
+            creeper.setInvulnerable(true);
+            creeper.setGravity(false);
+            creeper.setSilent(true);
+            creeper.setCollidable(false);
+            creeper.setExplosionRadius(0);
+        }
         Camera camera = new Camera(id,owner,loc,enabled,shown,as,creeper,skin);
         map.put(id,camera);
     }
@@ -163,6 +167,10 @@ public class CameraManager extends Manager<Camera> {
             }
             p.sendMessage(lang.CAMERA_OFFLINE_OVERRIDE);
         }
+        if (EXPERIMENTAL_VIEW && Utils.distance(p.getLocation(),cam.getArmorStand().getLocation()) >= 60) {
+            p.sendMessage("This camera is too far away from you!");
+            return;
+        }
 
         ViewerManager vm = cctv.getViewers();
         p.sendTitle(" ", lang.CAMERA_CONNECTING, 0, vm.TIME_TO_CONNECT*20, 0);
@@ -180,6 +188,10 @@ public class CameraManager extends Manager<Camera> {
             p.sendMessage(lang.CAMERA_NOT_FOUND);
             return;
         }
+        if (EXPERIMENTAL_VIEW && Utils.distance(p.getLocation(),cam.getArmorStand().getLocation()) >= 60) {
+            p.sendMessage(lang.CAMERA_TOO_FAR);
+            return;
+        }
         cctv.getNMS().setCameraPacket(p,cam.getArmorStand());
     }
 
@@ -192,7 +204,7 @@ public class CameraManager extends Manager<Camera> {
             p.sendMessage(lang.MAX_ROTATION);
             return;
         }
-        if (OLD_VIEW) p.teleport(camera.getArmorStand().getLocation());
+        if (!EXPERIMENTAL_VIEW) p.teleport(camera.getArmorStand().getLocation());
     }
     public void rotateVertically(Player p, Camera camera, int degrees) {
         if (!p.hasPermission("cctv.view.move")) {
@@ -203,6 +215,6 @@ public class CameraManager extends Manager<Camera> {
             p.sendMessage(lang.MAX_ROTATION);
             return;
         }
-        if (OLD_VIEW) p.teleport(camera.getArmorStand().getLocation());
+        if (!EXPERIMENTAL_VIEW) p.teleport(camera.getArmorStand().getLocation());
     }
 }

@@ -72,6 +72,7 @@ public class LanguageFile extends YamlConfigurationFile {
     }
     public final String CAMERA_DELETED_BECAUSE_BUGGED = get("cameras.deleted-because-bugged","&cSorry but this camera was bugged, so we removed it!");
     public final String CAMERA_ITEM_NAME = get("cameras.item-name", "&9Camera");
+    public final String CAMERA_TOO_FAR = get("cameras.too-far","&cThis camera is too far away from you!");
 
     public final String GROUP_CREATE = get("groups.create","&aGroup created!");
     public final String GROUP_DELETE = get("groups.delete","&aGroup deleted!");
