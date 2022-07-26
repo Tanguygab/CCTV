@@ -168,7 +168,7 @@ public class CameraManager extends Manager<Camera> {
             p.sendMessage(lang.CAMERA_OFFLINE_OVERRIDE);
         }
         if (EXPERIMENTAL_VIEW && Utils.distance(p.getLocation(),cam.getArmorStand().getLocation()) >= 60) {
-            p.sendMessage(lang.CAMERA_NOT_FOUND);
+            p.sendMessage(lang.CAMERA_TOO_FAR);
             return;
         }
 
