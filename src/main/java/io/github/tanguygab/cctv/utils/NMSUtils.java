@@ -13,7 +13,6 @@ import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 
 public class NMSUtils {
@@ -62,13 +61,6 @@ public class NMSUtils {
         p.setInvulnerable(view);
         p.setCollidable(!view);
         p.setGravity(!view);
-
-    }
-
-    public void spawnCamEntity(int id, boolean creeper, double x, double y, double z, float pitch, float yaw) {
-        new PacketPlayOutSpawnEntity(id,UUID.randomUUID(),x,y,z,pitch,yaw,null,0,null,0);
-    }
-    public void removeEntity() {
 
     }
 
