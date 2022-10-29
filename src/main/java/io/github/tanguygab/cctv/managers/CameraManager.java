@@ -204,7 +204,7 @@ public class CameraManager extends Manager<Camera> {
             p.sendMessage(lang.MAX_ROTATION);
             return;
         }
-        if (!EXPERIMENTAL_VIEW) p.teleport(camera.getArmorStand().getLocation());
+        if (!EXPERIMENTAL_VIEW && cctv.getViewers().exists(p)) p.teleport(camera.getArmorStand().getLocation());
     }
     public void rotateVertically(Player p, Camera camera, int degrees) {
         if (!p.hasPermission("cctv.view.move")) {
@@ -215,6 +215,6 @@ public class CameraManager extends Manager<Camera> {
             p.sendMessage(lang.MAX_ROTATION);
             return;
         }
-        if (!EXPERIMENTAL_VIEW) p.teleport(camera.getArmorStand().getLocation());
+        if (!EXPERIMENTAL_VIEW && cctv.getViewers().exists(p)) p.teleport(camera.getArmorStand().getLocation());
     }
 }
