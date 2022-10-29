@@ -74,12 +74,15 @@ public class Camera extends ID {
         set("z", loc.getZ());
         set("pitch", loc.getPitch());
         set("yaw", loc.getYaw());
-        armorStand.teleport(loc);
-        armorStand.setHeadPose(new EulerAngle(Math.toRadians(loc.getPitch()), 0.0D, 0.0D));
-        loc.add(0,0.5,0);
-        if (creeper != null)
+        if (armorStand != null) {
+            armorStand.teleport(loc);
+            armorStand.setHeadPose(new EulerAngle(Math.toRadians(loc.getPitch()), 0.0D, 0.0D));
+        }
+        if (creeper != null) {
+            loc.add(0, 0.5, 0);
             creeper.teleport(loc);
-        loc.add(0,-0.5,0);
+            loc.add(0, -0.5, 0);
+        }
     }
 
     public boolean rotateHorizontally(int degrees) {
@@ -135,19 +138,28 @@ public class Camera extends ID {
     public void setShown(boolean shown) {
         this.shown = shown;
         set("shown",shown);
-        armorStand.getEquipment().setHelmet(shown ? CCTV.get().getCustomHeads().get(skin) : null);
+        if (armorStand != null)
+            armorStand.getEquipment().setHelmet(shown ? CCTV.get().getCustomHeads().get(skin) : null);
     }
 
     public ArmorStand getArmorStand() {
         return armorStand;
     }
+    public void setArmorStand(ArmorStand armorStand) {
+        this.armorStand = armorStand;
+    }
+
     public Creeper getCreeper() {
         return creeper;
+    }
+    public void setCreeper(Creeper creeper) {
+        this.creeper = creeper;
     }
 
     public String getSkin() {
         return skin;
     }
+
     public void setSkin(String skin) {
         this.skin = skin;
         set("skin",skin);

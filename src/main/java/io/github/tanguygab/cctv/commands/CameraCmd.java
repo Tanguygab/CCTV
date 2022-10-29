@@ -7,6 +7,9 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Creeper;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
@@ -290,6 +293,20 @@ public class CameraCmd extends Command {
                 }
                 camera.setOwner(uuid);
                 p.sendMessage(lang.getCameraOwnerChanged(newOwner.getName()));
+            }
+            case "killall" -> {
+                if (noPerm(p, "killall")) {
+                    p.sendMessage(lang.NO_PERMISSIONS);
+                    return;
+                }
+                int i = 0;
+                for (Entity entity : p.getWorld().getEntities()) {
+                    if ((entity instanceof ArmorStand || entity instanceof Creeper) && entity.getCustomName() != null && entity.getCustomName().startsWith("CAM-")) {
+                        entity.remove();
+                        i++;
+                    }
+                }
+                p.sendMessage(i+" entities removed.");
             }
             default -> sender.spigot().sendMessage(helpPage("Camera commands",
                     "get:Get the camera item",

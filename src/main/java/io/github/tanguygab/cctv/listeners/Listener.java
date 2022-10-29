@@ -23,6 +23,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
 import java.util.*;
@@ -164,6 +165,24 @@ public class Listener implements org.bukkit.event.Listener {
     public void on(PlayerMoveEvent e) {
         if (cm.connecting.contains(e.getPlayer()) || vm.exists(e.getPlayer()))
             e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void on(ChunkLoadEvent e) {
+        for (Entity entity : e.getChunk().getEntities()) {
+            if (entity.getCustomName() != null && entity.getCustomName().startsWith("CAM-")) {
+                String id = entity.getCustomName().substring(4);
+
+                System.out.println(id);
+                Camera cam = cm.get(id);
+                if (cam == null) {
+                    entity.remove();
+                    return;
+                }
+                if (cam instanceof ArmorStand as) cam.setArmorStand(as);
+                if (cam instanceof Creeper creeper) cam.setCreeper(creeper);
+            }
+        }
     }
 
 }

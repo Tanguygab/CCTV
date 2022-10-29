@@ -47,19 +47,12 @@ public class CameraManager extends Manager<Camera> {
             double yaw = (double) config.get("yaw");
 
             Location loc = new Location(world, x, y, z, (float)yaw, (float)pitch);
-            if (!loc.getChunk().isLoaded()) loc.getChunk().load();
 
             for (Entity entity : loc.getChunk().getEntities()) {
-                if (entity instanceof ArmorStand as) {
-                    if (as.getCustomName() != null && as.getCustomName().equals("CAM-" + id))
-                        as.remove();
-                }
-                if (entity instanceof Creeper creeper) {
-                    if (creeper.getCustomName() != null && creeper.getCustomName().equals("CAM-" + id))
-                        creeper.remove();
-                }
+                if ((entity instanceof ArmorStand || entity instanceof Creeper) && entity.getCustomName() != null && entity.getCustomName().equals("CAM-" + id))
+                    entity.remove();
             }
-            create(id,owner,loc,enabled,shown,skin);
+            create(id,owner,loc,enabled,shown,skin,loc.getChunk().isLoaded());
         });
     }
 
@@ -89,31 +82,34 @@ public class CameraManager extends Manager<Camera> {
         if (player.getGameMode() == GameMode.SURVIVAL) player.getInventory().addItem(cctv.getCustomHeads().get(cam.getSkin()));
     }
 
-    public void create(String id, String owner, Location loc, boolean enabled, boolean shown, String skin) {
+    public void create(String id, String owner, Location loc, boolean enabled, boolean shown, String skin, boolean isLoaded) {
         if (exists(id)) return;
-        ArmorStand as = loc.getWorld().spawn(loc, ArmorStand.class);
-        as.setGravity(false);
-        as.setCollidable(false);
-        as.setInvulnerable(true);
-        as.setVisible(false);
-        as.setCustomName("CAM-" + id);
-        as.setSilent(true);
-        as.setHeadPose(new EulerAngle(Math.toRadians(loc.getPitch()), 0.0D, 0.0D));
-        if (shown) as.getEquipment().setHelmet(Heads.CAMERA.get());
-
+        ArmorStand as = null;
         Creeper creeper = null;
-        if (EXPERIMENTAL_VIEW) {
-            loc.add(0, 0.5, 0);
-            creeper = loc.getWorld().spawn(loc, Creeper.class);
-            loc.add(0, -0.5, 0);
-            creeper.setCustomName("CAM-" + id);
-            creeper.setInvisible(true);
-            creeper.setAI(false);
-            creeper.setInvulnerable(true);
-            creeper.setGravity(false);
-            creeper.setSilent(true);
-            creeper.setCollidable(false);
-            creeper.setExplosionRadius(0);
+        if (isLoaded) {
+            as = loc.getWorld().spawn(loc, ArmorStand.class);
+            as.setGravity(false);
+            as.setCollidable(false);
+            as.setInvulnerable(true);
+            as.setVisible(false);
+            as.setCustomName("CAM-" + id);
+            as.setSilent(true);
+            as.setHeadPose(new EulerAngle(Math.toRadians(loc.getPitch()), 0.0D, 0.0D));
+            if (shown) as.getEquipment().setHelmet(Heads.CAMERA.get());
+
+            if (EXPERIMENTAL_VIEW) {
+                loc.add(0, 0.5, 0);
+                creeper = loc.getWorld().spawn(loc, Creeper.class);
+                loc.add(0, -0.5, 0);
+                creeper.setCustomName("CAM-" + id);
+                creeper.setInvisible(true);
+                creeper.setAI(false);
+                creeper.setInvulnerable(true);
+                creeper.setGravity(false);
+                creeper.setSilent(true);
+                creeper.setCollidable(false);
+                creeper.setExplosionRadius(0);
+            }
         }
         Camera camera = new Camera(id,owner,loc,enabled,shown,as,creeper,skin);
         map.put(id,camera);
@@ -126,7 +122,7 @@ public class CameraManager extends Manager<Camera> {
         }
         if (id == null) id = Utils.getRandomNumber(999999, "camera")+"";
 
-        create(id,player.getUniqueId().toString(),loc,true,true,skin);
+        create(id,player.getUniqueId().toString(),loc,true,true,skin,true);
         player.sendMessage(lang.CAMERA_CREATE);
         player.sendMessage(lang.getCameraID(id));
     }
