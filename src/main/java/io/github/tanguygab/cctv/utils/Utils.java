@@ -9,6 +9,7 @@ import io.github.tanguygab.cctv.managers.CameraGroupManager;
 import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.managers.ComputerManager;
 import org.bukkit.*;
+import org.bukkit.entity.Player;
 import org.bukkit.util.NumberConversions;
 
 import java.util.List;
@@ -68,5 +69,13 @@ public class Utils {
 
     public static double distance(Location loc1, Location loc2) {
         return Math.sqrt(NumberConversions.square(loc1.getX() - loc2.getX()) + NumberConversions.square(loc1.getZ() - loc2.getZ()));
+    }
+
+    public static void unsetFly(Player player, int time) {
+        if (player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR) return;
+        for (int i = 0; i < time; i++) {
+            player.setFlying(false);
+            player.setAllowFlight(false);
+        }
     }
 }

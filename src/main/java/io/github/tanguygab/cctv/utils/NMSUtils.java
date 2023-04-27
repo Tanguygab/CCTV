@@ -6,8 +6,8 @@ import net.minecraft.network.protocol.game.*;
 import net.minecraft.server.level.EntityPlayer;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_19_R2.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_19_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
@@ -24,7 +24,8 @@ public class NMSUtils {
     public void glow(Player viewer, Player viewed, boolean glow) {
         EntityPlayer viewedNMS = ((CraftPlayer) viewed).getHandle();
         viewedNMS.i(glow);
-        sendPacket(viewer, new PacketPlayOutEntityMetadata(viewedNMS.ah(), viewedNMS.al().b()));
+        sendPacket(viewer, new PacketPlayOutEntityMetadata(viewedNMS.af(),
+                viewedNMS.aj().c()));
         if (!glow) {
             viewed.setSneaking(true); // yeah, I'm doing that because it doesn't want to work with PacketPlayOutEntityMetadata...
             viewed.setSneaking(false);
@@ -63,7 +64,6 @@ public class NMSUtils {
         p.setInvulnerable(view);
         p.setCollidable(!view);
         p.setGravity(!view);
-
     }
 
 }

@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'io.github.tanguygab'
-version = '8.4'
+version = '8.5.0'
 
 repositories {
     mavenCentral()
@@ -31,5 +31,14 @@ dependencies {
     compileOnly 'com.mojang:authlib:3.5.41'
     compileOnly 'com.mojang:brigadier:1.0.18'
     compileOnly 'com.github.LoneDev6:api-itemsadder:3.0.0'
-    compileOnly files('../../dependencies/nms/nms-1.19.3.jar')
+    compileOnly files('../../dependencies/nms/nms-1.19.4.jar')
+}
+
+processResources {
+    def props = [version: version]
+    inputs.properties props
+    filteringCharset 'UTF-8'
+    filesMatching(['plugin.yml','bungee.yml']) {
+        expand props
+    }
 }
