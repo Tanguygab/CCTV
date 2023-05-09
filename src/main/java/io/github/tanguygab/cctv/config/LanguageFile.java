@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.InputStream;
 
 public class LanguageFile extends YamlConfigurationFile {
-
     public LanguageFile(InputStream source, File destination) throws Exception {
         super(source, destination);
     }
@@ -14,7 +13,6 @@ public class LanguageFile extends YamlConfigurationFile {
     private String get(String str, String def) {
         return ChatColor.translateAlternateColorCodes('&',getString(str,def));
     }
-
     public final String NO_PERMISSIONS = get("no-permissions","&cYou don't have the right permission to do that!");
     public final String PLAYER_NOT_FOUND = get("player-not-found","&cThis player doesn't exist.");
     public final String PLAYER_ADDED = get("player-added","&aPlayer has been added!");
@@ -23,6 +21,7 @@ public class LanguageFile extends YamlConfigurationFile {
     public final String MAX_ROTATION = get("max-rotation","&cThis is the limit of rotation!");
     public final String NO_CAMERAS = get("no-cameras","&cThere aren't any cameras!");
     public final String SWITCHING_NOT_POSSIBLE = get("switching-not-possible","&cSwitching through cameras is not possible!");
+    public final String DOT_IN_ID = get("dot-in-id","&cID can't contain any dot.");
 
     public final String CAMERA_CREATE = get("cameras.create","&aCamera created!");
     public final String CAMERA_DELETE = get("cameras.delete","&cCamera deleted!");

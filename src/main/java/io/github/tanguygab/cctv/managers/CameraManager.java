@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.EulerAngle;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +21,7 @@ public class CameraManager extends Manager<Camera> {
 
     public boolean EXPERIMENTAL_VIEW;
     public boolean ZOOM_ITEM;
+    private final Map<String,List<Map<String,Object>>> unloadedWorlds = new HashMap<>();
 
     public List<Player> connecting = new ArrayList<>();
 
@@ -35,26 +37,39 @@ public class CameraManager extends Manager<Camera> {
         Map<String, Object> cams = file.getValues();
         cams.forEach((id,cfg)->{
             Map<String,Object> config = (Map<String, Object>) cfg;
-            String owner = config.get("owner")+"";
-            String skin = config.getOrDefault("skin","_DEFAULT_")+"";
-            boolean enabled = (boolean) config.getOrDefault("enabled",true);
-            boolean shown = (boolean) config.getOrDefault("shown",true);
 
-            World world = Bukkit.getServer().getWorld(config.get("world")+"");
-            double x = (double) config.get("x");
-            double y = (double) config.get("y");
-            double z = (double) config.get("z");
-            double pitch = (double) config.get("pitch");
-            double yaw = (double) config.get("yaw");
-
-            Location loc = new Location(world, x, y, z, (float)yaw, (float)pitch);
-
-            for (Entity entity : loc.getChunk().getEntities()) {
-                if ((entity instanceof ArmorStand || entity instanceof Creeper) && entity.getCustomName() != null && entity.getCustomName().equals("CAM-" + id))
-                    entity.remove();
+            String w = config.get("world")+"";
+            World world = Bukkit.getServer().getWorld(w);
+            if (world == null) {
+                unloadedWorlds.computeIfAbsent(w.toLowerCase(),wo->new ArrayList<>()).add(new HashMap<>(config) {{
+                    put("id",id);
+                }});
+                return;
             }
-            create(id,owner,loc,enabled,shown,skin,loc.getChunk().isLoaded());
+            loadFromConfig(id,config,world);
         });
+    }
+
+    private void loadFromConfig(String id, Map<String,Object> config, World world) {
+        String owner = config.get("owner")+"";
+        String skin = config.getOrDefault("skin","_DEFAULT_")+"";
+        boolean enabled = (boolean) config.getOrDefault("enabled",true);
+        boolean shown = (boolean) config.getOrDefault("shown",true);
+
+
+        double x = (double) config.get("x");
+        double y = (double) config.get("y");
+        double z = (double) config.get("z");
+        double pitch = (double) config.get("pitch");
+        double yaw = (double) config.get("yaw");
+
+        Location loc = new Location(world, x, y, z, (float)yaw, (float)pitch);
+
+        for (Entity entity : loc.getChunk().getEntities()) {
+            if ((entity instanceof ArmorStand || entity instanceof Creeper) && entity.getCustomName() != null && entity.getCustomName().equals("CAM-" + id))
+                entity.remove();
+        }
+        create(id,owner,loc,enabled,shown,skin,loc.getChunk().isLoaded());
     }
 
     public void unload() {
@@ -117,6 +132,10 @@ public class CameraManager extends Manager<Camera> {
     }
 
     public void create(String id, Location loc, Player player, String skin) {
+        if (id != null && id.contains(".")) {
+            player.sendMessage(lang.DOT_IN_ID);
+            return;
+        }
         if (exists(id)) {
             player.sendMessage(lang.CAMERA_ALREADY_EXISTS);
             return;
@@ -215,5 +234,12 @@ public class CameraManager extends Manager<Camera> {
             return;
         }
         if (!EXPERIMENTAL_VIEW && cctv.getViewers().exists(p)) p.teleport(camera.getArmorStand().getLocation());
+    }
+
+    public void loadWorld(World world) {
+        String w = world.getName().toLowerCase();
+        if (!unloadedWorlds.containsKey(w)) return;
+        unloadedWorlds.get(w).forEach(cfg->loadFromConfig(cfg.get("id")+"",cfg,world));
+        unloadedWorlds.remove(w);
     }
 }

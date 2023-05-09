@@ -24,6 +24,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
 import java.util.*;
@@ -183,6 +184,11 @@ public class Listener implements org.bukkit.event.Listener {
                 if (cam instanceof Creeper creeper) cam.setCreeper(creeper);
             }
         }
+    }
+
+    @EventHandler
+    public void on(WorldLoadEvent e) {
+        cm.loadWorld(e.getWorld());
     }
 
 }

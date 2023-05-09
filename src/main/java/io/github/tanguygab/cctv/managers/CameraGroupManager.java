@@ -30,6 +30,10 @@ public class CameraGroupManager extends Manager<CameraGroup> {
 
     public void create(String name, Player p) {
         LanguageFile lang = cctv.getLang();
+        if (name != null && name.contains(".")) {
+            p.sendMessage(lang.DOT_IN_ID);
+            return;
+        }
         if (exists(name)) {
             p.sendMessage(lang.GROUP_ALREADY_EXISTS);
             return;
