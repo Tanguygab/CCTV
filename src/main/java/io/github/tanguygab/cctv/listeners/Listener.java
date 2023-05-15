@@ -174,7 +174,6 @@ public class Listener implements org.bukkit.event.Listener {
             if (entity.getCustomName() != null && entity.getCustomName().startsWith("CAM-")) {
                 String id = entity.getCustomName().substring(4);
 
-                System.out.println(id);
                 Camera cam = cm.get(id);
                 if (cam == null) {
                     entity.remove();
