@@ -95,5 +95,6 @@ camera-view:
     zoom-off: "&6Zoom: &4Off"
     back: "&8Back"
     spot: "&6Spotting"
-chat-provide-player: "&aProvide the new name you would like your camera to have!"
+chat-provide-name: "&aProvide the new name you would like your camera to have!"
+chat-provide-player: "&aProvide a player to add!"
 chat-type-exit: "&aType 'cancel' to cancel!"

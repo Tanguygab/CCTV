@@ -1,6 +1,7 @@
 package io.github.tanguygab.cctv.menus.computers;
 
 import io.github.tanguygab.cctv.entities.Computer;
+import io.github.tanguygab.cctv.listeners.Listener;
 import io.github.tanguygab.cctv.menus.ComputerMenu;
 import io.github.tanguygab.cctv.utils.Heads;
 import io.github.tanguygab.cctv.utils.Utils;
@@ -27,7 +28,8 @@ public class ComputerAddPlayersMenu extends ComputerMenu {
     public void open() {
         inv = Bukkit.getServer().createInventory(null, 54, lang.getGuiComputerAddPlayer(page+""));
 
-        fillSlots(0,9,18);
+        fillSlots(0,9);
+        inv.setItem(18, getItem(Material.PLAYER_HEAD,lang.GUI_COMPUTER_OPTIONS_ADD_PLAYER));
         inv.setItem(27, Heads.MENU_NEXT.get());
         inv.setItem(36, Heads.MENU_PREVIOUS.get());
         inv.setItem(45, Heads.COMPUTER_BACK.get());
@@ -48,6 +50,12 @@ public class ComputerAddPlayersMenu extends ComputerMenu {
     @Override
     public void onClick(ItemStack item, int slot, ClickType click) {
         switch (slot) {
+            case 18 -> {
+                Listener.computerAddPlayer.put(p,computer);
+                p.closeInventory();
+                p.sendMessage(lang.CHAT_PROVIDE_PLAYER);
+                p.sendMessage(lang.CHAT_TYPE_CANCEL);
+            }
             case 27,36 -> setPage(slot == 27 ? page+1 : page-1);
             case 45 -> back();
             default -> {

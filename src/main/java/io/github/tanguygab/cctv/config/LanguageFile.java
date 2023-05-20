@@ -152,6 +152,7 @@ public class LanguageFile extends YamlConfigurationFile {
     public final String GUI_COMPUTER_DEFAULT_ITEM_EXIT = get("gui.computer.default-item.exit", "&4Exit");
     public final String GUI_COMPUTER_DEFAULT_ITEM_BACK = get("gui.computer.default-item.back", "&8Back");
     public final String GUI_COMPUTER_OPTIONS_SET_CAMERA_GROUP = get("gui.computer.options.set-camera-group", "&aSet camera group");
+    public final String GUI_COMPUTER_OPTIONS_ADD_PLAYER = get("gui.computer.options.add-player", "&aAdd player");
 
     public final String CAMERA_VIEW_OPTION = get("camera-view.option", "&eOptions");
     public final String CAMERA_VIEW_ROTATE_UP = get("camera-view.rotate-up", "&6Rotate Up");
@@ -172,7 +173,8 @@ public class LanguageFile extends YamlConfigurationFile {
     public final String CAMERA_VIEW_OPTIONS_BACK = get("camera-view.options.back", "&8Back");
     public final String CAMERA_VIEW_OPTIONS_SPOT = get("camera-view.options.spot", "&6Spotting");
 
-    public final String CHAT_PROVIDE_NAME = get("chat-provide-name", "&aProvide the new name you would like your camera to have!");
+    public final String CHAT_PROVIDE_NAME = get("chat-provide-name", "&aProvide a name you would like your camera to have!");
+    public final String CHAT_PROVIDE_PLAYER = get("chat-provide-player", "&aProvide a player to add!");
     public final String CHAT_TYPE_CANCEL = get("chat-type-cancel", "&aType 'cancel' to cancel!");
 
 }

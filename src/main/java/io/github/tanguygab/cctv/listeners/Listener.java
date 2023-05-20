@@ -28,6 +28,7 @@ import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 public class Listener implements org.bukkit.event.Listener {
 
@@ -38,6 +39,7 @@ public class Listener implements org.bukkit.event.Listener {
     private final ViewerManager vm;
 
     public static final Map<Player,Camera> cameraRename = new HashMap<>();
+    public static final Map<Player,Computer> computerAddPlayer = new HashMap<>();
     public static Map<Player,CCTVMenu> openedMenus = new HashMap<>();
 
     public Listener() {
@@ -109,27 +111,47 @@ public class Listener implements org.bukkit.event.Listener {
         Player p = e.getPlayer();
         String msg = e.getMessage();
 
-        if (!cameraRename.containsKey(p)) return;
-        e.setCancelled(true);
-        Camera camera = cameraRename.get(p);
-        cameraRename.remove(p);
+        if (cameraRename.containsKey(p)) {
+            e.setCancelled(true);
+            Camera camera = cameraRename.get(p);
+            onChat(p,msg,newName->{
+                if (camera.rename(newName)) {
+                    cameraRename.remove(p);
+                    p.sendMessage(lang.getCameraRenamed(newName));
+                    Bukkit.getServer().getScheduler().runTask(cctv, () -> cctv.openMenu(p, new CameraMenu(p, camera)));
+                    return;
+                }
+                p.sendMessage(lang.CAMERA_ALREADY_EXISTS);
+            });
+        }
+        if (computerAddPlayer.containsKey(p)) {
+            e.setCancelled(true);
+            Computer computer = computerAddPlayer.get(p);
+            onChat(p,msg,newName->{
+                OfflinePlayer offp = Utils.getOfflinePlayer(newName);
+                if (offp == null) {
+                    p.sendMessage(lang.PLAYER_NOT_FOUND);
+                    return;
+                }
+                computerAddPlayer.remove(p);
+                computer.addPlayer(offp.getUniqueId().toString());
+                p.sendMessage(lang.PLAYER_ADDED);
+            });
+        }
+    }
 
+    private void onChat(Player p, String msg, Consumer<String> run) {
         if (msg.equals("cancel")) {
-            p.sendMessage(ChatColor.RED + "Camera renaming cancelled!");
+            p.sendMessage(ChatColor.RED + "Cancelled!");
             return;
         }
 
         if (msg.equals("")) {
-            p.sendMessage(ChatColor.RED + "Please specify a new name!");
+            p.sendMessage(ChatColor.RED + "Please specify a name!");
             return;
         }
         String newName = msg.split(" ")[0];
-        if (camera.rename(newName)) {
-            p.sendMessage(lang.getCameraRenamed(newName));
-            Bukkit.getServer().getScheduler().runTask(cctv,()->cctv.openMenu(p,new CameraMenu(p,camera)));
-            return;
-        }
-        p.sendMessage(lang.CAMERA_ALREADY_EXISTS);
+        run.accept(newName);
     }
 
     @EventHandler
