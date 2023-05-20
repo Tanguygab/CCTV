@@ -153,8 +153,6 @@ public class CameraManager extends Manager<Camera> {
         if (!cctv.getViewers().exists(player)) return;
         cctv.getNMS().setCameraPacket(player,player);
         cctv.getViewers().delete(player);
-        Utils.unsetFly(player,10);
-        Bukkit.getScheduler().runTaskLater(CCTV.get(),()->Utils.unsetFly(player,10),20);
     }
 
     public List<String> get(Player p) {

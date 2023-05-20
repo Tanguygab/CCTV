@@ -57,10 +57,6 @@ public class NMSUtils {
         }
         p.teleport(loc);
         p.setInvisible(view);
-        if (p.getGameMode() != GameMode.CREATIVE && p.getGameMode() != GameMode.SPECTATOR) {
-            p.setAllowFlight(view);
-            p.setFlying(view);
-        }
         p.setInvulnerable(view);
         p.setCollidable(!view);
         p.setGravity(!view);

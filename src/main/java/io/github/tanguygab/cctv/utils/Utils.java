@@ -71,11 +71,4 @@ public class Utils {
         return Math.sqrt(NumberConversions.square(loc1.getX() - loc2.getX()) + NumberConversions.square(loc1.getZ() - loc2.getZ()));
     }
 
-    public static void unsetFly(Player player, int time) {
-        if (player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR) return;
-        for (int i = 0; i < time; i++) {
-            player.setFlying(false);
-            player.setAllowFlight(false);
-        }
-    }
 }
