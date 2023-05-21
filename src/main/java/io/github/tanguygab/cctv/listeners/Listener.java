@@ -106,7 +106,7 @@ public class Listener implements org.bukkit.event.Listener {
         cctv.openMenu(p,new CameraMenu(p,camera));
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void on(AsyncPlayerChatEvent e) {
         Player p = e.getPlayer();
         String msg = e.getMessage();

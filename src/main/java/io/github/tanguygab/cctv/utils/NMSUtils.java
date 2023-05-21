@@ -60,6 +60,7 @@ public class NMSUtils {
         p.setInvulnerable(view);
         p.setCollidable(!view);
         p.setGravity(!view);
+        p.setAllowFlight(view);
     }
 
 }
