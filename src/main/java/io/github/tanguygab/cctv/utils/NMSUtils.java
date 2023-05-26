@@ -55,12 +55,20 @@ public class NMSUtils {
             oldEntity.remove(p);
             p.showEntity(CCTV.get(), entity);
         }
-        p.teleport(loc);
+        if (view) {
+            p.teleport(loc);
+            p.setAllowFlight(true);
+            p.setFlying(true);
+        } else {
+            if (p.getGameMode() != GameMode.CREATIVE || p.getGameMode() != GameMode.SPECTATOR) {
+                p.setAllowFlight(false);
+                p.setFlying(false);
+            }
+            p.teleport(loc);
+        }
         p.setInvisible(view);
         p.setInvulnerable(view);
         p.setCollidable(!view);
-        p.setGravity(!view);
-        p.setAllowFlight(view);
     }
 
 }
