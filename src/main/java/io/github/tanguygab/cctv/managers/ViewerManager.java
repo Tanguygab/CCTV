@@ -28,12 +28,9 @@ public class ViewerManager extends Manager<Viewer> {
     public int TIME_TO_CONNECT;
     public int TIME_TO_DISCONNECT;
     public int TIME_FOR_SPOT;
+    public final List<String> blockedCmds = new ArrayList<>();
 
     private final CameraManager cm = cctv.getCameras();
-
-    public ViewerManager() {
-        super();
-    }
 
     @Override
     public void load() {
@@ -43,6 +40,7 @@ public class ViewerManager extends Manager<Viewer> {
         TIME_TO_CONNECT = config.getInt("viewers.timed-actions.connect",3);
         TIME_TO_DISCONNECT = config.getInt("viewers.timed-actions.disconnect",3);
         TIME_FOR_SPOT = config.getInt("viewers.timed-actions.spot",5);
+        blockedCmds.addAll(config.getStringList("viewers.blocked-commands",List.of()));
     }
 
     public void unload() {

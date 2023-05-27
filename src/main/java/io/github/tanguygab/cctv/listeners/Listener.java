@@ -185,12 +185,6 @@ public class Listener implements org.bukkit.event.Listener {
     }
 
     @EventHandler
-    public void on(PlayerMoveEvent e) {
-        if (cm.connecting.contains(e.getPlayer()) || vm.exists(e.getPlayer()))
-            e.setCancelled(true);
-    }
-
-    @EventHandler
     public void on(ChunkLoadEvent e) {
         for (Entity entity : e.getChunk().getEntities()) {
             if (entity.getCustomName() != null && entity.getCustomName().startsWith("CAM-")) {

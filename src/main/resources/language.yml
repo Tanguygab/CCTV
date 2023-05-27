@@ -5,6 +5,7 @@ player-removed: "&cThis player has been removed!"
 max-rotation: "&cThis is the limit of rotation!"
 no-next-camera: "&cThere aren't any cameras!"
 switching-not-possible: "&cSwitching through cameras is not possible!"
+command-blocked: "&cYou can't use this command right now!"
 dot-in-id: "&cID can't contain any dot."
 cameras:
   create: "&aCamera created!"

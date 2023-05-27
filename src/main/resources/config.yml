@@ -20,6 +20,14 @@ viewers:
     connect: 3
     disconnect: 3
     spot: 5
+  blocked-commands:
+    - "/tp"
+    - "/tpa"
+    - "/tphere"
+    - "/tpahere"
+    - "/home"
+    - "/warp"
+    - "/suicide"
 camera:
   experimental_view: false
   zoom_item: true

@@ -21,6 +21,7 @@ public class LanguageFile extends YamlConfigurationFile {
     public final String MAX_ROTATION = get("max-rotation","&cThis is the limit of rotation!");
     public final String NO_CAMERAS = get("no-cameras","&cThere aren't any cameras!");
     public final String SWITCHING_NOT_POSSIBLE = get("switching-not-possible","&cSwitching through cameras is not possible!");
+    public final String COMMAND_BLOCKED = get("command-blocked","&cYou can't use this command right now!");
     public final String DOT_IN_ID = get("dot-in-id","&cID can't contain any dot.");
 
     public final String CAMERA_CREATE = get("cameras.create","&aCamera created!");

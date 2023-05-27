@@ -78,7 +78,7 @@ public class ViewersEvents implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void on(PlayerDeathEvent e) {
         Player p = e.getEntity();
         if (vm.exists(p)) {
@@ -89,6 +89,25 @@ public class ViewersEvents implements Listener {
             vm.delete(p);
             if (!e.getKeepInventory())
                 p.getInventory().clear();
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void on(PlayerMoveEvent e) {
+        e.setCancelled(cm.connecting.contains(e.getPlayer()) || vm.exists(e.getPlayer()));
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void on(PlayerTeleportEvent e) {
+        e.setCancelled(cm.connecting.contains(e.getPlayer()) || vm.exists(e.getPlayer()));
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void on(PlayerCommandPreprocessEvent e) {
+        Player p = e.getPlayer();
+        if (vm.exists(p) && vm.blockedCmds.contains(e.getMessage().split(" ")[0])) {
+            e.setCancelled(true);
+            p.sendMessage(lang.COMMAND_BLOCKED);
         }
     }
 }
