@@ -151,7 +151,6 @@ public class CameraManager extends Manager<Camera> {
     public void unviewCamera(Player player) {
         if (player == null) return;
         if (!cctv.getViewers().exists(player)) return;
-        cctv.getNMS().setCameraPacket(player,player);
         cctv.getViewers().delete(player);
     }
 
@@ -200,7 +199,6 @@ public class CameraManager extends Manager<Camera> {
 
     public void viewCameraInstant(Camera cam, Player p) {
         if (cam == null) {
-            cctv.getViewers().delete(p);
             p.sendMessage(lang.CAMERA_NOT_FOUND);
             return;
         }

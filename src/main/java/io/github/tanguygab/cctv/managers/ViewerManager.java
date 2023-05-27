@@ -51,6 +51,7 @@ public class ViewerManager extends Manager<Viewer> {
 
     public void delete(Player p) {
         Viewer viewer = get(p);
+        cctv.getNMS().setCameraPacket(p,p);
         p.getInventory().setContents(viewer.getInv());
         if (!cm.EXPERIMENTAL_VIEW)
             for (Player online : Bukkit.getOnlinePlayers()) online.showPlayer(cctv,p);
