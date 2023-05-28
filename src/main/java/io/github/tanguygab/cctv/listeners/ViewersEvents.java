@@ -98,11 +98,6 @@ public class ViewersEvents implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void on(PlayerTeleportEvent e) {
-        e.setCancelled(cm.connecting.contains(e.getPlayer()) || vm.exists(e.getPlayer()));
-    }
-
-    @EventHandler(ignoreCancelled = true)
     public void on(PlayerCommandPreprocessEvent e) {
         Player p = e.getPlayer();
         if (vm.exists(p) && vm.blockedCmds.contains(e.getMessage().split(" ")[0])) {
