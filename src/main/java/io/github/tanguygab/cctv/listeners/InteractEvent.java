@@ -9,6 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -26,7 +27,7 @@ public class InteractEvent {
                 CCTV.get().getViewers().onCameraItems(p, item);
             return;
         }
-
+        if (e.useInteractedBlock() == Event.Result.DENY || e.useItemInHand() == Event.Result.DENY) return;
         Block block = e.getClickedBlock();
         if (e.getAction() != Action.RIGHT_CLICK_BLOCK || block == null) return;
 
