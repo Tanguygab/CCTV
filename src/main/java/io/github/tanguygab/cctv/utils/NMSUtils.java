@@ -1,35 +1,83 @@
 package io.github.tanguygab.cctv.utils;
 
 import io.github.tanguygab.cctv.CCTV;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.*;
-import net.minecraft.server.level.EntityPlayer;
+import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_19_R3.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
 public class NMSUtils {
 
-    private void sendPacket(Player player, Packet<PacketListenerPlayOut> packet) {
-        ((CraftPlayer)player).getHandle().b.a(packet);
+    private boolean nmsSupported;
+    private Method getHandle;
+    private Field playerConnection;
+    private Method sendPacket;
+    private Method setGlow;
+    private Method getId;
+    private Method getDataWatcher;
+    private Method getDataWatcherObjects;
+    private Constructor<?> packetPlayOutCamera;
+    private Constructor<?> packetPlayOutEntityMetadata;
+
+    public NMSUtils() {
+        String version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+        try {
+            Class<?> craftEntity = Class.forName("org.bukkit.craftbukkit."+version+".entity.CraftEntity");
+            getHandle = craftEntity.getDeclaredMethod("getHandle");
+            Class<?> entityPlayer = Class.forName("net.minecraft.server.level.EntityPlayer");
+            try {playerConnection = entityPlayer.getDeclaredField("c");}
+            catch (Exception e) {playerConnection = entityPlayer.getDeclaredField("b");}
+            sendPacket = Class.forName("net.minecraft.server.network.PlayerConnection").getDeclaredMethod("a",
+                    Class.forName("net.minecraft.network.protocol.Packet"));
+            packetPlayOutCamera = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutCamera")
+                    .getConstructor(Class.forName("net.minecraft.world.entity.Entity"));
+            packetPlayOutEntityMetadata = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata")
+                    .getConstructor(int.class, List.class);
+
+            setGlow = entityPlayer.getMethod("i", boolean.class);
+            getId = entityPlayer.getMethod("af");
+
+            getDataWatcher = entityPlayer.getMethod("aj");
+            getDataWatcherObjects = Class.forName("net.minecraft.network.syncher.DataWatcher").getDeclaredMethod("c");
+
+            nmsSupported = true;
+        } catch (Exception e) {
+            nmsSupported = false;
+        }
+    }
+
+    public boolean isNMSSupported() {
+        return nmsSupported;
+    }
+
+    private void sendPacket(Player player, Object packet) {
+        try {
+            sendPacket.invoke(playerConnection.get(getHandle.invoke(player)),packet);
+        } catch (Exception e) {e.printStackTrace();}
     }
 
     public void glow(Player viewer, Player viewed, boolean glow) {
-        EntityPlayer viewedNMS = ((CraftPlayer) viewed).getHandle();
-        viewedNMS.i(glow);
-        sendPacket(viewer, new PacketPlayOutEntityMetadata(viewedNMS.af(),
-                viewedNMS.aj().c()));
-        if (!glow) {
-            viewed.setSneaking(true); // yeah, I'm doing that because it doesn't want to work with PacketPlayOutEntityMetadata...
-            viewed.setSneaking(false);
+        if (!nmsSupported) {
+            viewer.sendMessage(ChatColor.DARK_RED+"Unsupported!");
+            return;
         }
+        try {
+            Object viewedNMS = getHandle.invoke(viewed);
+            setGlow.invoke(viewedNMS,glow);
+            viewer.sendMessage(viewer.getName()+" "+viewed.getName());
+            sendPacket(viewer,packetPlayOutEntityMetadata.newInstance(getId.invoke(viewedNMS),
+                    getDataWatcherObjects.invoke(getDataWatcher.invoke(viewedNMS))));
+        } catch (Exception e) {e.printStackTrace();}
     }
 
     private final Map<Player, Location> oldLoc = new HashMap<>();
@@ -37,7 +85,9 @@ public class NMSUtils {
 
     public void setCameraPacket(Player p, Entity entity) {
         if (CCTV.get().getCameras().EXPERIMENTAL_VIEW) {
-            sendPacket(p,new PacketPlayOutCamera(((CraftEntity)entity).getHandle()));
+            try {
+                sendPacket(p,packetPlayOutCamera.newInstance(getHandle.invoke(entity)));
+            } catch (Exception e) {e.printStackTrace();}
             return;
         }
 

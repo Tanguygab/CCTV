@@ -33,6 +33,11 @@ public class CameraManager extends Manager<Camera> {
     public void load() {
         EXPERIMENTAL_VIEW = cctv.getConfiguration().getBoolean("camera.experimental_view",false);
         ZOOM_ITEM = cctv.getConfiguration().getBoolean("camera.zoom_item",true);
+
+        if (EXPERIMENTAL_VIEW && !cctv.getNMS().isNMSSupported()) {
+            EXPERIMENTAL_VIEW = false;
+            cctv.getLogger().severe("Experimental View is enabled but your server doesn't support it! Switching back to normal view.");
+        }
         
         Map<String, Object> cams = file.getValues();
         cams.forEach((id,cfg)->{

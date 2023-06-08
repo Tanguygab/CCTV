@@ -77,14 +77,15 @@ public class ViewerOptionsMenu extends CCTVMenu {
         }
         p.closeInventory();
         List<Player> spotted = new ArrayList<>();
-        for (Player viewed : Bukkit.getOnlinePlayers())
+        Bukkit.getServer().getOnlinePlayers().forEach(viewed->{
             if (spot(p, viewed,true))
                 spotted.add(viewed);
+        });
 
-        Bukkit.getScheduler().scheduleSyncDelayedTask(cctv, () -> spotted.forEach(viewed->spot(viewed,viewed,false)), vm.TIME_FOR_SPOT * 20L);
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(cctv, () -> spotted.forEach(viewed->spot(p,viewed,false)), vm.TIME_FOR_SPOT * 20L);
     }
     private boolean spot(Player viewer, Player viewed, boolean glow) {
-        if (!viewed.canSee(viewed)) return false;
+        if (viewer == viewed || !viewer.canSee(viewed)) return false;
         cctv.getNMS().glow(viewer,viewed,glow);
         return true;
     }
