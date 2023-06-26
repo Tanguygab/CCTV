@@ -110,7 +110,7 @@ public class NMSUtils {
             p.setAllowFlight(true);
             p.setFlying(true);
         } else {
-            if (p.getGameMode() != GameMode.CREATIVE || p.getGameMode() != GameMode.SPECTATOR) {
+            if (p.getGameMode() != GameMode.CREATIVE && p.getGameMode() != GameMode.SPECTATOR) {
                 p.setAllowFlight(false);
                 p.setFlying(false);
             }
