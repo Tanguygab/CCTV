@@ -6,6 +6,7 @@ import dev.lone.itemsadder.api.Events.ItemsAdderLoadDataEvent;
 import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.managers.ComputerManager;
 import io.github.tanguygab.cctv.menus.CCTVMenu;
+import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -41,7 +42,8 @@ public class ItemsAdderEvents implements Listener {
 
     @EventHandler
     public void on(CustomBlockPlaceEvent e) {
-        if (e.getCustomBlockItem().isSimilar(cpm.COMPUTER_ITEM))
-            cpm.create(null,e.getPlayer(), e.getBlock().getLocation());;
+        boolean isAdminComputer = e.getCustomBlockItem().isSimilar(cpm.ADMIN_COMPUTER_ITEM);
+        if (isAdminComputer || e.getCustomBlockItem().isSimilar(cpm.COMPUTER_ITEM))
+            cpm.create(null,e.getPlayer(), e.getBlock().getLocation(),isAdminComputer);
     }
 }

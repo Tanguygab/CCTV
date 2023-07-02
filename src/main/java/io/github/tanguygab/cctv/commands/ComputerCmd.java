@@ -34,7 +34,13 @@ public class ComputerCmd extends Command {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
-                p.getInventory().addItem(cpm.COMPUTER_ITEM.clone());
+                p.getInventory().addItem((args.length > 2
+                        && args[2].equalsIgnoreCase("admin")
+                        && p.hasPermission("cctv.admin.computer")
+                        && cpm.ADMIN_COMPUTER_ITEM != null
+                        ? cpm.ADMIN_COMPUTER_ITEM
+                        : cpm.COMPUTER_ITEM
+                ).clone());
                 p.sendMessage(ChatColor.GREEN + "Place down this item to create a computer!");
             }
             case "list" -> {

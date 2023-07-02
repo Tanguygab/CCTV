@@ -25,7 +25,7 @@ public class ComputerMainMenu extends ComputerMenu {
 
     @Override
     public void open() {
-        inv = Bukkit.getServer().createInventory(null, 54, lang.getGuiComputerDefault(page+""));
+        inv = Bukkit.getServer().createInventory(null, 54, lang.getGuiComputerDefault(String.valueOf(page)));
 
         fillSlots(9,18);
         inv.setItem(0, getItem(Heads.OPTIONS,lang.GUI_COMPUTER_DEFAULT_ITEM_OPTION));
@@ -33,29 +33,36 @@ public class ComputerMainMenu extends ComputerMenu {
         inv.setItem(36, Heads.MENU_PREVIOUS.get());
         inv.setItem(45, getItem(Heads.EXIT,lang.GUI_COMPUTER_DEFAULT_ITEM_EXIT));
 
+        if (computer.isAdmin()) {
+            list(cctv.getCameras().values(),this::loadCamera);
+            p.openInventory(inv);
+            return;
+        }
         CameraGroup group = computer.getCameraGroup();
-        if (group != null)
-            list(group.getCameras(),cam->{
-                ItemStack item = getItem(cctv.getCustomHeads().get(cam.getSkin()), "&eCamera: " + cam.getId());
-                Location loc = cam.getLocation();
-                ItemMeta meta = item.getItemMeta();
-                meta.setLore(List.of("",ChatColor.translateAlternateColorCodes('&',
-                                "&6X: &7"+ posFormat.format(loc.getX())
-                                        +" &6Y: &7"+ posFormat.format(loc.getY())
-                                        +" &6Z: &7"+ posFormat.format(loc.getZ())
-                        ),""
-                        ,ChatColor.YELLOW+"Left-Click to View"
-                        ,ChatColor.YELLOW+"Right-Click to Edit"
-                        ,""
-                        ,ChatColor.YELLOW+"Shift-Left to go up"
-                        ,ChatColor.YELLOW+"Shift-Right to go down"
-                        ,ChatColor.RED+"Drop to remove"
-                ));
-                item.setItemMeta(meta);
-                inv.addItem(item);
-            });
+        if (group != null) list(group.getCameras(),this::loadCamera);
 
         p.openInventory(inv);
+    }
+
+    private void loadCamera(Camera cam) {
+        ItemStack item = getItem(cctv.getCustomHeads().get(cam.getSkin()), "&eCamera: " + cam.getId());
+        Location loc = cam.getLocation();
+        ItemMeta meta = item.getItemMeta();
+        assert meta != null;
+        meta.setLore(List.of("",ChatColor.translateAlternateColorCodes('&',
+                        "&6X: &7"+ posFormat.format(loc.getX())
+                                +" &6Y: &7"+ posFormat.format(loc.getY())
+                                +" &6Z: &7"+ posFormat.format(loc.getZ())
+                ),""
+                ,ChatColor.YELLOW+"Left-Click to View"
+                ,ChatColor.YELLOW+"Right-Click to Edit"
+                ,""
+                ,ChatColor.YELLOW+"Shift-Left to go up"
+                ,ChatColor.YELLOW+"Shift-Right to go down"
+                ,ChatColor.RED+"Drop to remove"
+        ));
+        item.setItemMeta(meta);
+        inv.addItem(item);
     }
 
     @Override

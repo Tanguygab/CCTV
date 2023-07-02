@@ -1,5 +1,8 @@
 computer:
   block: NETHER_BRICK_STAIRS
+  admin-computer:
+    enabled: false
+    block: POLISHED_BLACKSTONE_STAIRS
   craft:
     enabled: true
     shape:

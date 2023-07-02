@@ -70,8 +70,9 @@ public class Listener implements org.bukkit.event.Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST,ignoreCancelled = true)
     public void on(BlockPlaceEvent e) {
-        if (e.getItemInHand().isSimilar(cpm.COMPUTER_ITEM))
-            cpm.create(null,e.getPlayer(), e.getBlock().getLocation());
+        boolean isAdminComputer = e.getItemInHand().isSimilar(cpm.ADMIN_COMPUTER_ITEM);
+        if (isAdminComputer || e.getItemInHand().isSimilar(cpm.COMPUTER_ITEM))
+            cpm.create(null,e.getPlayer(), e.getBlock().getLocation(),isAdminComputer);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

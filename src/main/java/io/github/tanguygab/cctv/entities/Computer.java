@@ -13,8 +13,9 @@ public class Computer extends ID {
     private CameraGroup cameraGroup;
     private final List<String> allowedPlayers;
     private boolean publik;
+    private final boolean admin;
 
-    public Computer(String name, Location loc, String owner, String group, List<String> allowedPlayers, boolean publik) {
+    public Computer(String name, Location loc, String owner, String group, List<String> allowedPlayers, boolean publik, boolean admin) {
         super(name,CCTV.get().getComputers());
         this.loc = loc;
         set("world", loc.getWorld().getName());
@@ -23,9 +24,10 @@ public class Computer extends ID {
         set("z", loc.getZ());
         setOwner(owner);
         setCameraGroup(CCTV.get().getCameraGroups().get(group));
-        this.allowedPlayers = allowedPlayers;
         setPublic(publik);
+        this.allowedPlayers = allowedPlayers;
         set("allowed-players", allowedPlayers.isEmpty() ? null : allowedPlayers);
+        set("creative",this.admin = admin);
     }
 
     @Override
@@ -82,5 +84,9 @@ public class Computer extends ID {
 
     public boolean canUse(OfflinePlayer player) {
         return publik || allowedPlayers.contains(player.getUniqueId().toString()) || owner.equals(player.getUniqueId().toString());
+    }
+
+    public boolean isAdmin() {
+        return admin;
     }
 }

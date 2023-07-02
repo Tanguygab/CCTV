@@ -9,7 +9,6 @@ import io.github.tanguygab.cctv.managers.CameraGroupManager;
 import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.managers.ComputerManager;
 import org.bukkit.*;
-import org.bukkit.entity.Player;
 import org.bukkit.util.NumberConversions;
 
 import java.util.List;
@@ -28,7 +27,7 @@ public class Utils {
                 CameraManager manager = CCTV.get().getCameras();
                 if (manager.values().size() >= size) size *= 10;
                 for (Camera cam : manager.values()) {
-                    if (cam.getId().equals(number+""))
+                    if (cam.getId().equals(String.valueOf(number)))
                         number = getRandomNumber(size, type);
                 }
                 return number;
@@ -37,7 +36,7 @@ public class Utils {
                 ComputerManager manager = CCTV.get().getComputers();
                 if (manager.values().size() >= size) size *= 10;
                 for (Computer computer : manager.values()) {
-                    if (computer.getId().equals(number+""))
+                    if (computer.getId().equals(String.valueOf(number)))
                         number = getRandomNumber(size, type);
                 }
                 return number;
@@ -46,7 +45,7 @@ public class Utils {
                 CameraGroupManager manager = CCTV.get().getCameraGroups();
                 if (manager.values().size() >= size) size *= 10;
                 for (CameraGroup group : manager.values()) {
-                    if (group.getId().equals(number+""))
+                    if (group.getId().equals(String.valueOf(number)))
                         number = getRandomNumber(size, type);
                 }
                 return number;
@@ -64,7 +63,7 @@ public class Utils {
     }
 
     public static List<String> list(List<?> list) {
-        return list.stream().map(el->el instanceof ID id ? id.getId() : el+"").toList();
+        return list.stream().map(el->el instanceof ID id ? id.getId() : String.valueOf(el)).toList();
     }
 
     public static double distance(Location loc1, Location loc2) {

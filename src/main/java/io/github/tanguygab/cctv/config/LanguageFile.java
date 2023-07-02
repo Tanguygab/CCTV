@@ -113,6 +113,7 @@ public class LanguageFile extends YamlConfigurationFile {
     public final String COMPUTER_CHANGE_NO_PERMS = get("computers.change-no-perms", "&cYou can only edit your own computers!");
     public final String COMPUTER_NOT_ALLOWED = get("computers.not-allowed", "&cYou aren't allowed to open this computer!");
     public final String COMPUTER_ITEM_NAME = get("computers.item-name", "&9Computer");
+    public final String COMPUTER_ITEM_NAME_ADMIN = get("computers.item-name-creative", "&dAdmin Computer");
 
     private final String GUI_CAMERA = get("gui.camera.title", "&eCamera %cameraID%");
     public String getGuiCamera(String id) {

@@ -58,6 +58,7 @@ computers:
   change-no-perms: "&cYou can only edit your own computers!"
   not-allowed: "&cYou aren't allowed to open this computer!"
   item-name: "&9Computer"
+  item-name-admin: "&dAdmin Computer"
 gui:
   camera:
     title: "&eCamera %cameraID%"
