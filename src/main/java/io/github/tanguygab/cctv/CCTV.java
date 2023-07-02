@@ -112,6 +112,7 @@ public class CCTV extends JavaPlugin {
 
         loadRecipes();
         PluginManager plm = getServer().getPluginManager();
+        if (plm.isPluginEnabled("PlaceholderAPI")) new CCTVExpansion(this).register();
         plm.registerEvents(new Listener(),this);
         plm.registerEvents(new ViewersEvents(),this);
         plm.registerEvents(new ComputersEvents(),this);
