@@ -1,3 +1,5 @@
+lang: en_US
+
 computer:
   block: NETHER_BRICK_STAIRS
   admin-computer:

@@ -32,7 +32,9 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import javax.annotation.Nonnull;
 import java.io.File;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +50,7 @@ public class CCTV extends JavaPlugin {
     private LanguageFile lang;
     private CustomHeads customHeads;
     private NMSUtils nms;
+    private CCTVExpansion expansion;
     public ConfigurationFile getConfiguration() {
         return config;
     }
@@ -89,7 +92,9 @@ public class CCTV extends JavaPlugin {
         new CCTVAPI(this);
         try {
             config = new YamlConfigurationFile(getResource("config.yml"), new File(getDataFolder(), "config.yml"));
-            lang = new LanguageFile(getResource("language.yml"), new File(getDataFolder(), "language.yml"));
+            String langPath = "languages/"+config.getString("lang","en_US")+".yml";
+            InputStream langResource = getResource(langPath);
+            lang = new LanguageFile(langResource == null ? getResource("languages/en_US.yml") : langResource, new File(getDataFolder(), langPath));
             cameraManager = new CameraManager();
             cameraGroupManager = new CameraGroupManager();
             computerManager = new ComputerManager();
@@ -112,7 +117,7 @@ public class CCTV extends JavaPlugin {
 
         loadRecipes();
         PluginManager plm = getServer().getPluginManager();
-        if (plm.isPluginEnabled("PlaceholderAPI")) new CCTVExpansion(this).register();
+        if (plm.isPluginEnabled("PlaceholderAPI")) (expansion = new CCTVExpansion(this)).register();
         plm.registerEvents(new Listener(),this);
         plm.registerEvents(new ViewersEvents(),this);
         plm.registerEvents(new ComputersEvents(),this);
@@ -140,6 +145,7 @@ public class CCTV extends JavaPlugin {
     public void onDisable() {
         HandlerList.unregisterAll(this);
 
+        if (expansion != null) expansion.unregister();
         cameraManager.unload();
         viewerManager.unload();
         Listener.openedMenus.forEach((p,inv)->p.closeInventory());
@@ -193,10 +199,8 @@ public class CCTV extends JavaPlugin {
         menu.open();
     }
 
-    private boolean cam = false;
-
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(@Nonnull CommandSender sender, @Nonnull Command command, @Nonnull String label, String[] args) {
         String arg = args.length > 0 ? args[0] : "";
         switch (arg) {
             case "camera" -> cameraCmd.onCommand(sender,args);
@@ -229,7 +233,7 @@ public class CCTV extends JavaPlugin {
         return true;
     }
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+    public List<String> onTabComplete(@Nonnull CommandSender sender, @Nonnull Command command, @Nonnull String alias, String[] args) {
         String arg = args.length > 1 ? args[0] : "";
         return switch (arg) {
             case "camera" -> cameraCmd.onTabComplete(sender,args);
