@@ -2,7 +2,7 @@ package io.github.tanguygab.cctv.entities;
 
 import io.github.tanguygab.cctv.CCTV;
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 
@@ -82,7 +82,7 @@ public class Computer extends ID {
         set("public",publik);
     }
 
-    public boolean canUse(OfflinePlayer player) {
+    public boolean canUse(Player player) {
         return publik || allowedPlayers.contains(player.getUniqueId().toString()) || owner.equals(player.getUniqueId().toString());
     }
 
