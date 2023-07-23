@@ -49,28 +49,29 @@ public class ComputerMainMenu extends ComputerMenu {
         Location loc = cam.getLocation();
         ItemMeta meta = item.getItemMeta();
         assert meta != null;
-        meta.setLore(List.of("",ChatColor.translateAlternateColorCodes('&',
-                        "&6X: &7"+ posFormat.format(loc.getX())
-                                +" &6Y: &7"+ posFormat.format(loc.getY())
-                                +" &6Z: &7"+ posFormat.format(loc.getZ())
-                ),""
-                ,ChatColor.YELLOW+"Left-Click to View"
-                ,ChatColor.YELLOW+"Right-Click to Edit"
-                ,""
-                ,ChatColor.YELLOW+"Shift-Left to go up"
-                ,ChatColor.YELLOW+"Shift-Right to go down"
-                ,ChatColor.RED+"Drop to remove"
-        ));
+        String lore = "\n&6X: &7"+ posFormat.format(loc.getX())
+                + " &6Y: &7"+ posFormat.format(loc.getY())
+                + " &6Z: &7"+ posFormat.format(loc.getZ())
+                + "\n\n&eLeft-Click to View"
+                + "\n&eRight-Click to Edit"
+                + "\n\n&eShift-Right to go down"
+                + "\n&eShift-Left to go up"
+                + (canEdit() ? "\n&eDrop to remove" : "");
+        lore = ChatColor.translateAlternateColorCodes('&',lore);
+        meta.setLore(List.of(lore.split("\n")));
         item.setItemMeta(meta);
         inv.addItem(item);
+    }
+
+    private boolean canEdit() {
+        return computer.getOwner().equals(p.getUniqueId().toString()) || p.hasPermission("cctv.computer.other");
     }
 
     @Override
     public void onClick(ItemStack item, int slot, ClickType click) {
         switch (slot) {
             case 0 -> {
-                if (computer.getOwner().equals(p.getUniqueId().toString()) || p.hasPermission("cctv.computer.other"))
-                    open(new ComputerOptionsMenu(p,computer));
+                if (canEdit()) open(new ComputerOptionsMenu(p,computer));
                 else p.sendMessage(lang.COMPUTER_CHANGE_NO_PERMS);
             }
             case 27,36 -> setPage(slot == 27 ? page+1 : page-1);
@@ -110,6 +111,7 @@ public class ComputerMainMenu extends ComputerMenu {
                         open();
                     }
                     case DROP -> {
+                        if (!canEdit()) return;
                         computer.getCameraGroup().removeCamera(camera);
                         p.sendMessage(lang.GROUP_REMOVE_CAMERA);
                         open();
