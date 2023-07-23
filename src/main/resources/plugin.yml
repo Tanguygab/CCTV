@@ -1,7 +1,7 @@
 name: CCTV
 version: '${version}'
 main: io.github.tanguygab.cctv.CCTV
-api-version: 1.19
+api-version: 1.18
 authors: [Streampy, Timdecoole123, Tanguygab]
 description: A real CCTV plugin with working CCTV for a real usage and no invisible players.
 softdepend: [ItemsAdder, PlaceholderAPI]
