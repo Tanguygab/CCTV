@@ -61,14 +61,7 @@ public class CameraManager extends Manager<Camera> {
         boolean enabled = (boolean) config.getOrDefault("enabled",true);
         boolean shown = (boolean) config.getOrDefault("shown",true);
 
-
-        double x = (double) config.get("x");
-        double y = (double) config.get("y");
-        double z = (double) config.get("z");
-        double pitch = (double) config.get("pitch");
-        double yaw = (double) config.get("yaw");
-
-        Location loc = new Location(world, x, y, z, (float)yaw, (float)pitch);
+        Location loc = Utils.loadLocation(world,config);
 
         for (Entity entity : loc.getChunk().getEntities()) {
             if ((entity instanceof ArmorStand || entity instanceof Creeper) && entity.getCustomName() != null && entity.getCustomName().equals("CAM-" + id))

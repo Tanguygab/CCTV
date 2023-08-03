@@ -153,22 +153,24 @@ public class CCTV extends JavaPlugin {
     }
 
     private void loadRecipes() {
-        Map<String,String> camItems = new HashMap<>();
-        camItems.put("R","REDSTONE_BLOCK");
-        camItems.put("P","HEAVY_WEIGHTED_PRESSURE_PLATE");
-        camItems.put("D","DISPENSER");
-        camItems.put("G","GLASS_PANE");
-        camItems.put("L","DAYLIGHT_DETECTOR");
-        camItems.put("C","COMPARATOR");
+        Map<String,String> camItems = new HashMap<>() {{
+            put("R","REDSTONE_BLOCK");
+            put("P","HEAVY_WEIGHTED_PRESSURE_PLATE");
+            put("D","DISPENSER");
+            put("G","GLASS_PANE");
+            put("L","DAYLIGHT_DETECTOR");
+            put("C","COMPARATOR");
+        }};
         loadRecipe(Utils.cameraKey, Heads.CAMERA.get(),"camera",List.of("RPP","PDG","LCP"),camItems);
 
-        Map<String,String> computerItems = new HashMap<>();
-        computerItems.put("I","REDSTONE");
-        computerItems.put("P","HEAVY_WEIGHTED_PRESSURE_PLATE");
-        computerItems.put("G","GLASS_PANE");
-        computerItems.put("C","COMPARATOR");
-        computerItems.put("R","REPEATER");
-        computerItems.put("T","REDSTONE_TORCH");
+        Map<String,String> computerItems = new HashMap<>() {{
+            put("I","REDSTONE");
+            put("P","HEAVY_WEIGHTED_PRESSURE_PLATE");
+            put("G","GLASS_PANE");
+            put("C","COMPARATOR");
+            put("R","REPEATER");
+            put("T","REDSTONE_TORCH");
+        }};
         loadRecipe(Utils.computerKey,computerManager.COMPUTER_ITEM.clone(),"computer",List.of("ITI","PGP","RCR"),computerItems);
     }
     private void loadRecipe(NamespacedKey key, ItemStack item, String cfg, List<String> defShape, Map<String,String> defItems) {

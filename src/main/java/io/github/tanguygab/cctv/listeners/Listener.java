@@ -162,6 +162,9 @@ public class Listener implements org.bukkit.event.Listener {
         p.discoverRecipe(Utils.computerKey);
         if (!cm.EXPERIMENTAL_VIEW)
             for (Viewer viewer : vm.values()) p.hidePlayer(cctv,vm.get(viewer));
+        if (!vm.viewersQuit.containsKey(p.getUniqueId())) return;
+        p.teleport(vm.viewersQuit.get(p.getUniqueId()));
+        vm.viewersQuit.remove(p.getUniqueId());
     }
 
     @EventHandler

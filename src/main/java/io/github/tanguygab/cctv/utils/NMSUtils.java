@@ -80,7 +80,7 @@ public class NMSUtils {
         } catch (Exception e) {e.printStackTrace();}
     }
 
-    private final Map<Player, Location> oldLoc = new HashMap<>();
+    public final Map<Player, Location> oldLoc = new HashMap<>();
     private final Map<Player, Entity> oldEntity = new HashMap<>();
 
     public void setCameraPacket(Player p, Entity entity) {

@@ -12,6 +12,7 @@ import org.bukkit.*;
 import org.bukkit.util.NumberConversions;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class Utils {
@@ -68,6 +69,16 @@ public class Utils {
 
     public static double distance(Location loc1, Location loc2) {
         return Math.sqrt(NumberConversions.square(loc1.getX() - loc2.getX()) + NumberConversions.square(loc1.getZ() - loc2.getZ()));
+    }
+
+    public static Location loadLocation(World world, Map<String,Object> config) {
+        if (world == null) world = Bukkit.getServer().getWorld(String.valueOf(config.get("world")));
+        double x = (double) config.get("x");
+        double y = (double) config.get("y");
+        double z = (double) config.get("z");
+        float pitch = (float) config.get("pitch");
+        float yaw = (float) config.get("yaw");
+        return new Location(world, x, y, z, yaw, pitch);
     }
 
 }

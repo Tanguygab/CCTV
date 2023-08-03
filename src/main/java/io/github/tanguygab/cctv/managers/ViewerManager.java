@@ -7,7 +7,9 @@ import io.github.tanguygab.cctv.entities.Viewer;
 import io.github.tanguygab.cctv.menus.CCTVMenu;
 import io.github.tanguygab.cctv.menus.ViewerOptionsMenu;
 import io.github.tanguygab.cctv.utils.Heads;
+import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -15,10 +17,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class ViewerManager extends Manager<Viewer> {
 
@@ -31,6 +30,7 @@ public class ViewerManager extends Manager<Viewer> {
     public final List<String> blockedCmds = new ArrayList<>();
 
     private final CameraManager cm = cctv.getCameras();
+    public final Map<UUID, Location> viewersQuit = new HashMap<>();
 
     @Override
     public void load() {
@@ -41,10 +41,24 @@ public class ViewerManager extends Manager<Viewer> {
         TIME_TO_DISCONNECT = config.getInt("viewers.timed-actions.disconnect",3);
         TIME_FOR_SPOT = config.getInt("viewers.timed-actions.spot",5);
         blockedCmds.addAll(config.getStringList("viewers.blocked-commands",List.of()));
+
+        Map<String,Map<String,Object>> loggedOutViewers = config.getConfigurationSection("logged-out-viewers");
+        loggedOutViewers.forEach((uuid,loc)->viewersQuit.put(UUID.fromString(uuid),Utils.loadLocation(null,loc)));
+        cctv.getConfiguration().set("logged-out-viewers",null);
     }
 
     public void unload() {
         values().forEach(v-> cctv.getCameras().unviewCamera(get(v)));
+        viewersQuit.forEach((uuid,loc)->{
+            Map<String,Object> locMap = new HashMap<>();
+            locMap.put("world",loc.getWorld()+"");
+            locMap.put("x",loc.getX());
+            locMap.put("y",loc.getY());
+            locMap.put("z",loc.getZ());
+            locMap.put("pitch",loc.getPitch());
+            locMap.put("yaw",loc.getYaw());
+            cctv.getConfiguration().set("logged-out-viewers."+uuid,locMap);
+        });
     }
 
     public void delete(Player p) {

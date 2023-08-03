@@ -46,7 +46,9 @@ public class ViewersEvents implements Listener {
 
     @EventHandler
     public void on(PlayerQuitEvent e) {
-        cm.unviewCamera(e.getPlayer());
+        Player p = e.getPlayer();
+        if (vm.exists(p)) vm.viewersQuit.put(p.getUniqueId(), CCTV.get().getNMS().oldLoc.get(p));
+        cm.unviewCamera(p);
     }
 
     @EventHandler(ignoreCancelled = true)
