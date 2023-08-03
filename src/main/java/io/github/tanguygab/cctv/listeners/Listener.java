@@ -12,12 +12,14 @@ import io.github.tanguygab.cctv.menus.CCTVMenu;
 import io.github.tanguygab.cctv.menus.cameras.CameraMenu;
 import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -26,6 +28,8 @@ import org.bukkit.event.player.*;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -50,13 +54,21 @@ public class Listener implements org.bukkit.event.Listener {
         vm = cctv.getViewers();
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void on(PlayerInteractEvent e) {
-        InteractEvent.on(e);
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onInteract(PlayerInteractEvent e) {
+        Block block = e.getClickedBlock();
+        if (e.getAction() != Action.RIGHT_CLICK_BLOCK || block == null) return;
+
+        Player p = e.getPlayer();
+        Computer computer = cpm.get(block);
+        if (e.getHand() == EquipmentSlot.OFF_HAND || computer == null) return;
+        e.setCancelled(true);
+        if (computer.canUse(p)) cpm.open(p, computer);
+        else p.sendMessage(CCTV.get().getLang().COMPUTER_NOT_ALLOWED);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST,ignoreCancelled = true)
-    public void on(BlockBreakEvent e) {
+    public void onBlockBreak(BlockBreakEvent e) {
         Computer computer = cpm.get(e.getBlock());
         if (computer == null) return;
         e.setCancelled(true);
@@ -69,14 +81,23 @@ public class Listener implements org.bukkit.event.Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST,ignoreCancelled = true)
-    public void on(BlockPlaceEvent e) {
-        boolean isAdminComputer = e.getItemInHand().isSimilar(cpm.ADMIN_COMPUTER_ITEM);
-        if (isAdminComputer || e.getItemInHand().isSimilar(cpm.COMPUTER_ITEM))
-            cpm.create(null,e.getPlayer(), e.getBlock().getLocation(),isAdminComputer);
+    public void onBlockPlace(BlockPlaceEvent e) {
+        Player p = e.getPlayer();
+        ItemStack item = e.getItemInHand();
+        boolean isAdminComputer = item.isSimilar(cpm.ADMIN_COMPUTER_ITEM);
+        if (isAdminComputer || item.isSimilar(cpm.COMPUTER_ITEM)) {
+            cpm.create(null, p, e.getBlock().getLocation(), isAdminComputer);
+            return;
+        }
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null && meta.hasDisplayName() && item.getType() == Material.PLAYER_HEAD && cctv.getCustomHeads().isCamera(item)) {
+            cm.createCamera(p, item, e.getBlockAgainst().getLocation(), e.getBlockAgainst().getFace(e.getBlockPlaced()));
+            e.setCancelled(true);
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void on(PlayerInteractAtEntityEvent e) {
+    public void onInteractEntity(PlayerInteractAtEntityEvent e) {
         Entity entity = e.getRightClicked();
         if (!(entity instanceof ArmorStand) && !(entity instanceof Creeper)) return;
         String customName = entity.getCustomName();
@@ -108,7 +129,7 @@ public class Listener implements org.bukkit.event.Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void on(AsyncPlayerChatEvent e) {
+    public void onChat(AsyncPlayerChatEvent e) {
         Player p = e.getPlayer();
         String msg = e.getMessage();
 
@@ -156,7 +177,7 @@ public class Listener implements org.bukkit.event.Listener {
     }
 
     @EventHandler
-    public void on(PlayerJoinEvent event) {
+    public void onJoin(PlayerJoinEvent event) {
         Player p = event.getPlayer();
         p.discoverRecipe(Utils.cameraKey);
         p.discoverRecipe(Utils.computerKey);
@@ -168,7 +189,7 @@ public class Listener implements org.bukkit.event.Listener {
     }
 
     @EventHandler
-    public void on(InventoryClickEvent e) {
+    public void onInvClick(InventoryClickEvent e) {
         if (!(e.getWhoClicked() instanceof Player p)) return;
         if (openedMenus.containsKey(p)) {
             openedMenus.get(p).onClick(e.getCurrentItem(),e.getRawSlot(),e.getClick());
@@ -182,14 +203,14 @@ public class Listener implements org.bukkit.event.Listener {
     }
 
     @EventHandler
-    public void on(InventoryCloseEvent e) {
+    public void onInvClose(InventoryCloseEvent e) {
         Player p = (Player) e.getPlayer();
         CCTVMenu menu = openedMenus.get(p);
         if (menu != null && menu.inv.equals(e.getInventory())) openedMenus.get(p).close();
     }
 
     @EventHandler
-    public void on(ChunkLoadEvent e) {
+    public void onChunkLoad(ChunkLoadEvent e) {
         for (Entity entity : e.getChunk().getEntities()) {
             if (entity.getCustomName() != null && entity.getCustomName().startsWith("CAM-")) {
                 String id = entity.getCustomName().substring(4);
@@ -206,7 +227,7 @@ public class Listener implements org.bukkit.event.Listener {
     }
 
     @EventHandler
-    public void on(WorldLoadEvent e) {
+    public void onWorldLoad(WorldLoadEvent e) {
         cm.loadWorld(e.getWorld());
     }
 

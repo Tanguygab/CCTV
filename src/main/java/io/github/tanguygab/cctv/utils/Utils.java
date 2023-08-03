@@ -76,8 +76,8 @@ public class Utils {
         double x = (double) config.get("x");
         double y = (double) config.get("y");
         double z = (double) config.get("z");
-        float pitch = (float) config.get("pitch");
-        float yaw = (float) config.get("yaw");
+        float pitch = (float)(double) config.get("pitch");
+        float yaw = (float)(double) config.get("yaw");
         return new Location(world, x, y, z, yaw, pitch);
     }
 

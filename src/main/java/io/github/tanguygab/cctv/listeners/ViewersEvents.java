@@ -12,8 +12,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.inventory.InventoryInteractEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.EquipmentSlot;
 
 import java.util.Arrays;
 
@@ -30,13 +31,13 @@ public class ViewersEvents implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void on(AsyncPlayerChatEvent e) {
+    public void onChat(AsyncPlayerChatEvent e) {
         if (vm.exists(e.getPlayer()) && !vm.CAN_CHAT)
             e.setCancelled(true);
     }
 
     @EventHandler
-    public void on(PlayerToggleSneakEvent e) {
+    public void onSneak(PlayerToggleSneakEvent e) {
         Player player = e.getPlayer();
         if (!vm.exists(player)) return;
 
@@ -45,25 +46,25 @@ public class ViewersEvents implements Listener {
     }
 
     @EventHandler
-    public void on(PlayerQuitEvent e) {
+    public void onQuit(PlayerQuitEvent e) {
         Player p = e.getPlayer();
         if (vm.exists(p)) vm.viewersQuit.put(p.getUniqueId(), CCTV.get().getNMS().oldLoc.get(p));
         cm.unviewCamera(p);
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void on(InventoryInteractEvent e) {
+    public void onInvClick(InventoryClickEvent e) {
         if (vm.exists(e.getWhoClicked().getUniqueId().toString()))
             e.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void on(PlayerDropItemEvent e) {
+    public void onDrop(PlayerDropItemEvent e) {
         if (vm.exists(e.getPlayer())) e.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void on(EntityDamageByEntityEvent e) {
+    public void onDamage(EntityDamageByEntityEvent e) {
         if (e.getEntity() instanceof Player p) {
             if (vm.exists(p)) e.setCancelled(true);
             return;
@@ -81,7 +82,7 @@ public class ViewersEvents implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void on(PlayerDeathEvent e) {
+    public void onDeath(PlayerDeathEvent e) {
         Player p = e.getEntity();
         if (vm.exists(p)) {
             if (!e.getKeepInventory()) {
@@ -95,16 +96,25 @@ public class ViewersEvents implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void on(PlayerMoveEvent e) {
+    public void onMove(PlayerMoveEvent e) {
         e.setCancelled(cm.connecting.contains(e.getPlayer()) || vm.exists(e.getPlayer()));
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void on(PlayerCommandPreprocessEvent e) {
+    public void onCommand(PlayerCommandPreprocessEvent e) {
         Player p = e.getPlayer();
         if (vm.exists(p) && vm.blockedCmds.contains(e.getMessage().split(" ")[0])) {
             e.setCancelled(true);
             p.sendMessage(lang.COMMAND_BLOCKED);
         }
+    }
+
+    @EventHandler
+    public void onInteract(PlayerInteractEvent e) {
+        Player p = e.getPlayer();
+        if (!CCTV.get().getViewers().exists(p)) return;
+        e.setCancelled(true);
+        if (e.getHand() != EquipmentSlot.OFF_HAND)
+            CCTV.get().getViewers().onCameraItems(p, e.getItem());
     }
 }

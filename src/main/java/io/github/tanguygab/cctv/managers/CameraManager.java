@@ -6,10 +6,12 @@ import io.github.tanguygab.cctv.entities.CameraGroup;
 import io.github.tanguygab.cctv.utils.Heads;
 import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.*;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.EulerAngle;
 
 import java.util.ArrayList;
@@ -43,7 +45,7 @@ public class CameraManager extends Manager<Camera> {
         cams.forEach((id,cfg)->{
             Map<String,Object> config = (Map<String, Object>) cfg;
 
-            String w = config.get("world")+"";
+            String w = String.valueOf(config.get("world"));
             World world = Bukkit.getServer().getWorld(w);
             if (world == null) {
                 unloadedWorlds.computeIfAbsent(w.toLowerCase(),wo->new ArrayList<>()).add(new HashMap<>(config) {{
@@ -56,8 +58,8 @@ public class CameraManager extends Manager<Camera> {
     }
 
     private void loadFromConfig(String id, Map<String,Object> config, World world) {
-        String owner = config.get("owner")+"";
-        String skin = config.getOrDefault("skin","_DEFAULT_")+"";
+        String owner = String.valueOf(config.get("owner"));
+        String skin = String.valueOf(config.getOrDefault("skin", "_DEFAULT_"));
         boolean enabled = (boolean) config.getOrDefault("enabled",true);
         boolean shown = (boolean) config.getOrDefault("shown",true);
 
@@ -138,7 +140,7 @@ public class CameraManager extends Manager<Camera> {
             player.sendMessage(lang.CAMERA_ALREADY_EXISTS);
             return;
         }
-        if (id == null) id = Utils.getRandomNumber(999999, "camera")+"";
+        if (id == null) id = String.valueOf(Utils.getRandomNumber(999999, "camera"));
 
         create(id,player.getUniqueId().toString(),loc,true,true,skin,true);
         player.sendMessage(lang.CAMERA_CREATE);
@@ -233,7 +235,29 @@ public class CameraManager extends Manager<Camera> {
     public void loadWorld(World world) {
         String w = world.getName().toLowerCase();
         if (!unloadedWorlds.containsKey(w)) return;
-        unloadedWorlds.get(w).forEach(cfg->loadFromConfig(cfg.get("id")+"",cfg,world));
+        unloadedWorlds.get(w).forEach(cfg->loadFromConfig(String.valueOf(cfg.get("id")),cfg,world));
         unloadedWorlds.remove(w);
     }
+
+    public void createCamera(Player p, ItemStack item, Location loc, BlockFace face) {
+        if (p.getGameMode() == GameMode.SURVIVAL || p.getGameMode() == GameMode.ADVENTURE)
+            item.setAmount(item.getAmount()-1);
+        switch (face) {
+            case UP -> setLoc(loc,0.5D,0.5D,0.47D,loc.getYaw()+180.0F);
+            case DOWN -> setLoc(loc,0.5D,0.5D,2.03D,loc.getYaw()+180.0F);
+            case EAST -> setLoc(loc,1.29D,0.5D,1.24D,270.0F);
+            case WEST -> setLoc(loc,-0.29D,0.5D,1.24D,90.0F);
+            case NORTH -> setLoc(loc,0.5D,-0.29D,1.24D,180.0F);
+            case SOUTH -> setLoc(loc,0.5D,1.29D,1.24D,0.0F);
+        }
+        CCTV.get().getCameras().create(null, loc, p,CCTV.get().getCustomHeads().get(item));
+    }
+
+    private void setLoc(Location loc, double x, double z, double y, float yaw) {
+        loc.setX(loc.getX()+x);
+        loc.setZ(loc.getZ()+z);
+        loc.setY(loc.getY()-y);
+        loc.setYaw(yaw);
+    }
+
 }
