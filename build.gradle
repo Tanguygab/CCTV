@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'io.github.tanguygab'
-version = '8.5.2-SNAPSHOT'
+version = '8.5.2'
 
 repositories {
     mavenCentral()
