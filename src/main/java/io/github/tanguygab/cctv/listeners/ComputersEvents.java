@@ -22,7 +22,7 @@ public class ComputersEvents implements Listener {
         if (onMove(e.getBlocks())) e.setCancelled(true);
     }
     private boolean onMove(List<Block> blocks) {
-        return blocks.stream().anyMatch(block -> CCTV.get().getComputers().exists(block));
+        return blocks.stream().anyMatch(block -> CCTV.getInstance().getComputers().exists(block));
     }
 
     @EventHandler
@@ -34,7 +34,7 @@ public class ComputersEvents implements Listener {
         onExplosion(e.blockList());
     }
     private void onExplosion(List<Block> blocks) {
-        blocks.removeIf(block -> CCTV.get().getComputers().exists(block));
+        blocks.removeIf(block -> CCTV.getInstance().getComputers().exists(block));
     }
 
 }

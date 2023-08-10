@@ -1,29 +1,36 @@
 package io.github.tanguygab.cctv.entities;
 
 import io.github.tanguygab.cctv.CCTV;
+import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Computer extends ID {
 
     private final Location loc;
     private String owner;
-    private CameraGroup cameraGroup;
+    private final List<Camera> cameras;
     private final List<String> allowedPlayers;
     private boolean publik;
     private final boolean admin;
 
-    public Computer(String name, Location loc, String owner, String group, List<String> allowedPlayers, boolean publik, boolean admin) {
-        super(name,CCTV.get().getComputers());
+    public Computer(String name, Location loc, String owner, List<String> cameras, List<String> allowedPlayers, boolean publik, boolean admin) {
+        super(name,CCTV.getInstance().getComputers());
         this.loc = loc;
         set("world", loc.getWorld().getName());
         set("x", loc.getX());
         set("y", loc.getY());
         set("z", loc.getZ());
         setOwner(owner);
-        setCameraGroup(CCTV.get().getCameraGroups().get(group));
+        this.cameras = new ArrayList<>();
+        cameras.forEach(str->{
+            Camera cam = CCTV.getInstance().getCameras().get(str);
+            if (cam != null) this.cameras.add(cam);
+        });
+        set("cameras", cameras.isEmpty() ? null : Utils.list(cameras));
         setPublic(publik);
         this.allowedPlayers = allowedPlayers;
         set("allowed-players", allowedPlayers.isEmpty() ? null : allowedPlayers);
@@ -37,9 +44,8 @@ public class Computer extends ID {
         set("y", loc.getY());
         set("z", loc.getZ());
         setOwner(owner);
-        setCameraGroup(cameraGroup);
+        saveCams();
         set("allowed-players", allowedPlayers.isEmpty() ? null : allowedPlayers);
-
     }
 
     public Location getLocation() {
@@ -54,12 +60,20 @@ public class Computer extends ID {
         set("owner",owner);
     }
 
-    public CameraGroup getCameraGroup() {
-        return cameraGroup;
+
+    public List<Camera> getCameras() {
+        return cameras;
     }
-    public void setCameraGroup(CameraGroup cameraGroup) {
-        this.cameraGroup = cameraGroup;
-        set("camera-group",cameraGroup == null ? null : cameraGroup.getId());
+    public void saveCams() {
+        set("cameras", cameras.isEmpty() ? null : Utils.list(cameras));
+    }
+    public void addCamera(Camera cam) {
+        cameras.add(cam);
+        saveCams();
+    }
+    public void removeCamera(Camera cam) {
+        cameras.remove(cam);
+        saveCams();
     }
 
     public List<String> getAllowedPlayers() {

@@ -17,7 +17,7 @@ public abstract class Command {
 
     private final String type;
 
-    protected final CCTV cctv = CCTV.get();
+    protected final CCTV cctv = CCTV.getInstance();
     protected final LanguageFile lang = cctv.getLang();
 
     public Command(String type) {
@@ -92,13 +92,13 @@ public abstract class Command {
         filler.setStrikethrough(true);
         comp.addExtra(filler);
 
-        TextComponent previous = comp("\u00AB",page <= 1 ? ChatColor.DARK_GRAY : ChatColor.GRAY);
+        TextComponent previous = comp("«",page <= 1 ? ChatColor.DARK_GRAY : ChatColor.GRAY);
         if (page > 1) {
             previous.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(ChatColor.YELLOW+"Previous Page")));
             previous.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cctv " + type + " list " + (page-1)));
         }
         comp.addExtra(previous);
-        TextComponent next = comp("\u00BB",page == pages.size() ? ChatColor.DARK_GRAY : ChatColor.GRAY);
+        TextComponent next = comp("»",page == pages.size() ? ChatColor.DARK_GRAY : ChatColor.GRAY);
         if (page < pages.size()) {
             next.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(ChatColor.YELLOW+"Next Page")));
             next.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cctv " + type + " list " + (page+1)));

@@ -22,7 +22,7 @@ public abstract class CCTVMenu {
 
     protected final Player p;
     public Inventory inv;
-    protected CCTV cctv = CCTV.get();
+    protected CCTV cctv = CCTV.getInstance();
     protected LanguageFile lang = cctv.getLang();
     public boolean renaming = false;
     private CCTVMenu previousMenu;

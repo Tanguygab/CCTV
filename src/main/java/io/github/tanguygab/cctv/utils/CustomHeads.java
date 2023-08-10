@@ -11,11 +11,11 @@ import java.util.*;
 public class CustomHeads {
 
     private final Map<String,ItemStack> heads = new LinkedHashMap<>();
-    private final NamespacedKey headKey = new NamespacedKey(CCTV.get(),"head");
+    private final NamespacedKey headKey = new NamespacedKey(CCTV.getInstance(),"head");
 
     public CustomHeads() {
         heads.put("_DEFAULT_",Heads.CAMERA.get());
-        Map<String,String> textures = CCTV.get().getConfiguration().getConfigurationSection("camera.skins");
+        Map<String,String> textures = CCTV.getInstance().getConfiguration().getConfigurationSection("camera.skins");
         textures.forEach((name,base64)-> {
             ItemStack item = Heads.createSkull(base64,name);
             ItemMeta meta = item.getItemMeta();
@@ -35,13 +35,13 @@ public class CustomHeads {
 
     public String get(ItemStack item) {
         ItemMeta meta = item.getItemMeta();
-        if (meta == null || !isCamera(item) || CCTV.get().getLang().CAMERA_ITEM_NAME.equals(meta.getDisplayName())) return "_DEFAULT_";
+        if (meta == null || !isCamera(item) || CCTV.getInstance().getLang().CAMERA_ITEM_NAME.equals(meta.getDisplayName())) return "_DEFAULT_";
         return meta.getPersistentDataContainer().get(headKey, PersistentDataType.STRING);
     }
 
     public boolean isCamera(ItemStack item) {
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return false;
-        return CCTV.get().getLang().CAMERA_ITEM_NAME.equals(meta.getDisplayName()) || meta.getPersistentDataContainer().has(headKey,PersistentDataType.STRING);
+        return CCTV.getInstance().getLang().CAMERA_ITEM_NAME.equals(meta.getDisplayName()) || meta.getPersistentDataContainer().has(headKey,PersistentDataType.STRING);
     }
 }

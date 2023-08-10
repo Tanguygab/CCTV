@@ -121,7 +121,7 @@ public class CameraCmd extends Command {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
-                cm.unviewCamera(p);
+                cm.disconnectFromCamera(p);
             }
             case "teleport" -> {
                 if (noPerm(p, "teleport")) {

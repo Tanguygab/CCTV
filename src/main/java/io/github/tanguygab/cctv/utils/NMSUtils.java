@@ -84,7 +84,7 @@ public class NMSUtils {
     private final Map<Player, Entity> oldEntity = new HashMap<>();
 
     public void setCameraPacket(Player p, Entity entity) {
-        if (CCTV.get().getCameras().EXPERIMENTAL_VIEW) {
+        if (CCTV.getInstance().getCameras().EXPERIMENTAL_VIEW) {
             try {
                 sendPacket(p,packetPlayOutCamera.newInstance(getHandle.invoke(entity)));
             } catch (Exception e) {e.printStackTrace();}
@@ -96,14 +96,14 @@ public class NMSUtils {
         if (view) {
             oldLoc.putIfAbsent(p,p.getLocation());
             if (oldEntity.containsKey(p))
-                p.showEntity(CCTV.get(), oldEntity.get(p));
+                p.showEntity(CCTV.getInstance(), oldEntity.get(p));
             oldEntity.put(p,entity);
             loc = entity.getLocation();
-            p.hideEntity(CCTV.get(),entity);
+            p.hideEntity(CCTV.getInstance(),entity);
         } else {
             oldLoc.remove(p);
             oldEntity.remove(p);
-            p.showEntity(CCTV.get(), entity);
+            p.showEntity(CCTV.getInstance(), entity);
         }
         if (view) {
             p.teleport(loc);

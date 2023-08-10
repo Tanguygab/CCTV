@@ -47,7 +47,7 @@ public class Listener implements org.bukkit.event.Listener {
     public static Map<Player,CCTVMenu> openedMenus = new HashMap<>();
 
     public Listener() {
-        cctv = CCTV.get();
+        cctv = CCTV.getInstance();
         lang = cctv.getLang();
         cm = cctv.getCameras();
         cpm = cctv.getComputers();
@@ -64,7 +64,7 @@ public class Listener implements org.bukkit.event.Listener {
         if (e.getHand() == EquipmentSlot.OFF_HAND || computer == null) return;
         e.setCancelled(true);
         if (computer.canUse(p)) cpm.open(p, computer);
-        else p.sendMessage(CCTV.get().getLang().COMPUTER_NOT_ALLOWED);
+        else p.sendMessage(CCTV.getInstance().getLang().COMPUTER_NOT_ALLOWED);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST,ignoreCancelled = true)

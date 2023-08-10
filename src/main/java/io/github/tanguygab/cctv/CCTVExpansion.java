@@ -4,9 +4,9 @@ package io.github.tanguygab.cctv;
 import io.github.tanguygab.cctv.entities.Camera;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -23,27 +23,27 @@ public class CCTVExpansion extends PlaceholderExpansion {
     }
 
     @Override
-    public @Nonnull String getIdentifier() {
+    public @NotNull String getIdentifier() {
         return "cctv";
     }
 
     @Override
-    public @Nonnull String getAuthor() {
+    public @NotNull String getAuthor() {
         return "Tanguygab";
     }
 
     @Override
-    public @Nonnull String getVersion() {
+    public @NotNull String getVersion() {
         return cctv.getDescription().getVersion();
     }
 
     @Override
-    public @Nonnull List<String> getPlaceholders() {
+    public @NotNull List<String> getPlaceholders() {
         return placeholders;
     }
 
     @Override
-    public @Nullable String onRequest(OfflinePlayer player, @Nonnull String params) {
+    public @Nullable String onRequest(OfflinePlayer player, @NotNull String params) {
         if (!params.startsWith("camera_")) return null;
         String cam = params.split("_")[1];
         Camera camera = cctv.getCameras().get(cam);

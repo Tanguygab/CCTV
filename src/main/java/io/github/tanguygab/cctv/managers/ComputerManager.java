@@ -1,6 +1,8 @@
 package io.github.tanguygab.cctv.managers;
 
 import dev.lone.itemsadder.api.CustomStack;
+import io.github.tanguygab.cctv.config.ConfigurationFile;
+import io.github.tanguygab.cctv.config.YamlConfigurationFile;
 import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.listeners.ItemsAdderEvents;
 import io.github.tanguygab.cctv.menus.CCTVMenu;
@@ -14,6 +16,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,14 +31,20 @@ public class ComputerManager extends Manager<Computer> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void load() {
         COMPUTER_ITEM = loadComputerMat("block",Material.NETHER_BRICK_STAIRS,lang.COMPUTER_ITEM_NAME);
+        ConfigurationFile groupCfg = null;
+        File groupFile = new File(cctv.getDataFolder(), "cameragroups.yml");
+        try {if (groupFile.exists()) groupCfg = new YamlConfigurationFile(null, groupFile);}
+        catch (Exception e) {e.printStackTrace();}
+        ConfigurationFile finalGroupCfg = groupCfg;
 
         if (cctv.getConfiguration().getBoolean("computer.admin-computer.enabled",false))
             ADMIN_COMPUTER_ITEM = loadComputerMat("admin-computer.block",Material.POLISHED_BLACKSTONE_STAIRS,lang.COMPUTER_ITEM_NAME_ADMIN);
 
         Map<String,Object> map = file.getValues();
-        map.forEach((id,cfg)->{
+        map.forEach((id, cfg)->{
             Map<String,Object> config = (Map<String, Object>) cfg;
             String owner = String.valueOf(config.get("owner"));
             World world = cctv.getServer().getWorld(String.valueOf(config.get("world")));
@@ -45,12 +54,19 @@ public class ComputerManager extends Manager<Computer> {
             boolean publik = (boolean) config.getOrDefault("public",false);
             boolean admin = (boolean) config.getOrDefault("admin",false);
 
-            String group = config.containsKey("camera-group") ? String.valueOf(config.get("camera-group")) : null;
+            List<String> cameras = null;
+            if (config.containsKey("camera-group")) {
+                String group = String.valueOf(config.get("camera-group"));
+                config.remove("camera-group");
+                if (finalGroupCfg != null && finalGroupCfg.hasConfigOption(group+".cameras"))
+                    cameras = finalGroupCfg.getStringList(group+".cameras");
+            }
+            if (cameras == null) cameras = config.containsKey("cameras") ? (List<String>) config.get("cameras") : new ArrayList<>();
             List<String> allowedPlayers = config.containsKey("allowed-players") ? (List<String>) config.get("allowed-players") : new ArrayList<>();
 
-            create(id,owner,new Location(world,x,y,z),group,allowedPlayers,publik,admin);
-
+            create(id,owner,new Location(world,x,y,z),cameras,allowedPlayers,publik,admin);
         });
+        if (groupFile.exists()) groupFile.delete();
     }
 
 
@@ -112,19 +128,19 @@ public class ComputerManager extends Manager<Computer> {
         return list;
     }
 
-    private Computer create(String id, String owner, Location loc, String group, List<String> allowedPlayers, boolean publik, boolean admin) {
+    private Computer create(String id, String owner, Location loc, List<String> cameras, List<String> allowedPlayers, boolean publik, boolean admin) {
         for (Computer computer : values())
             if (loc.equals(computer.getLocation()) || computer.getId().equals(id))
                 return null;
 
-        id = id == null || id.equals("") ? String.valueOf(Utils.getRandomNumber(9999, "computer")) : id;
-        Computer computer = new Computer(id,loc,owner,group,allowedPlayers,publik,admin);
-        map.put(id,computer);
+        id = id == null || id.equals("") ? String.valueOf(Utils.getRandomNumber(9999, this)) : id;
+        Computer computer = new Computer(id,loc,owner,cameras,allowedPlayers,publik,admin);
+        put(id,computer);
         return computer;
     }
 
     public void create(String id, Player p, Location loc, boolean admin) {
-        Computer computer = create(id,p.getUniqueId().toString(),loc, null, new ArrayList<>(),false,admin && p.hasPermission("cctv.admin.computer"));
+        Computer computer = create(id,p.getUniqueId().toString(),loc, new ArrayList<>(), new ArrayList<>(),false,admin && p.hasPermission("cctv.admin.computer"));
         if (computer != null) {
             p.sendMessage(lang.COMPUTER_CREATE);
             p.sendMessage(lang.getComputerID(computer.getId()));

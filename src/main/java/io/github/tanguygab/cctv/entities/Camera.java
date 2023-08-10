@@ -23,7 +23,7 @@ public class Camera extends ID {
     private Creeper creeper;
 
     public Camera(String name, String owner, Location loc, boolean enabled, boolean shown, ArmorStand armorStand, Creeper creeper, String skin) {
-        super(name,CCTV.get().getCameras());
+        super(name,CCTV.getInstance().getCameras());
         setOwner(owner);
         this.armorStand = armorStand;
         this.creeper = creeper;
@@ -43,13 +43,13 @@ public class Camera extends ID {
     }
 
     public boolean rename(String newName) {
-        if (CCTV.get().getCameras().exists(newName)) {
+        if (CCTV.getInstance().getCameras().exists(newName)) {
             return false;
         }
         setId(newName);
-        CCTV.get().getCameraGroups().values().forEach(g->{
-            if (g.getCameras().contains(this))
-                g.saveCams();
+        CCTV.getInstance().getComputers().values().forEach(computer->{
+            if (computer.getCameras().contains(this))
+                computer.saveCams();
         });
         armorStand.setCustomName("CAM-"+getId());
         return true;
@@ -118,14 +118,14 @@ public class Camera extends ID {
         this.enabled = enabled;
         set("enabled", enabled);
         if (enabled) return;
-        LanguageFile lang = CCTV.get().getLang();
-        for (Viewer viewer : CCTV.get().getViewers().values()) {
+        LanguageFile lang = CCTV.getInstance().getLang();
+        for (Viewer viewer : CCTV.getInstance().getViewers().values()) {
             if (viewer.getCamera() != this) continue;
             Player target = Bukkit.getServer().getPlayer(UUID.fromString(viewer.getId()));
             if (target == null) continue;
             if (!target.hasPermission("cctv.camera.view.override") && !target.hasPermission("cctv.admin")) {
                 target.sendTitle(lang.CAMERA_OFFLINE,"",0,15,0);
-                CCTV.get().getCameras().unviewCamera(target);
+                CCTV.getInstance().getCameras().disconnectFromCamera(target);
                 continue;
             }
             target.sendMessage(lang.CAMERA_OFFLINE_OVERRIDE);
@@ -139,7 +139,7 @@ public class Camera extends ID {
         this.shown = shown;
         set("shown",shown);
         if (armorStand != null)
-            armorStand.getEquipment().setHelmet(shown ? CCTV.get().getCustomHeads().get(skin) : null);
+            armorStand.getEquipment().setHelmet(shown ? CCTV.getInstance().getCustomHeads().get(skin) : null);
     }
 
     public ArmorStand getArmorStand() {

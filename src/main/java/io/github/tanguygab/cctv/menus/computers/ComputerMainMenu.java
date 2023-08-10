@@ -1,7 +1,6 @@
 package io.github.tanguygab.cctv.menus.computers;
 
 import io.github.tanguygab.cctv.entities.Camera;
-import io.github.tanguygab.cctv.entities.CameraGroup;
 import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.menus.cameras.CameraMenu;
 import io.github.tanguygab.cctv.menus.ComputerMenu;
@@ -38,8 +37,7 @@ public class ComputerMainMenu extends ComputerMenu {
             p.openInventory(inv);
             return;
         }
-        CameraGroup group = computer.getCameraGroup();
-        if (group != null) list(group.getCameras(),this::loadCamera);
+        list(computer.getCameras(),this::loadCamera);
 
         p.openInventory(inv);
     }
@@ -90,30 +88,28 @@ public class ComputerMainMenu extends ComputerMenu {
                 }
                 switch (click) {
                     case LEFT -> {
-                        cctv.getCameras().viewCamera(p, camera, computer.getCameraGroup());
+                        cctv.getCameras().viewCamera(p, camera, computer);
                         p.closeInventory();
                     }
                     case RIGHT -> {
-                        if (!camera.getOwner().equals(p.getUniqueId().toString()) && !p.hasPermission("cctv.camera.other")) {
+                        if (!camera.getOwner().equals(p.getUniqueId().toString()) && !p.hasPermission("cctv.camera.other"))
                             p.sendMessage(lang.NO_PERMISSIONS);
-                        }
                         else open(new CameraMenu(p,camera));
                     }
                     case SHIFT_LEFT, SHIFT_RIGHT -> {
-                        CameraGroup g = computer.getCameraGroup();
-                        int bound = click == ClickType.SHIFT_LEFT ? 0 : g.getCameras().size()-1;
+                        int bound = click == ClickType.SHIFT_LEFT ? 0 : computer.getCameras().size()-1;
                         int inc = click == ClickType.SHIFT_LEFT ? -1 : 1;
 
-                        int index = g.getCameras().indexOf(camera);
+                        int index = computer.getCameras().indexOf(camera);
                         if (index == bound) return;
-                        g.removeCamera(camera);
-                        g.getCameras().add(index+inc,camera);
+                        computer.removeCamera(camera);
+                        computer.getCameras().add(index+inc,camera);
                         open();
                     }
                     case DROP -> {
                         if (!canEdit()) return;
-                        computer.getCameraGroup().removeCamera(camera);
-                        p.sendMessage(lang.GROUP_REMOVE_CAMERA);
+                        computer.removeCamera(camera);
+                        p.sendMessage(lang.COMPUTER_CAMERA_REMOVED);
                         open();
                     }
                 }

@@ -30,20 +30,6 @@ cameras:
   view-count: '&aВ данный момент %count% игроков просматривают камеру &2%cameraID%&a!'
   deleted-because-bugged: '&cИзвините, но эта камера была ошибочной, поэтому мы удалили ее!'
   item-name: '&9Камера'
-groups:
-  create: '&aГруппа создана!'
-  delete: '&aГруппа удалена!'
-  already-exists: '&cТакая группа уже существует!'
-  not-found: '&cТакая группа не найдена!'
-  id: '&eID группы: %groupID%'
-  owner-changed: '&6Владелец группы установлен на &a%player%&6!'
-  player-already-owner: '&cЭтот игрок уже является владельцем этой группы!'
-  renamed: '&aГруппа переименована в ''%groupID%''!'
-  camera-already-added: '&cЭта камера уже добавлена в эту группу!'
-  camera-added: '&aКамера добавлена в группу!'
-  remove-camera: '&aКамера удалена из этой группы!'
-  does-not-contain-camera: '&cЭта группа не содержит камеры с таким ID!'
-  assigned-to-computer: '&aГруппа назначена для этого компьютера!'
 computers:
   create: '&aКомпьютер создан!'
   delete: '&cКомпьютер удален!'
@@ -55,6 +41,11 @@ computers:
   change-no-perms: '&cВы можете редактировать только свои собственные компьютеры!'
   not-allowed: '&cУ вас нет разрешения открывать этот компьютер!'
   item-name: '&9Компьютер'
+  camera:
+    added: '&aКамера добавлена в компьютером!'
+    already-added: '&cЭта камера уже добавлена в эту компьютером!'
+    removed: '&aКамера удалена из этой компьютеры!'
+    not-found: '&cЭта компьютера не содержит камеры с таким ID!'
 gui:
   camera:
     title: '&eКамера %cameraID%'
@@ -65,7 +56,6 @@ gui:
   computer:
     default: '&eCCTV (страница: %page%)'
     options-item: '&eНастройки'
-    set-group: '&eУстановить группу камеры (страница: %page%)'
     add-player: '&aДобавить игрока (страница: %page%)'
     remove-player: '&cУдалить игрока (страница: %page%)'
     default-item:
@@ -75,7 +65,6 @@ gui:
       exit: '&4Выйти'
       back: '&8Назад'
     options:
-      set-camera-group: '&aУстановить группу камеры'
       add-player: '&aДобавить игрока'
       remove-player: '&cУдалить игрока'
 camera-view:

@@ -25,9 +25,9 @@ public class ViewersEvents implements Listener {
     private final ViewerManager vm;
 
     public ViewersEvents() {
-        lang = CCTV.get().getLang();
-        cm = CCTV.get().getCameras();
-        vm = CCTV.get().getViewers();
+        lang = CCTV.getInstance().getLang();
+        cm = CCTV.getInstance().getCameras();
+        vm = CCTV.getInstance().getViewers();
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -42,14 +42,14 @@ public class ViewersEvents implements Listener {
         if (!vm.exists(player)) return;
 
         player.sendTitle(" ", lang.CAMERA_DISCONNECTING, 0, vm.TIME_TO_DISCONNECT*20, 0);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(CCTV.get(), () -> cm.unviewCamera(player),  vm.TIME_TO_DISCONNECT * 20L);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(CCTV.getInstance(), () -> cm.disconnectFromCamera(player),  vm.TIME_TO_DISCONNECT * 20L);
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent e) {
         Player p = e.getPlayer();
-        if (vm.exists(p)) vm.viewersQuit.put(p.getUniqueId(), CCTV.get().getNMS().oldLoc.get(p));
-        cm.unviewCamera(p);
+        if (vm.exists(p)) vm.viewersQuit.put(p.getUniqueId(), CCTV.getInstance().getNms().oldLoc.get(p));
+        cm.disconnectFromCamera(p);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -112,9 +112,9 @@ public class ViewersEvents implements Listener {
     @EventHandler
     public void onInteract(PlayerInteractEvent e) {
         Player p = e.getPlayer();
-        if (!CCTV.get().getViewers().exists(p)) return;
+        if (!CCTV.getInstance().getViewers().exists(p)) return;
         e.setCancelled(true);
         if (e.getHand() != EquipmentSlot.OFF_HAND)
-            CCTV.get().getViewers().onCameraItems(p, e.getItem());
+            CCTV.getInstance().getViewers().onCameraItems(p, e.getItem());
     }
 }

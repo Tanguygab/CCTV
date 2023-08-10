@@ -2,7 +2,7 @@ package io.github.tanguygab.cctv.managers;
 
 import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.entities.Camera;
-import io.github.tanguygab.cctv.entities.CameraGroup;
+import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.utils.Heads;
 import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.*;
@@ -32,11 +32,12 @@ public class CameraManager extends Manager<Camera> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void load() {
         EXPERIMENTAL_VIEW = cctv.getConfiguration().getBoolean("camera.experimental_view",false);
         ZOOM_ITEM = cctv.getConfiguration().getBoolean("camera.zoom_item",true);
 
-        if (EXPERIMENTAL_VIEW && !cctv.getNMS().isNMSSupported()) {
+        if (EXPERIMENTAL_VIEW && !cctv.getNms().isNMSSupported()) {
             EXPERIMENTAL_VIEW = false;
             cctv.getLogger().severe("Experimental View is enabled but your server doesn't support it! Switching back to normal view.");
         }
@@ -92,8 +93,8 @@ public class CameraManager extends Manager<Camera> {
             cam.getCreeper().remove();
         player.sendMessage(lang.CAMERA_DELETE);
         player.sendMessage(lang.getCameraID(cam.getId()));
-        cctv.getViewers().values().stream().filter(p -> p.getCamera() == cam).forEach(p -> unviewCamera(Bukkit.getPlayer(p.getId())));
-        cctv.getCameraGroups().values().forEach(g->g.removeCamera(cam));
+        cctv.getViewers().values().stream().filter(viewer -> viewer.getCamera() == cam).forEach(p -> disconnectFromCamera(Bukkit.getPlayer(p.getId())));
+        cctv.getComputers().values().forEach(computer->computer.removeCamera(cam));
         delete(cam.getId());
         if (player.getGameMode() == GameMode.SURVIVAL) player.getInventory().addItem(cctv.getCustomHeads().get(cam.getSkin()));
     }
@@ -128,7 +129,7 @@ public class CameraManager extends Manager<Camera> {
             }
         }
         Camera camera = new Camera(id,owner,loc,enabled,shown,as,creeper,skin);
-        map.put(id,camera);
+        put(id,camera);
     }
 
     public void create(String id, Location loc, Player player, String skin) {
@@ -140,7 +141,7 @@ public class CameraManager extends Manager<Camera> {
             player.sendMessage(lang.CAMERA_ALREADY_EXISTS);
             return;
         }
-        if (id == null) id = String.valueOf(Utils.getRandomNumber(999999, "camera"));
+        if (id == null) id = String.valueOf(Utils.getRandomNumber(999999, this));
 
         create(id,player.getUniqueId().toString(),loc,true,true,skin,true);
         player.sendMessage(lang.CAMERA_CREATE);
@@ -148,7 +149,7 @@ public class CameraManager extends Manager<Camera> {
     }
 
 
-    public void unviewCamera(Player player) {
+    public void disconnectFromCamera(Player player) {
         if (player == null) return;
         if (!cctv.getViewers().exists(player)) return;
         cctv.getViewers().delete(player);
@@ -156,20 +157,19 @@ public class CameraManager extends Manager<Camera> {
 
     public List<String> get(Player p) {
         List<String> cameras = new ArrayList<>();
-        for (Camera camera : values()) {
+        for (Camera camera : values())
             if (camera.getOwner().equals(p.getUniqueId().toString()) || p.hasPermission("cctv.camera.other"))
                 cameras.add(camera.getId());
-        }
         return cameras;
     }
     public Camera get(Location loc) {
-        for (Camera cam : values()) {
-            if (cam.getLocation().equals(loc)) return cam;
-        }
+        for (Camera cam : values())
+            if (cam.getLocation().equals(loc))
+                return cam;
         return null;
     }
 
-    public void viewCamera(Player p, Camera cam, CameraGroup group) {
+    public void viewCamera(Player p, Camera cam, Computer computer) {
         if (cam == null) {
             p.sendMessage(lang.CAMERA_NOT_FOUND);
             return;
@@ -191,8 +191,8 @@ public class CameraManager extends Manager<Camera> {
         p.sendTitle(" ", lang.CAMERA_CONNECTING, 0, vm.TIME_TO_CONNECT*20, 0);
         connecting.add(p);
         Bukkit.getScheduler().scheduleSyncDelayedTask(cctv,  () -> {
-            vm.createPlayer(p, cam, group);
-            cctv.getNMS().setCameraPacket(p,cam.getArmorStand());
+            vm.createPlayer(p, cam, computer);
+            cctv.getNms().setCameraPacket(p,cam.getArmorStand());
             connecting.remove(p);
         }, vm.TIME_TO_CONNECT * 20L);
     }
@@ -206,7 +206,7 @@ public class CameraManager extends Manager<Camera> {
             p.sendMessage(lang.CAMERA_TOO_FAR);
             return;
         }
-        cctv.getNMS().setCameraPacket(p,cam.getArmorStand());
+        cctv.getNms().setCameraPacket(p,cam.getArmorStand());
     }
 
     public void rotateHorizontally(Player p, Camera camera, int degrees) {
@@ -250,7 +250,7 @@ public class CameraManager extends Manager<Camera> {
             case NORTH -> setLoc(loc,0.5D,-0.29D,1.24D,180.0F);
             case SOUTH -> setLoc(loc,0.5D,1.29D,1.24D,0.0F);
         }
-        CCTV.get().getCameras().create(null, loc, p,CCTV.get().getCustomHeads().get(item));
+        create(null, loc, p,CCTV.getInstance().getCustomHeads().get(item));
     }
 
     private void setLoc(Location loc, double x, double z, double y, float yaw) {

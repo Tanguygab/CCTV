@@ -68,34 +68,11 @@ public class LanguageFile extends YamlConfigurationFile {
     public final String CAMERA_MOVED = get("cameras.moved","&aCamera moved to your location!");
     private final String CAMERA_VIEW_COUNT = get("cameras.view-count","&aThere are currently &2%count%&a players watching camera &2%cameraID%&a!");
     public String getCameraViewCount(int count, String id) {
-        return CAMERA_VIEW_COUNT.replace("%count%",count+"").replace("%cameraID%",id);
+        return CAMERA_VIEW_COUNT.replace("%count%", String.valueOf(count)).replace("%cameraID%",id);
     }
     public final String CAMERA_DELETED_BECAUSE_BUGGED = get("cameras.deleted-because-bugged","&cSorry but this camera was bugged, so we removed it!");
     public final String CAMERA_ITEM_NAME = get("cameras.item-name", "&9Camera");
     public final String CAMERA_TOO_FAR = get("cameras.too-far","&cThis camera is too far away from you!");
-
-    public final String GROUP_CREATE = get("groups.create","&aGroup created!");
-    public final String GROUP_DELETE = get("groups.delete","&aGroup deleted!");
-    public final String GROUP_ALREADY_EXISTS = get("groups.already-exists","&cThis group already exists!");
-    public final String GROUP_NOT_FOUND = get("groups.not-found","&cThis group doesn't exist!");
-    private final String GROUP_ID = get("groups.id","&eGroup ID: %groupID%");
-    public String getGroupID(String id) {
-        return GROUP_ID.replace("%groupID%",id);
-    }
-    private final String GROUP_OWNER_CHANGED = get("groups.owner-changed","&6Group owner is set to &a%player%&6!");
-    public String getGroupOwnerChanged(String player) {
-        return GROUP_OWNER_CHANGED.replace("%player%",player);
-    }
-    public final String GROUP_PLAYER_ALREADY_OWNER = get("groups.player-already-owner","&cThis player is already the owner of this group!");
-    private final String GROUP_RENAMED = get("groups.renamed","&aGroup renamed to '%groupID%'!");
-    public String getGroupRenamed(String id) {
-        return GROUP_RENAMED.replace("%groupID%",id);
-    }
-    public final String GROUP_CAMERA_ALREADY_ADDED = get("groups.camera-already-added","&cThis camera has already been added to this group!");
-    public final String GROUP_CAMERA_ADDED = get("groups.camera-added","&aCamera added to the group!");
-    public final String GROUP_REMOVE_CAMERA = get("groups.remove-camera","&aCamera removed from this group!");
-    public final String GROUP_DOES_NOT_CONTAIN_CAMERA = get("groups.does-not-contain-camera","&cThis group does not contain a camera with that ID!");
-    public final String GROUP_ASSIGNED_TO_COMPUTER = get("groups.assigned-to-computer","&aGroup assigned to this PC!");
 
     public final String COMPUTER_CREATE = get("computers.create", "&aComputer created!");
     public final String COMPUTER_DELETE = get("computers.delete", "&cComputer deleted!");
@@ -114,6 +91,11 @@ public class LanguageFile extends YamlConfigurationFile {
     public final String COMPUTER_NOT_ALLOWED = get("computers.not-allowed", "&cYou aren't allowed to open this computer!");
     public final String COMPUTER_ITEM_NAME = get("computers.item-name", "&9Computer");
     public final String COMPUTER_ITEM_NAME_ADMIN = get("computers.item-name-creative", "&dAdmin Computer");
+    public final String COMPUTER_CAMERA_ADDED = get("computers.camera.added","&aCamera added to the computer!");
+    public final String COMPUTER_CAMERA_ALREADY_ADDED = get("computers.camera.already-added","&cThis camera has already been added to this computer!");
+    public final String COMPUTER_CAMERA_REMOVED = get("computers.camera.removed","&aCamera removed from this computer!");
+    public final String COMPUTER_CAMERA_NOT_FOUND = get("computers.camera.not-found","&cThis computer does not contain a camera with that ID!");
+
 
     private final String GUI_CAMERA = get("gui.camera.title", "&eCamera %cameraID%");
     public String getGuiCamera(String id) {
@@ -132,10 +114,6 @@ public class LanguageFile extends YamlConfigurationFile {
         return GUI_COMPUTER_DEFAULT.replace("%page%",page);
     }
     public final String GUI_COMPUTER_OPTIONS_ITEM = get("gui.computer.options-item", "&eOptions");
-    public final String GUI_COMPUTER_SET_GROUP = get("gui.computer.set-group", "&eSet camera group (page: %page%)");
-    public String getGuiComputerSetGroup(String page) {
-        return GUI_COMPUTER_SET_GROUP.replace("%page%",page);
-    }
     private final String GUI_COMPUTER_REMOVE_PLAYER = get("gui.computer.remove-player", "&cRemove player (page: %page%)");
     public String getGuiComputerRemovePlayer(String page) {
         return GUI_COMPUTER_REMOVE_PLAYER.replace("%page%",page);
@@ -145,15 +123,14 @@ public class LanguageFile extends YamlConfigurationFile {
         return GUI_COMPUTER_ADD_PLAYER.replace("%page%",page);
     }
     private final String GUI_COMPUTER_ADD_CAMERA = get("gui.computer.add-camera", "&aAdd camera (page: %page%)");
-    public String getGuiComputerAddCamera(String page) {
-        return GUI_COMPUTER_ADD_CAMERA.replace("%page%",page);
+    public String getGuiComputerAddCamera(int page) {
+        return GUI_COMPUTER_ADD_CAMERA.replace("%page%",String.valueOf(page));
     }
     public final String GUI_COMPUTER_DEFAULT_ITEM_OPTION = get("gui.computer.default-item.option", "&6Options");
     public final String GUI_COMPUTER_DEFAULT_ITEM_NEXT_PAGE = get("gui.computer.default-item.next-page", "&8Next Page");
     public final String GUI_COMPUTER_DEFAULT_ITEM_PREVIOUS_PAGE = get("gui.computer.default-item.previous-page", "&8Previous Page");
     public final String GUI_COMPUTER_DEFAULT_ITEM_EXIT = get("gui.computer.default-item.exit", "&4Exit");
     public final String GUI_COMPUTER_DEFAULT_ITEM_BACK = get("gui.computer.default-item.back", "&8Back");
-    public final String GUI_COMPUTER_OPTIONS_SET_CAMERA_GROUP = get("gui.computer.options.set-camera-group", "&aSet camera group");
     public final String GUI_COMPUTER_OPTIONS_ADD_PLAYER = get("gui.computer.options.add-player", "&aAdd player");
 
     public final String CAMERA_VIEW_OPTION = get("camera-view.option", "&eOptions");
@@ -166,7 +143,7 @@ public class LanguageFile extends YamlConfigurationFile {
     public final String CAMERA_VIEW_EXIT = get("camera-view.exit", "&4Exit");
     private final String CAMERA_VIEW_ZOOM = get("camera-view.zoom", "&6Zoom: &a%level%x");
     public String getCameraViewZoom(int zoom) {
-        return CAMERA_VIEW_ZOOM.replace("%level%",zoom+"");
+        return CAMERA_VIEW_ZOOM.replace("%level%", String.valueOf(zoom));
     }
     public final String CAMERA_VIEW_OPTIONS_TITLE = get("camera-view.options.title", "&eSettings");
     public final String CAMERA_VIEW_OPTIONS_NIGHTVISION_OFF = get("camera-view.options.nightvision-off", "&6Night-Vision: &4Off");

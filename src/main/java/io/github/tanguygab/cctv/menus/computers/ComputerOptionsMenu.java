@@ -1,7 +1,6 @@
 package io.github.tanguygab.cctv.menus.computers;
 
 import io.github.tanguygab.cctv.entities.Computer;
-import io.github.tanguygab.cctv.listeners.Listener;
 import io.github.tanguygab.cctv.menus.ComputerMenu;
 import io.github.tanguygab.cctv.utils.Heads;
 import org.bukkit.Bukkit;
@@ -27,9 +26,8 @@ public class ComputerOptionsMenu extends ComputerMenu {
 
         inv.setItem(0, Heads.COMPUTER_BACK.get());
 
-        inv.setItem(2, getItem(Heads.CAMERA.get(),"&aAdd Cameras"));
+        inv.setItem(3, getItem(Heads.CAMERA.get(),"&aAdd Cameras"));
         setPublicItem();
-        setGroupItem();
 
         p.openInventory(inv);
     }
@@ -45,19 +43,6 @@ public class ComputerOptionsMenu extends ComputerMenu {
                 ChatColor.YELLOW+"Shift-Left to toggle"
         ));
         item.setItemMeta(meta);
-        inv.setItem(3, item);
-    }
-
-    private void setGroupItem() {
-        ItemStack item = Heads.COMPUTER_SET_CAMGROUP.get();
-        ItemMeta meta = item.getItemMeta();
-        meta.setLore(List.of("",
-                ChatColor.GOLD+"Current Group: "+ChatColor.YELLOW+(computer.getCameraGroup() == null ? "None" : computer.getCameraGroup().getId()),
-                "",
-                ChatColor.YELLOW+"Click to set a group",
-                ChatColor.YELLOW+"Drop to remove current")
-        );
-        item.setItemMeta(meta);
         inv.setItem(4, item);
     }
 
@@ -65,8 +50,8 @@ public class ComputerOptionsMenu extends ComputerMenu {
     public void onClick(ItemStack item, int slot, ClickType click) {
         switch (slot) {
             case 0 -> open(new ComputerMainMenu(p,computer));
-            case 2 -> open(new ComputerAddCamerasMenu(p,computer));
-            case 3 -> {
+            case 3 -> open(new ComputerAddCamerasMenu(p,computer));
+            case 4 -> {
                 switch (click) {
                     case LEFT -> open(new ComputerAddPlayersMenu(p,computer));
                     case RIGHT -> open(new ComputerRemovePlayerMenu(p,computer));
@@ -75,14 +60,6 @@ public class ComputerOptionsMenu extends ComputerMenu {
                         setPublicItem();
                     }
                 }
-            }
-            case 4 -> {
-                if (click == ClickType.DROP || click == ClickType.CONTROL_DROP) {
-                    computer.setCameraGroup(null);
-                    setGroupItem();
-                    return;
-                }
-                open(new ComputerSetGroupMenu(p,computer));
             }
         }
     }

@@ -10,15 +10,15 @@ public class Viewer extends ID {
 
     private final ItemStack[] inv;
     private Camera camera;
-    private CameraGroup group;
+    private Computer computer;
     private boolean nightVision;
     private boolean canExit;
 
-    public Viewer(Player p, Camera camera, CameraGroup group) {
-        super(p.getUniqueId().toString(),CCTV.get().getViewers());
+    public Viewer(Player p, Camera camera, Computer computer) {
+        super(p.getUniqueId().toString(),CCTV.getInstance().getViewers());
         inv = p.getInventory().getContents().clone();
         this.camera = camera;
-        this.group = group;
+        this.computer = computer;
         canExit = true;
     }
 
@@ -36,19 +36,20 @@ public class Viewer extends ID {
         if (nv) setNightVision(true);
     }
 
-    public CameraGroup getGroup() {
-        return group;
+    public Computer getComputer() {
+        return computer;
     }
-    public void setGroup(CameraGroup group) {
-        this.group = group;
+    public void setComputer(Computer computer) {
+        this.computer = computer;
     }
 
     public boolean hasNightVision() {
         return nightVision;
     }
+    @SuppressWarnings("UnstableApiUsage")
     public void setNightVision(boolean nightVision) {
         this.nightVision = nightVision;
-        CCTV cctv = CCTV.get();
+        CCTV cctv = CCTV.getInstance();
         Player p = cctv.getViewers().get(this);
         if (!cctv.getCameras().EXPERIMENTAL_VIEW) {
             if (nightVision) p.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION,1000000,0));
@@ -57,11 +58,11 @@ public class Viewer extends ID {
         }
         if (nightVision) {
             p.hideEntity(cctv, camera.getArmorStand());
-            cctv.getNMS().setCameraPacket(p,camera.getCreeper());
+            cctv.getNms().setCameraPacket(p,camera.getCreeper());
             return;
         }
         p.showEntity(cctv, camera.getArmorStand());
-        cctv.getNMS().setCameraPacket(p, camera.getArmorStand());
+        cctv.getNms().setCameraPacket(p, camera.getArmorStand());
     }
 
     public void setCanExit(boolean canExit) {

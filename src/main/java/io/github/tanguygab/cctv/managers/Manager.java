@@ -16,7 +16,7 @@ public abstract class Manager<T> {
 
     protected Map<String,T> map = new HashMap<>();
 
-    protected CCTV cctv = CCTV.get();
+    protected CCTV cctv = CCTV.getInstance();
     public ConfigurationFile file;
     protected LanguageFile lang = cctv.getLang();
 
@@ -43,6 +43,7 @@ public abstract class Manager<T> {
     public List<T> values() {
         return new ArrayList<>(map.values());
     }
+    @SuppressWarnings("unchecked")
     public void put(String id, Object element) {
         map.put(id, (T) element);
     }

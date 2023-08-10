@@ -6,7 +6,6 @@ import dev.lone.itemsadder.api.Events.ItemsAdderLoadDataEvent;
 import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.managers.ComputerManager;
 import io.github.tanguygab.cctv.menus.CCTVMenu;
-import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,7 +17,7 @@ public class ItemsAdderEvents implements Listener {
     private final String mat;
 
     public ItemsAdderEvents(ComputerManager cpm, String mat) {
-        cctv = CCTV.get();
+        cctv = CCTV.getInstance();
         this.cpm = cpm;
         this.mat = mat;
     }

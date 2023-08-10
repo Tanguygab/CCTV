@@ -2,7 +2,7 @@ package io.github.tanguygab.cctv.managers;
 
 import io.github.tanguygab.cctv.config.ConfigurationFile;
 import io.github.tanguygab.cctv.entities.Camera;
-import io.github.tanguygab.cctv.entities.CameraGroup;
+import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.entities.Viewer;
 import io.github.tanguygab.cctv.menus.CCTVMenu;
 import io.github.tanguygab.cctv.menus.ViewerOptionsMenu;
@@ -48,10 +48,10 @@ public class ViewerManager extends Manager<Viewer> {
     }
 
     public void unload() {
-        values().forEach(v-> cctv.getCameras().unviewCamera(get(v)));
+        values().forEach(v-> cctv.getCameras().disconnectFromCamera(get(v)));
         viewersQuit.forEach((uuid,loc)->{
             Map<String,Object> locMap = new HashMap<>();
-            locMap.put("world",loc.getWorld()+"");
+            locMap.put("world",loc.getWorld() != null ? loc.getWorld().getName() : "");
             locMap.put("x",loc.getX());
             locMap.put("y",loc.getY());
             locMap.put("z",loc.getZ());
@@ -61,9 +61,10 @@ public class ViewerManager extends Manager<Viewer> {
         });
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     public void delete(Player p) {
         Viewer viewer = get(p);
-        cctv.getNMS().setCameraPacket(p,p);
+        cctv.getNms().setCameraPacket(p,p);
         p.getInventory().setContents(viewer.getInv());
         if (!cm.EXPERIMENTAL_VIEW)
             for (Player online : Bukkit.getOnlinePlayers()) online.showPlayer(cctv,p);
@@ -86,27 +87,27 @@ public class ViewerManager extends Manager<Viewer> {
         return exists(p.getUniqueId().toString());
     }
 
-    public void createPlayer(Player p, Camera cam, CameraGroup group) {
-        Viewer viewer = new Viewer(p,cam,group);
-        map.put(viewer.getId(),viewer);
+    public void createPlayer(Player p, Camera cam, Computer computer) {
+        Viewer viewer = new Viewer(p,cam,computer);
+        put(viewer.getId(),viewer);
 
         p.setCanPickupItems(false);
-        giveViewerItems(p,group);
+        giveViewerItems(p,computer);
 
         if (!cm.EXPERIMENTAL_VIEW)
             for (Player online : Bukkit.getOnlinePlayers()) online.hidePlayer(cctv,p);
     }
 
-    private void giveViewerItems(Player p, CameraGroup group) {
+    private void giveViewerItems(Player p, Computer computer) {
         PlayerInventory inv = p.getInventory();
         inv.clear();
         if (GIWP || p.hasPermission("cctv.view.zoom") || p.hasPermission("cctv.view.nightvision") || p.hasPermission("cctv.view.spot"))
             inv.setItem(0, CCTVMenu.getItem(Heads.OPTIONS,lang.CAMERA_VIEW_OPTION));
         if (GIWP || p.hasPermission("cctv.view.move")) {
             inv.setItem(3, Heads.ROTATE_LEFT.get());
-            inv.setItem(group != null && group.getCameras().size() > 1 ? 4 : 5, Heads.ROTATE_RIGHT.get());
+            inv.setItem(computer != null && computer.getCameras().size() > 1 ? 4 : 5, Heads.ROTATE_RIGHT.get());
         }
-        if ((GIWP || p.hasPermission("cctv.view.switch")) && group != null && group.getCameras().size() > 1) {
+        if ((GIWP || p.hasPermission("cctv.view.switch")) && computer != null && computer.getCameras().size() > 1) {
             inv.setItem(6, Heads.CAM_PREVIOUS.get());
             inv.setItem(7, Heads.CAM_NEXT.get());
         }
@@ -121,7 +122,7 @@ public class ViewerManager extends Manager<Viewer> {
         String itemName = item.getItemMeta().getDisplayName();
         if (itemName.equals(lang.CAMERA_VIEW_EXIT)) {
             p.sendTitle(" ", cctv.getLang().CAMERA_DISCONNECTING, 0, TIME_TO_DISCONNECT*20, 0);
-            Bukkit.getScheduler().scheduleSyncDelayedTask(cctv, () -> cm.unviewCamera(p),  TIME_TO_DISCONNECT * 20L);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(cctv, () -> cm.disconnectFromCamera(p),  TIME_TO_DISCONNECT * 20L);
             return;
         }
         if (itemName.equals(lang.CAMERA_VIEW_OPTION)) cctv.openMenu(p,new ViewerOptionsMenu(p));
@@ -137,17 +138,17 @@ public class ViewerManager extends Manager<Viewer> {
             return;
         }
         Viewer viewer = get(p);
-        CameraGroup group = viewer.getGroup();
-        if (group == null) {
+        Computer computer = viewer.getComputer();
+        if (computer == null) {
             p.sendMessage(lang.SWITCHING_NOT_POSSIBLE);
             return;
         }
-        if (group.getCameras().size() <= 1) {
+        if (computer.getCameras().size() <= 1) {
             p.sendMessage(lang.NO_CAMERAS);
             return;
         }
 
-        List<Camera> cams = new ArrayList<>(group.getCameras());
+        List<Camera> cams = new ArrayList<>(computer.getCameras());
         if (previous) Collections.reverse(cams);
 
         Camera currentCam = viewer.getCamera();

@@ -33,20 +33,6 @@ cameras:
   deleted-because-bugged: "&cSorry but this camera was bugged, so we removed it!"
   item-name: "&9Camera"
   too-far: "&cThis camera is too far away from you!"
-groups:
-  create: "&aGroup created!"
-  delete: "&aGroup deleted!"
-  already-exists: "&cThis group already exists!"
-  not-found: "&cThis group doesn't exist!"
-  id: "&eGroup ID: %groupID%"
-  owner-changed: "&6Group owner is set to &a%player%&6!"
-  player-already-owner: "&cThis player is already the owner of this group!"
-  renamed: "&aGroup renamed to '%groupID%'!"
-  camera-already-added: "&cThis camera has already been added to this group!"
-  camera-added: "&aCamera added to the group!"
-  remove-camera: "&aCamera removed from this group!"
-  does-not-contain-camera: "&cThis group does not contain a camera with that ID!"
-  assigned-to-computer: "&aGroup assigned to this PC!"
 computers:
   create: "&aComputer created!"
   delete: "&cComputer deleted!"
@@ -59,6 +45,11 @@ computers:
   not-allowed: "&cYou aren't allowed to open this computer!"
   item-name: "&9Computer"
   item-name-admin: "&dAdmin Computer"
+  camera:
+    added: "&aCamera added to the computer!"
+    already-added: "&cThis camera has already been added to this computer!"
+    removed: "&aCamera removed from this computer!"
+    not-found: "&cThis computer does not contain a camera with that ID!"
 gui:
   camera:
     title: "&eCamera %cameraID%"
@@ -69,7 +60,6 @@ gui:
   computer:
     default: "&eCCTV (page: %page%)"
     options-item: "&eOptions"
-    set-group: "&eSet camera group (page: %page%)"
     default-item:
       option: "&6Options"
       next-page: "&8Next Page"
@@ -77,7 +67,6 @@ gui:
       exit: "&4Exit"
       back: "&8Back"
     options:
-      set-camera-group: "&aSet camera group"
       add-player: "&aAdd player"
       remove-player: "&cRemove player"
 camera-view:
