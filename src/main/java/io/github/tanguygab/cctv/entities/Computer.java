@@ -27,7 +27,7 @@ public class Computer extends ID {
         setPublic(publik);
         this.allowedPlayers = allowedPlayers;
         set("allowed-players", allowedPlayers.isEmpty() ? null : allowedPlayers);
-        set("creative",this.admin = admin);
+        set("admin",this.admin = admin);
     }
 
     @Override
