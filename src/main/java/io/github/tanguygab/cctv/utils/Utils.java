@@ -4,6 +4,8 @@ import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.entities.ID;
 import io.github.tanguygab.cctv.managers.Manager;
 import org.bukkit.*;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.NumberConversions;
 
 import java.util.List;
@@ -48,6 +50,11 @@ public class Utils {
         float pitch = (float)(double) config.get("pitch");
         float yaw = (float)(double) config.get("yaw");
         return new Location(world, x, y, z, yaw, pitch);
+    }
+
+    public static void giveOrDrop(Player player, ItemStack item) {
+        if (!player.getInventory().addItem(item).isEmpty())
+            player.getWorld().dropItem(player.getLocation(),item);
     }
 
 }
