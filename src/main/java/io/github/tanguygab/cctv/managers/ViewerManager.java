@@ -32,6 +32,10 @@ public class ViewerManager extends Manager<Viewer> {
     private final CameraManager cm = cctv.getCameras();
     public final Map<UUID, Location> viewersQuit = new HashMap<>();
 
+    public ViewerManager() {
+        super("userdata.yml");
+    }
+
     @Override
     public void load() {
         ConfigurationFile config = cctv.getConfiguration();
@@ -42,9 +46,9 @@ public class ViewerManager extends Manager<Viewer> {
         TIME_FOR_SPOT = config.getInt("viewers.timed-actions.spot",5);
         blockedCmds.addAll(config.getStringList("viewers.blocked-commands",List.of()));
 
-        Map<String,Map<String,Object>> loggedOutViewers = config.getConfigurationSection("logged-out-viewers");
+        Map<String,Map<String,Object>> loggedOutViewers = file.getConfigurationSection("logged-out-viewers");
         loggedOutViewers.forEach((uuid,loc)->viewersQuit.put(UUID.fromString(uuid),Utils.loadLocation(null,loc)));
-        cctv.getConfiguration().set("logged-out-viewers",null);
+        file.set("logged-out-viewers",null);
     }
 
     public void unload() {
@@ -57,7 +61,7 @@ public class ViewerManager extends Manager<Viewer> {
             locMap.put("z",loc.getZ());
             locMap.put("pitch",loc.getPitch());
             locMap.put("yaw",loc.getYaw());
-            cctv.getConfiguration().set("logged-out-viewers."+uuid,locMap);
+            file.set("logged-out-viewers."+uuid,locMap);
         });
     }
 

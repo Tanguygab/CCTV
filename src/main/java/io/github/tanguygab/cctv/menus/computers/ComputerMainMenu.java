@@ -26,8 +26,9 @@ public class ComputerMainMenu extends ComputerMenu {
     public void open() {
         inv = Bukkit.getServer().createInventory(null, 54, lang.getGuiComputerDefault(String.valueOf(page)));
 
-        fillSlots(9,18);
+        fillSlots(18);
         inv.setItem(0, getItem(Heads.OPTIONS,lang.GUI_COMPUTER_DEFAULT_ITEM_OPTION));
+        inv.setItem(9, getItem(Material.COMPASS,(showCoords() ? ChatColor.GREEN : ChatColor.RED)+"Toggle Camera Coordinates"));
         inv.setItem(27, Heads.MENU_NEXT.get());
         inv.setItem(36, Heads.MENU_PREVIOUS.get());
         inv.setItem(45, getItem(Heads.EXIT,lang.GUI_COMPUTER_DEFAULT_ITEM_EXIT));
@@ -42,15 +43,19 @@ public class ComputerMainMenu extends ComputerMenu {
         p.openInventory(inv);
     }
 
+    private boolean showCoords() {
+        return !cctv.hasToggledComputerCoords(p);
+    }
+
     private void loadCamera(Camera cam) {
-        ItemStack item = getItem(cctv.getCustomHeads().get(cam.getSkin()), "&eCamera: " + cam.getId());
+        ItemStack item = getItem(cctv.getCustomHeads().get(cam.getSkin()), "&eCamera: &6" + cam.getId());
         Location loc = cam.getLocation();
         ItemMeta meta = item.getItemMeta();
         assert meta != null;
-        String lore = "\n&6X: &7"+ posFormat.format(loc.getX())
+        String lore = (showCoords() ? "&6X: &7"+ posFormat.format(loc.getX())
                 + " &6Y: &7"+ posFormat.format(loc.getY())
-                + " &6Z: &7"+ posFormat.format(loc.getZ())
-                + "\n\n&eLeft-Click to View"
+                + " &6Z: &7"+ posFormat.format(loc.getZ())+"\n" : "")
+                + "\n&eLeft-Click to View"
                 + "\n&eRight-Click to Edit"
                 + "\n\n&eShift-Right to go down"
                 + "\n&eShift-Left to go up"
@@ -71,6 +76,10 @@ public class ComputerMainMenu extends ComputerMenu {
             case 0 -> {
                 if (canEdit()) open(new ComputerOptionsMenu(p,computer));
                 else p.sendMessage(lang.COMPUTER_CHANGE_NO_PERMS);
+            }
+            case 9 -> {
+                cctv.toggleComputerCoords(p);
+                open();
             }
             case 27,36 -> setPage(slot == 27 ? page+1 : page-1);
             case 45 -> p.closeInventory();

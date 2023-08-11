@@ -34,6 +34,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +56,8 @@ public class CCTV extends JavaPlugin {
     @Getter private ComputerManager computers;
     @Getter private ViewerManager viewers;
 
+    private final List<String> toggledCoords = new ArrayList<>();
+
     @Override
     public void onEnable() {
         instance = this;
@@ -67,6 +70,8 @@ public class CCTV extends JavaPlugin {
             cameras = new CameraManager();
             computers = new ComputerManager();
             viewers = new ViewerManager();
+
+            viewers.file.getStringList("toggled-computer-coords", new ArrayList<>());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -113,6 +118,7 @@ public class CCTV extends JavaPlugin {
 
         if (expansion != null) expansion.unregister();
         cameras.unload();
+        viewers.file.set("toggled-computer-coords", toggledCoords);
         viewers.unload();
         Listener.openedMenus.forEach((p,inv)->p.closeInventory());
         getLogger().info("CCTV Plugin has been successfully Disabled!");
@@ -165,6 +171,17 @@ public class CCTV extends JavaPlugin {
     public void openMenu(Player p, CCTVMenu menu) {
         Listener.openedMenus.put(p,menu);
         menu.open();
+    }
+
+    public void toggleComputerCoords(Player player) {
+        String uuid = player.getUniqueId().toString();
+        if (toggledCoords.contains(uuid))
+            toggledCoords.remove(uuid);
+        else toggledCoords.add(uuid);
+    }
+
+    public boolean hasToggledComputerCoords(Player player) {
+        return toggledCoords.contains(player.getUniqueId().toString());
     }
 
     @Override
