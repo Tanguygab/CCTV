@@ -2,8 +2,12 @@ package io.github.tanguygab.cctv.entities;
 
 import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.config.LanguageFile;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
@@ -14,13 +18,14 @@ import java.util.UUID;
 
 public class Camera extends ID {
 
-    private String owner;
-    private Location loc;
-    private boolean enabled;
-    private boolean shown;
-    private String skin;
-    private ArmorStand armorStand;
-    private Creeper creeper;
+    @Getter private String owner;
+    @Getter private Location location;
+    @Getter private boolean enabled;
+    @Getter private boolean shown;
+    @Getter private String skin;
+    @Getter private ArmorStand armorStand;
+    @Getter private Creeper creeper;
+    @Getter private BossBar bossbar;
 
     public Camera(String name, String owner, Location loc, boolean enabled, boolean shown, ArmorStand armorStand, Creeper creeper, String skin) {
         super(name,CCTV.getInstance().getCameras());
@@ -31,12 +36,14 @@ public class Camera extends ID {
         setEnabled(enabled);
         setShown(shown);
         setSkin(skin);
+        if (CCTV.getInstance().getViewers().BOSSBAR)
+            this.bossbar = Bukkit.getServer().createBossBar(name, BarColor.BLUE, BarStyle.SOLID);
     }
 
     @Override
     protected void save() {
         setOwner(owner);
-        setLocation(loc);
+        setLocation(location);
         setEnabled(enabled);
         setShown(shown);
         setSkin(skin);
@@ -55,19 +62,13 @@ public class Camera extends ID {
         return true;
     }
 
-    public String getOwner() {
-        return owner;
-    }
     public void setOwner(String owner) {
         this.owner = owner;
         set("owner",owner);
     }
 
-    public Location getLocation() {
-        return loc;
-    }
     public void setLocation(Location loc) {
-        this.loc = loc;
+        this.location = loc;
         set("world", loc.getWorld().getName());
         set("x", loc.getX());
         set("y", loc.getY());
@@ -88,7 +89,7 @@ public class Camera extends ID {
     public boolean rotateHorizontally(int degrees) {
         Location asLoc = armorStand.getLocation();
         float newYaw = Math.round(asLoc.getYaw() + degrees);
-        float yaw = loc.getYaw();
+        float yaw = location.getYaw();
         float check = yaw > 359.0F
                 ? yaw - 360.0F
                 : yaw;
@@ -103,17 +104,14 @@ public class Camera extends ID {
         return true;
     }
     public boolean rotateVertically(int degrees) {
-        float pitch = loc.getPitch();
+        float pitch = location.getPitch();
         float newPitch = Math.round(pitch + degrees);
         if (newPitch < -45 || newPitch > 45) return false;
-        loc.setPitch(newPitch);
-        setLocation(loc);
+        location.setPitch(newPitch);
+        setLocation(location);
         return true;
     }
 
-    public boolean isEnabled() {
-        return enabled;
-    }
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
         set("enabled", enabled);
@@ -132,9 +130,6 @@ public class Camera extends ID {
         }
     }
 
-    public boolean isShown() {
-        return shown;
-    }
     public void setShown(boolean shown) {
         this.shown = shown;
         set("shown",shown);
@@ -142,22 +137,11 @@ public class Camera extends ID {
             armorStand.getEquipment().setHelmet(shown ? CCTV.getInstance().getCustomHeads().get(skin) : null);
     }
 
-    public ArmorStand getArmorStand() {
-        return armorStand;
-    }
     public void setArmorStand(ArmorStand armorStand) {
         this.armorStand = armorStand;
     }
-
-    public Creeper getCreeper() {
-        return creeper;
-    }
     public void setCreeper(Creeper creeper) {
         this.creeper = creeper;
-    }
-
-    public String getSkin() {
-        return skin;
     }
 
     public void setSkin(String skin) {

@@ -1,11 +1,13 @@
 package io.github.tanguygab.cctv.entities;
 
+import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.managers.Manager;
 
 public class ID {
 
     private String id;
     private final Manager<?> manager;
+    protected final CCTV cctv = CCTV.getInstance();
 
     public ID(String id, Manager<?> manager) {
         this.id = id;

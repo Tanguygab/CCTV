@@ -25,6 +25,7 @@ viewers:
     connect: 3
     disconnect: 3
     spot: 5
+  bossbar: true
   blocked-commands:
     - "/tp"
     - "/tpa"

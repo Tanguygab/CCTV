@@ -3,6 +3,7 @@ package io.github.tanguygab.cctv.managers;
 import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.entities.Camera;
 import io.github.tanguygab.cctv.entities.Computer;
+import io.github.tanguygab.cctv.entities.Viewer;
 import io.github.tanguygab.cctv.utils.Heads;
 import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.*;
@@ -192,21 +193,20 @@ public class CameraManager extends Manager<Camera> {
         connecting.add(p);
         Bukkit.getScheduler().scheduleSyncDelayedTask(cctv,  () -> {
             vm.createPlayer(p, cam, computer);
-            cctv.getNms().setCameraPacket(p,cam.getArmorStand());
             connecting.remove(p);
         }, vm.TIME_TO_CONNECT * 20L);
     }
 
-    public void viewCameraInstant(Camera cam, Player p) {
+    public void viewCameraInstant(Camera cam, Viewer viewer) {
         if (cam == null) {
-            p.sendMessage(lang.CAMERA_NOT_FOUND);
+            viewer.getPlayer().sendMessage(lang.CAMERA_NOT_FOUND);
             return;
         }
-        if (EXPERIMENTAL_VIEW && Utils.distance(p.getLocation(),cam.getArmorStand().getLocation()) >= 60) {
-            p.sendMessage(lang.CAMERA_TOO_FAR);
+        if (EXPERIMENTAL_VIEW && Utils.distance(viewer.getPlayer().getLocation(),cam.getArmorStand().getLocation()) >= 60) {
+            viewer.getPlayer().sendMessage(lang.CAMERA_TOO_FAR);
             return;
         }
-        cctv.getNms().setCameraPacket(p,cam.getArmorStand());
+        viewer.setCamera(cam);
     }
 
     public void rotateHorizontally(Player p, Camera camera, int degrees) {

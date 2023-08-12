@@ -68,8 +68,8 @@ public class CCTV extends JavaPlugin {
             InputStream langResource = getResource(langPath);
             lang = new LanguageFile(langResource == null ? getResource("languages/en_US.yml") : langResource, new File(getDataFolder(), langPath));
             cameras = new CameraManager();
-            computers = new ComputerManager();
             viewers = new ViewerManager();
+            computers = new ComputerManager();
 
             viewers.file.getStringList("toggled-computer-coords", new ArrayList<>());
         } catch (Exception e) {
@@ -82,9 +82,9 @@ public class CCTV extends JavaPlugin {
         cameraCmd = new CameraCmd();
         computerCmd = new ComputerCmd();
 
+        viewers.load();
         cameras.load();
         computers.load();
-        viewers.load();
 
         loadRecipes();
         PluginManager plm = getServer().getPluginManager();

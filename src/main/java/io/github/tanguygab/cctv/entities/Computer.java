@@ -2,6 +2,7 @@ package io.github.tanguygab.cctv.entities;
 
 import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.utils.Utils;
+import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -10,20 +11,20 @@ import java.util.List;
 
 public class Computer extends ID {
 
-    private final Location loc;
-    private String owner;
-    private final List<Camera> cameras;
-    private final List<String> allowedPlayers;
+    @Getter private final Location location;
+    @Getter private String owner;
+    @Getter private final List<Camera> cameras;
+    @Getter private final List<String> allowedPlayers;
     private boolean publik;
-    private final boolean admin;
+    @Getter private final boolean admin;
 
-    public Computer(String name, Location loc, String owner, List<String> cameras, List<String> allowedPlayers, boolean publik, boolean admin) {
+    public Computer(String name, Location location, String owner, List<String> cameras, List<String> allowedPlayers, boolean publik, boolean admin) {
         super(name,CCTV.getInstance().getComputers());
-        this.loc = loc;
-        set("world", loc.getWorld().getName());
-        set("x", loc.getX());
-        set("y", loc.getY());
-        set("z", loc.getZ());
+        this.location = location;
+        set("world", location.getWorld().getName());
+        set("x", location.getX());
+        set("y", location.getY());
+        set("z", location.getZ());
         setOwner(owner);
         this.cameras = new ArrayList<>();
         cameras.forEach(str->{
@@ -39,31 +40,20 @@ public class Computer extends ID {
 
     @Override
     protected void save() {
-        set("world", loc.getWorld().getName());
-        set("x", loc.getX());
-        set("y", loc.getY());
-        set("z", loc.getZ());
+        set("world", location.getWorld().getName());
+        set("x", location.getX());
+        set("y", location.getY());
+        set("z", location.getZ());
         setOwner(owner);
         saveCams();
         set("allowed-players", allowedPlayers.isEmpty() ? null : allowedPlayers);
     }
 
-    public Location getLocation() {
-        return loc;
-    }
-
-    public String getOwner() {
-        return owner;
-    }
     public void setOwner(String owner) {
         this.owner = owner;
         set("owner",owner);
     }
 
-
-    public List<Camera> getCameras() {
-        return cameras;
-    }
     public void saveCams() {
         set("cameras", cameras.isEmpty() ? null : Utils.list(cameras));
     }
@@ -76,9 +66,6 @@ public class Computer extends ID {
         saveCams();
     }
 
-    public List<String> getAllowedPlayers() {
-        return allowedPlayers;
-    }
     public void addPlayer(String player) {
         allowedPlayers.add(player);
         set("allowed-players", allowedPlayers);
@@ -98,9 +85,5 @@ public class Computer extends ID {
 
     public boolean canUse(Player player) {
         return publik || allowedPlayers.contains(player.getUniqueId().toString()) || owner.equals(player.getUniqueId().toString());
-    }
-
-    public boolean isAdmin() {
-        return admin;
     }
 }

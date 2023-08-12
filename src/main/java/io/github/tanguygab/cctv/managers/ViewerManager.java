@@ -23,6 +23,7 @@ public class ViewerManager extends Manager<Viewer> {
 
     public boolean CAN_CHAT;
     public boolean GIWP;
+    public boolean BOSSBAR;
 
     public int TIME_TO_CONNECT;
     public int TIME_TO_DISCONNECT;
@@ -44,6 +45,7 @@ public class ViewerManager extends Manager<Viewer> {
         TIME_TO_CONNECT = config.getInt("viewers.timed-actions.connect",3);
         TIME_TO_DISCONNECT = config.getInt("viewers.timed-actions.disconnect",3);
         TIME_FOR_SPOT = config.getInt("viewers.timed-actions.spot",5);
+        BOSSBAR = config.getBoolean("viewers.bossbar",true);
         blockedCmds.addAll(config.getStringList("viewers.blocked-commands",List.of()));
 
         Map<String,Map<String,Object>> loggedOutViewers = file.getConfigurationSection("logged-out-viewers");
@@ -68,10 +70,10 @@ public class ViewerManager extends Manager<Viewer> {
     @SuppressWarnings("UnstableApiUsage")
     public void delete(Player p) {
         Viewer viewer = get(p);
-        cctv.getNms().setCameraPacket(p,p);
-        p.getInventory().setContents(viewer.getInv());
+        viewer.setCamera(null);
         if (!cm.EXPERIMENTAL_VIEW)
-            for (Player online : Bukkit.getOnlinePlayers()) online.showPlayer(cctv,p);
+            for (Player online : Bukkit.getOnlinePlayers())
+                online.showPlayer(cctv,p);
 
         p.removePotionEffect(PotionEffectType.SLOW);
         p.removePotionEffect(PotionEffectType.NIGHT_VISION);
@@ -136,19 +138,19 @@ public class ViewerManager extends Manager<Viewer> {
         if (itemName.equals(lang.CAMERA_VIEW_NEXT)) switchCamera(p,false);
     }
 
-    public void switchCamera(Player p, boolean previous) {
-        if (!p.hasPermission("cctv.view.switch")) {
-            p.sendMessage(lang.NO_PERMISSIONS);
+    public void switchCamera(Player player, boolean previous) {
+        if (!player.hasPermission("cctv.view.switch")) {
+            player.sendMessage(lang.NO_PERMISSIONS);
             return;
         }
-        Viewer viewer = get(p);
+        Viewer viewer = get(player);
         Computer computer = viewer.getComputer();
         if (computer == null) {
-            p.sendMessage(lang.SWITCHING_NOT_POSSIBLE);
+            player.sendMessage(lang.SWITCHING_NOT_POSSIBLE);
             return;
         }
         if (computer.getCameras().size() <= 1) {
-            p.sendMessage(lang.NO_CAMERAS);
+            player.sendMessage(lang.NO_CAMERAS);
             return;
         }
 
@@ -159,8 +161,7 @@ public class ViewerManager extends Manager<Viewer> {
         Camera cam = cams.indexOf(currentCam) == cams.size()-1
                 ? cams.get(0)
                 : cams.get(cams.indexOf(currentCam)+1);
-        cm.viewCameraInstant(cam, p);
-        viewer.setCamera(cam);
+        cm.viewCameraInstant(cam, viewer);
     }
 
 }
