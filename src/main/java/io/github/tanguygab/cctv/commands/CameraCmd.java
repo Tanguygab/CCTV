@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
 import java.util.Arrays;
 import java.util.List;
 
-public class CameraCmd extends Command {
+public class CameraCmd extends Command<Camera> {
 
     private final CameraManager cm = cctv.getCameras();
 
@@ -52,18 +52,6 @@ public class CameraCmd extends Command {
                 if (args.length > 2) cm.create(args[2],p.getLocation(),p,"_DEFAULT_");
                 else p.sendMessage(ChatColor.RED + "Please specify a camera name!");
             }
-            case "delete" -> {
-                if (args.length < 3) {
-                    p.sendMessage(ChatColor.RED + "Please specify a camera name!");
-                    return;
-                }
-                Camera camera = cm.get(args[2]);
-                if (camera == null || cantUse(p, camera.getOwner())) {
-                    p.sendMessage(lang.CAMERA_NOT_FOUND);
-                    return;
-                }
-                cm.delete(camera.getId(),p);
-            }
             case "list" -> {
                 int page = 1;
                 if (args.length > 2) {
@@ -72,142 +60,30 @@ public class CameraCmd extends Command {
                 }
                 p.spigot().sendMessage(list("Cameras",cm.get(p),"view","Click to view!",page));
             }
-            case "view" -> {
-                if (cctv.getViewers().exists(p)) {
-                    p.sendMessage(ChatColor.RED + "You already watching a camera!");
-                    return;
-                }
-                if (args.length < 3) {
-                    p.sendMessage(ChatColor.RED + "Please specify a camera name!");
-                    return;
-                }
-                Camera camera = cm.get(args[2]);
-                if (camera == null || cantUse(p, camera.getOwner())) {
-                    p.sendMessage(lang.CAMERA_NOT_FOUND);
-                    return;
-                }
-                cm.viewCamera(p, camera, null);
-            }
             case "connected" -> {
-                if (args.length < 3) {
-                    p.sendMessage(ChatColor.RED + "Please specify a camera name!");
-                    return;
-                }
-                Camera camera = cm.get(args[2]);
-                if (camera == null || cantUse(p, camera.getOwner())) {
-                    p.sendMessage(lang.CAMERA_NOT_FOUND);
-                    return;
-                }
-                p.sendMessage(lang.getCameraViewCount(Math.toIntExact(cctv.getViewers().values().stream().filter(viewer->viewer.getCamera()==camera).count()),camera.getId()));
+                Camera camera = checkExist(p,true,args);
+                if (camera != null)
+                    p.sendMessage(lang.getCameraViewCount(Math.toIntExact(cctv.getViewers().values().stream().filter(viewer->viewer.getCamera()==camera).count()),camera.getId()));
             }
-            case "return" -> cm.disconnectFromCamera(p);
+            case "disconnect" -> cm.disconnectFromCamera(p);
             case "teleport" -> {
                 if (noPerm(p, "teleport")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
-                if (args.length < 3) {
-                    p.sendMessage(ChatColor.RED + "Please specify a camera name!");
-                    return;
-                }
-                Camera camera = cm.get(args[2]);
-                if (camera == null || cantUse(p, camera.getOwner())) {
-                    p.sendMessage(lang.CAMERA_NOT_FOUND);
-                    return;
-                }
-                p.teleport(camera.getArmorStand());
-            }
-            case "enable" -> {
-                if (args.length < 3) {
-                    p.sendMessage(ChatColor.RED + "Please specify a camera name!");
-                    return;
-                }
-                Camera camera = cm.get(args[2]);
-                if (camera == null || cantUse(p, camera.getOwner())) {
-                    p.sendMessage(lang.CAMERA_NOT_FOUND);
-                    return;
-                }
-                if (camera.isEnabled()) {
-                    p.sendMessage(lang.CAMERA_ALREADY_ENABLED);
-                    return;
-                }
-                camera.setEnabled(true);
-                p.sendMessage(lang.getCameraEnabled(camera.getId()));
-            }
-            case "disable" -> {
-                if (args.length < 3) {
-                    p.sendMessage(ChatColor.RED + "Please specify a camera name!");
-                    return;
-                }
-                Camera camera = cm.get(args[2]);
-                if (camera == null || cantUse(p, camera.getOwner())) {
-                    p.sendMessage(lang.CAMERA_NOT_FOUND);
-                    return;
-                }
-                if (!camera.isEnabled()) {
-                    p.sendMessage(lang.CAMERA_ALREADY_DISABLED);
-                    return;
-                }
-                camera.setEnabled(false);
-                p.sendMessage(lang.getCameraDisabled(camera.getId()));
-            }
-            case "show" -> {
-                if (args.length < 3) {
-                    p.sendMessage(ChatColor.RED + "Please specify a camera name!");
-                    return;
-                }
-                Camera camera = cm.get(args[2]);
-                if (camera == null || cantUse(p, camera.getOwner())) {
-                    p.sendMessage(lang.CAMERA_NOT_FOUND);
-                    return;
-                }
-                if (camera.isShown()) {
-                    p.sendMessage(lang.CAMERA_ALREADY_SHOWN);
-                    return;
-                }
-                camera.setShown(true);
-                p.sendMessage(lang.getCameraShown(camera.getId()));
-            }
-            case "hide" -> {
-                if (args.length < 3) {
-                    p.sendMessage(ChatColor.RED + "Please specify a camera name!");
-                    return;
-                }
-                Camera camera = cm.get(args[2]);
-                if (camera == null || cantUse(p, camera.getOwner())) {
-                    p.sendMessage(lang.CAMERA_NOT_FOUND);
-                    return;
-                }
-                if (!camera.isShown()) {
-                    p.sendMessage(lang.CAMERA_ALREADY_HIDDEN);
-                    return;
-                }
-                camera.setShown(false);
-                p.sendMessage(lang.getCameraHidden(camera.getId()));
+                Camera camera = checkExist(p,true,args);
+                if (camera != null) p.teleport(camera.getArmorStand());
             }
             case "movehere" -> {
-                if (args.length < 3) {
-                    p.sendMessage(ChatColor.RED + "Please specify a camera name!");
-                    return;
-                }
-                Camera camera = cm.get(args[2]);
-                if (camera == null || cantUse(p, camera.getOwner())) {
-                    p.sendMessage(lang.CAMERA_NOT_FOUND);
-                    return;
-                }
+                Camera camera = checkExist(p,true,args);
+                if (camera == null) return;
                 camera.setLocation(p.getLocation());
                 p.sendMessage(lang.CAMERA_MOVED);
             }
             case "rename" -> {
-                if (args.length < 3) {
-                    p.sendMessage(ChatColor.RED + "Please specify a camera name!");
-                    return;
-                }
-                Camera camera = cm.get(args[2]);
-                if (camera == null || cantUse(p, camera.getOwner())) {
-                    p.sendMessage(lang.CAMERA_NOT_FOUND);
-                    return;
-                }
+                Camera camera = checkExist(p,true,args);
+                if (camera == null) return;
+
                 if (args.length < 4) {
                     p.sendMessage(ChatColor.RED + "Please specify a new name!");
                     return;
@@ -218,15 +94,9 @@ public class CameraCmd extends Command {
                 else p.sendMessage(lang.CAMERA_ALREADY_EXISTS);
             }
             case "setowner" -> {
-                if (args.length < 3) {
-                    p.sendMessage(ChatColor.RED + "Please specify a camera name!");
-                    return;
-                }
-                Camera camera = cm.get(args[2]);
-                if (camera == null || cantUse(p, camera.getOwner())) {
-                    p.sendMessage(lang.CAMERA_NOT_FOUND);
-                    return;
-                }
+                Camera camera = checkExist(p,true,args);
+                if (camera == null) return;
+
                 if (args.length < 4) {
                     p.sendMessage(ChatColor.RED + "Please specify a new owner!");
                     return;
@@ -263,14 +133,9 @@ public class CameraCmd extends Command {
                     "create <name>:Create a new camera",
                     "delete <name>:Delete a camera",
                     "list:Get the list of all cameras",
-                    "view <camera>:View the camera",
                     "connected <camera>:All players connected to this camera",
-                    "return:Stop viewing your current camera",
+                    "disconnect:Disconnect from your current camera",
                     "teleport <camera>:Teleport to the camera",
-                    "enable <camera>:Enable the camera",
-                    "disable <camera>:Disable the camera",
-                    "show <camera>:Show the camera",
-                    "hide <camera>:Hide the camera",
                     "movehere <camera>:Move the camera to your location",
                     "rename <camera> <name>:Rename the camera",
                     "setowner <camera> <player>:Set the camera's owner"));
@@ -279,7 +144,7 @@ public class CameraCmd extends Command {
 
     public List<String> onTabComplete(CommandSender sender, String[] args) {
         return switch (args.length) {
-            case 2 -> List.of("get","create","delete","list","view","connected","return","teleport","enable","disable","show","hide","movehere","rename","setowner");
+            case 2 -> List.of("get","create","list","connected","return","teleport","movehere","rename","setowner");
             case 3 -> switch (args[1].toLowerCase()) {
                 case "create","list","return" -> null;
                 case "get" -> cctv.getCustomHeads().getHeads();
