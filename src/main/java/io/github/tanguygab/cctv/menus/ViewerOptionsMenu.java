@@ -17,7 +17,6 @@ import java.util.List;
 
 public class ViewerOptionsMenu extends CCTVMenu {
 
-    private final boolean newCam = cctv.getCameras().EXPERIMENTAL_VIEW;
     private final ViewerManager vm = cctv.getViewers();
 
     public ViewerOptionsMenu(Player p) {
@@ -27,12 +26,12 @@ public class ViewerOptionsMenu extends CCTVMenu {
     @Override
     public void open() {
         inv = Bukkit.getServer().createInventory(null, InventoryType.HOPPER, lang.CAMERA_VIEW_OPTIONS_TITLE);
-        if (hasItemPerm(p,"nightvision")) inv.setItem(0, vm.get(p).hasNightVision() ? Heads.NIGHT_VISION_ON.get() : Heads.NIGHT_VISION_OFF.get());
+        inv.setItem(0, vm.get(p).hasNightVision() ? Heads.NIGHT_VISION_ON.get() : Heads.NIGHT_VISION_OFF.get());
 
-        if (hasItemPerm(p,"spot")) inv.setItem(1, getItem(Heads.SPOTTING,lang.CAMERA_VIEW_OPTIONS_SPOT));
+        inv.setItem(1, getItem(Heads.SPOTTING,lang.CAMERA_VIEW_OPTIONS_SPOT));
 
-        if (hasItemPerm(p,"zoom") && cctv.getCameras().ZOOM_ITEM) {
-            if (!newCam) {
+        if (vm.ZOOM_ITEM) {
+            if (!cctv.getCameras().EXPERIMENTAL_VIEW) {
                 PotionEffect effect = p.getPotionEffect(PotionEffectType.SLOW);
                 inv.setItem(2, getItem(Heads.ZOOM,
                         effect != null
@@ -46,17 +45,13 @@ public class ViewerOptionsMenu extends CCTVMenu {
         p.openInventory(inv);
     }
 
-    private boolean hasItemPerm(Player p, String perm) {
-        return vm.GIWP || p.hasPermission("cctv.view."+perm);
-    }
-
     @Override
     public void onClick(ItemStack item, int slot, ClickType click) {
         switch (slot) {
             case 0 -> nightvision(p);
             case 1 -> spotting(p);
             case 2 -> {
-                if (newCam) return;
+                if (cctv.getCameras().EXPERIMENTAL_VIEW) return;
                 PotionEffect effect = p.getPotionEffect(PotionEffectType.SLOW);
                 if (effect == null) {
                     zoom(p, 1);

@@ -20,7 +20,7 @@ computer:
       T: REDSTONE_TORCH
 viewers:
   can_chat: true
-  get_items_without_permission: true
+  zoom_item: true
   timed-actions:
     connect: 3
     disconnect: 3
@@ -36,7 +36,6 @@ viewers:
     - "/suicide"
 camera:
   experimental_view: false
-  zoom_item: true
   craft:
     enabled: true
     shape:

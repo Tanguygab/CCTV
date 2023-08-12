@@ -23,7 +23,6 @@ import java.util.Map;
 public class CameraManager extends Manager<Camera> {
 
     public boolean EXPERIMENTAL_VIEW;
-    public boolean ZOOM_ITEM;
     private final Map<String,List<Map<String,Object>>> unloadedWorlds = new HashMap<>();
 
     public List<Player> connecting = new ArrayList<>();
@@ -36,7 +35,6 @@ public class CameraManager extends Manager<Camera> {
     @SuppressWarnings("unchecked")
     public void load() {
         EXPERIMENTAL_VIEW = cctv.getConfiguration().getBoolean("camera.experimental_view",false);
-        ZOOM_ITEM = cctv.getConfiguration().getBoolean("camera.zoom_item",true);
 
         if (EXPERIMENTAL_VIEW && !cctv.getNms().isNMSSupported()) {
             EXPERIMENTAL_VIEW = false;

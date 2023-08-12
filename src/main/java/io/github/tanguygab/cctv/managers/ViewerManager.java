@@ -22,7 +22,7 @@ import java.util.*;
 public class ViewerManager extends Manager<Viewer> {
 
     public boolean CAN_CHAT;
-    public boolean GIWP;
+    public boolean ZOOM_ITEM;
     public boolean BOSSBAR;
 
     public int TIME_TO_CONNECT;
@@ -41,7 +41,7 @@ public class ViewerManager extends Manager<Viewer> {
     public void load() {
         ConfigurationFile config = cctv.getConfiguration();
         CAN_CHAT = config.getBoolean("viewers.can_chat",true);
-        GIWP = config.getBoolean("viewers.get_items_without_permission",true);
+        ZOOM_ITEM = cctv.getConfiguration().getBoolean("camera.zoom_item",true);
         TIME_TO_CONNECT = config.getInt("viewers.timed-actions.connect",3);
         TIME_TO_DISCONNECT = config.getInt("viewers.timed-actions.disconnect",3);
         TIME_FOR_SPOT = config.getInt("viewers.timed-actions.spot",5);
@@ -107,16 +107,11 @@ public class ViewerManager extends Manager<Viewer> {
     private void giveViewerItems(Player p, Computer computer) {
         PlayerInventory inv = p.getInventory();
         inv.clear();
-        if (GIWP || p.hasPermission("cctv.view.zoom") || p.hasPermission("cctv.view.nightvision") || p.hasPermission("cctv.view.spot"))
-            inv.setItem(0, CCTVMenu.getItem(Heads.OPTIONS,lang.CAMERA_VIEW_OPTION));
-        if (GIWP || p.hasPermission("cctv.view.move")) {
-            inv.setItem(3, Heads.ROTATE_LEFT.get());
-            inv.setItem(computer != null && computer.getCameras().size() > 1 ? 4 : 5, Heads.ROTATE_RIGHT.get());
-        }
-        if ((GIWP || p.hasPermission("cctv.view.switch")) && computer != null && computer.getCameras().size() > 1) {
-            inv.setItem(6, Heads.CAM_PREVIOUS.get());
-            inv.setItem(7, Heads.CAM_NEXT.get());
-        }
+        inv.setItem(0, CCTVMenu.getItem(Heads.OPTIONS,lang.CAMERA_VIEW_OPTION));
+        inv.setItem(3, Heads.ROTATE_LEFT.get());
+        inv.setItem(computer != null && computer.getCameras().size() > 1 ? 4 : 5, Heads.ROTATE_RIGHT.get());
+        inv.setItem(6, Heads.CAM_PREVIOUS.get());
+        inv.setItem(7, Heads.CAM_NEXT.get());
         inv.setItem(8, CCTVMenu.getItem(Heads.EXIT,lang.CAMERA_VIEW_EXIT));
     }
 
