@@ -32,7 +32,7 @@ public class CameraCmd extends Command {
 
         switch (arg) {
             case "get" -> {
-                if (noPerm(p, "create")) {
+                if (noPerm(p, "get")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
@@ -53,10 +53,6 @@ public class CameraCmd extends Command {
                 else p.sendMessage(ChatColor.RED + "Please specify a camera name!");
             }
             case "delete" -> {
-                if (noPerm(p, "delete")) {
-                    p.sendMessage(lang.NO_PERMISSIONS);
-                    return;
-                }
                 if (args.length < 3) {
                     p.sendMessage(ChatColor.RED + "Please specify a camera name!");
                     return;
@@ -69,10 +65,6 @@ public class CameraCmd extends Command {
                 cm.delete(camera.getId(),p);
             }
             case "list" -> {
-                if (noPerm(p, "list")) {
-                    p.sendMessage(lang.NO_PERMISSIONS);
-                    return;
-                }
                 int page = 1;
                 if (args.length > 2) {
                     try {page = Integer.parseInt(args[2]);}
@@ -81,10 +73,6 @@ public class CameraCmd extends Command {
                 p.spigot().sendMessage(list("Cameras",cm.get(p),"view","Click to view!",page));
             }
             case "view" -> {
-                if (noPerm(p, "view")) {
-                    p.sendMessage(lang.NO_PERMISSIONS);
-                    return;
-                }
                 if (cctv.getViewers().exists(p)) {
                     p.sendMessage(ChatColor.RED + "You already watching a camera!");
                     return;
@@ -101,10 +89,6 @@ public class CameraCmd extends Command {
                 cm.viewCamera(p, camera, null);
             }
             case "connected" -> {
-                if (noPerm(p, "connected")) {
-                    p.sendMessage(lang.NO_PERMISSIONS);
-                    return;
-                }
                 if (args.length < 3) {
                     p.sendMessage(ChatColor.RED + "Please specify a camera name!");
                     return;
@@ -116,13 +100,7 @@ public class CameraCmd extends Command {
                 }
                 p.sendMessage(lang.getCameraViewCount(Math.toIntExact(cctv.getViewers().values().stream().filter(viewer->viewer.getCamera()==camera).count()),camera.getId()));
             }
-            case "return" -> {
-                if (noPerm(p, "return")) {
-                    p.sendMessage(lang.NO_PERMISSIONS);
-                    return;
-                }
-                cm.disconnectFromCamera(p);
-            }
+            case "return" -> cm.disconnectFromCamera(p);
             case "teleport" -> {
                 if (noPerm(p, "teleport")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
@@ -140,10 +118,6 @@ public class CameraCmd extends Command {
                 p.teleport(camera.getArmorStand());
             }
             case "enable" -> {
-                if (noPerm(p, "enable")) {
-                    p.sendMessage(lang.NO_PERMISSIONS);
-                    return;
-                }
                 if (args.length < 3) {
                     p.sendMessage(ChatColor.RED + "Please specify a camera name!");
                     return;
@@ -161,10 +135,6 @@ public class CameraCmd extends Command {
                 p.sendMessage(lang.getCameraEnabled(camera.getId()));
             }
             case "disable" -> {
-                if (noPerm(p, "disable")) {
-                    p.sendMessage(lang.NO_PERMISSIONS);
-                    return;
-                }
                 if (args.length < 3) {
                     p.sendMessage(ChatColor.RED + "Please specify a camera name!");
                     return;
@@ -182,10 +152,6 @@ public class CameraCmd extends Command {
                 p.sendMessage(lang.getCameraDisabled(camera.getId()));
             }
             case "show" -> {
-                if (noPerm(p, "show")) {
-                    p.sendMessage(lang.NO_PERMISSIONS);
-                    return;
-                }
                 if (args.length < 3) {
                     p.sendMessage(ChatColor.RED + "Please specify a camera name!");
                     return;
@@ -203,10 +169,6 @@ public class CameraCmd extends Command {
                 p.sendMessage(lang.getCameraShown(camera.getId()));
             }
             case "hide" -> {
-                if (noPerm(p, "hide")) {
-                    p.sendMessage(lang.NO_PERMISSIONS);
-                    return;
-                }
                 if (args.length < 3) {
                     p.sendMessage(ChatColor.RED + "Please specify a camera name!");
                     return;
@@ -224,10 +186,6 @@ public class CameraCmd extends Command {
                 p.sendMessage(lang.getCameraHidden(camera.getId()));
             }
             case "movehere" -> {
-                if (noPerm(p, "movehere")) {
-                    p.sendMessage(lang.NO_PERMISSIONS);
-                    return;
-                }
                 if (args.length < 3) {
                     p.sendMessage(ChatColor.RED + "Please specify a camera name!");
                     return;
@@ -241,10 +199,6 @@ public class CameraCmd extends Command {
                 p.sendMessage(lang.CAMERA_MOVED);
             }
             case "rename" -> {
-                if (noPerm(p, "rename")) {
-                    p.sendMessage(lang.NO_PERMISSIONS);
-                    return;
-                }
                 if (args.length < 3) {
                     p.sendMessage(ChatColor.RED + "Please specify a camera name!");
                     return;
@@ -264,10 +218,6 @@ public class CameraCmd extends Command {
                 else p.sendMessage(lang.CAMERA_ALREADY_EXISTS);
             }
             case "setowner" -> {
-                if (noPerm(p, "setowner")) {
-                    p.sendMessage(lang.NO_PERMISSIONS);
-                    return;
-                }
                 if (args.length < 3) {
                     p.sendMessage(ChatColor.RED + "Please specify a camera name!");
                     return;
@@ -295,7 +245,7 @@ public class CameraCmd extends Command {
                 p.sendMessage(lang.getCameraOwnerChanged(newOwner.getName()));
             }
             case "killall" -> {
-                if (noPerm(p, "killall")) {
+                if (p.hasPermission("cctv.admin")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
