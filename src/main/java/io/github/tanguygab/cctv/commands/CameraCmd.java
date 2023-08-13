@@ -131,7 +131,6 @@ public class CameraCmd extends Command<Camera> {
             default -> sender.spigot().sendMessage(helpPage("Camera commands",
                     "get:Get the camera item",
                     "create <name>:Create a new camera",
-                    "delete <name>:Delete a camera",
                     "list:Get the list of all cameras",
                     "connected <camera>:All players connected to this camera",
                     "disconnect:Disconnect from your current camera",
