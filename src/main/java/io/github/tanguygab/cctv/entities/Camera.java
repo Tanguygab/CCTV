@@ -14,6 +14,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.EulerAngle;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class Camera extends ID {
@@ -69,7 +70,7 @@ public class Camera extends ID {
 
     public void setLocation(Location loc) {
         this.location = loc;
-        set("world", loc.getWorld().getName());
+        set("world", Objects.requireNonNull(loc.getWorld()).getName());
         set("x", loc.getX());
         set("y", loc.getY());
         set("z", loc.getZ());
@@ -134,7 +135,7 @@ public class Camera extends ID {
         this.shown = shown;
         set("shown",shown);
         if (armorStand != null)
-            armorStand.getEquipment().setHelmet(shown ? CCTV.getInstance().getCustomHeads().get(skin) : null);
+            Objects.requireNonNull(armorStand.getEquipment()).setHelmet(shown ? CCTV.getInstance().getCustomHeads().get(skin) : null);
     }
 
     public void setArmorStand(ArmorStand armorStand) {

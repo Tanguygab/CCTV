@@ -7,10 +7,7 @@ import io.github.tanguygab.cctv.config.YamlConfigurationFile;
 import org.bukkit.entity.Player;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class Manager<T> {
 
@@ -19,8 +16,7 @@ public abstract class Manager<T> {
     protected CCTV cctv = CCTV.getInstance();
     public ConfigurationFile file;
     protected LanguageFile lang = cctv.getLang();
-
-    public Manager() {}
+    private static final Random random = new Random();
 
     public Manager(String fileName) {
         try {
@@ -52,4 +48,9 @@ public abstract class Manager<T> {
         if (file != null) file.set(id,null);
     }
     public void delete(String id, Player player) {}
+
+    public String getRandomID() {
+        int number = random.nextInt(999999);
+        return map.containsKey(String.valueOf(number)) ? getRandomID() : String.valueOf(number);
+    }
 }

@@ -5,12 +5,9 @@ import io.github.tanguygab.cctv.menus.CCTVMenu;
 import io.github.tanguygab.cctv.utils.CustomHeads;
 import io.github.tanguygab.cctv.utils.Heads;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 
 public class CameraSkinMenu extends CCTVMenu {
@@ -27,7 +24,7 @@ public class CameraSkinMenu extends CCTVMenu {
 
     @Override
     public void open() {
-        inv = Bukkit.getServer().createInventory(null, 54, lang.getGuiCameraSkin(page+""));
+        inv = Bukkit.getServer().createInventory(null, 54, lang.getGuiCameraSkin(String.valueOf(page)));
 
         fillSlots(9,18);
         updateCameraItem();
@@ -49,13 +46,9 @@ public class CameraSkinMenu extends CCTVMenu {
             case 27,36 -> setPage(slot == 27 ? page+1 : page-1);
             case 45 -> back();
             default -> {
-                if (item == null || item.getType() == Material.AIR) return;
-                ItemMeta meta = item.getItemMeta();
-                if (meta == null || !meta.hasDisplayName()) return;
-                String itemName = ChatColor.stripColor(meta.getDisplayName());
-                if (!itemName.startsWith("Skin: ")) return;
-                String skin = itemName.substring(6).replace("Default","_DEFAULT_");
-                camera.setSkin(skin);
+                String skin = getItemName(item,"Skin: ");
+                if (skin == null) return;
+                camera.setSkin(skin.replace("Default","_DEFAULT_"));
                 updateCameraItem();
             }
         }

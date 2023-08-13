@@ -1,31 +1,19 @@
 package io.github.tanguygab.cctv.utils;
 
 import io.github.tanguygab.cctv.CCTV;
+import io.github.tanguygab.cctv.config.ConfigurationFile;
 import io.github.tanguygab.cctv.entities.ID;
-import io.github.tanguygab.cctv.managers.Manager;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.NumberConversions;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
 
 public class Utils {
 
     public static NamespacedKey cameraKey = new NamespacedKey(CCTV.getInstance(), "camera");
     public static NamespacedKey computerKey = new NamespacedKey(CCTV.getInstance(), "computer");
-    private static final Random random = new Random();
-
-    public static int getRandomNumber(int size, Manager<? extends ID> manager) {
-        int number = random.nextInt(size);
-        if (manager.values().size() >= size) size *= 10;
-        for (ID element : manager.values())
-            if (element.getId().equals(String.valueOf(number)))
-                number = getRandomNumber(size,manager);
-        return number;
-    }
 
     public static OfflinePlayer getOfflinePlayer(String player) {
         for (OfflinePlayer off : Bukkit.getServer().getOfflinePlayers())
@@ -42,13 +30,13 @@ public class Utils {
         return Math.sqrt(NumberConversions.square(loc1.getX() - loc2.getX()) + NumberConversions.square(loc1.getZ() - loc2.getZ()));
     }
 
-    public static Location loadLocation(World world, Map<String,Object> config) {
-        if (world == null) world = Bukkit.getServer().getWorld(String.valueOf(config.get("world")));
-        double x = (double) config.get("x");
-        double y = (double) config.get("y");
-        double z = (double) config.get("z");
-        float pitch = (float)(double) config.get("pitch");
-        float yaw = (float)(double) config.get("yaw");
+    public static Location loadLocation(String id, ConfigurationFile config) {
+        World world = Bukkit.getServer().getWorld(config.getString(id+".world"));
+        double x = config.getDouble(id+".x",0);
+        double y = config.getDouble(id+".y",0);
+        double z = config.getDouble(id+".z",0);
+        float pitch = config.getDouble(id+".pitch",0).floatValue();
+        float yaw = config.getDouble(id+".yaw",0).floatValue();
         return new Location(world, x, y, z, yaw, pitch);
     }
 

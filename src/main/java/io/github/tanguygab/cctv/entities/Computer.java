@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Computer extends ID {
 
@@ -21,7 +22,7 @@ public class Computer extends ID {
     public Computer(String name, Location location, String owner, List<String> cameras, List<String> allowedPlayers, boolean publik, boolean admin) {
         super(name,CCTV.getInstance().getComputers());
         this.location = location;
-        set("world", location.getWorld().getName());
+        set("world", Objects.requireNonNull(location.getWorld()).getName());
         set("x", location.getX());
         set("y", location.getY());
         set("z", location.getZ());
@@ -40,7 +41,7 @@ public class Computer extends ID {
 
     @Override
     protected void save() {
-        set("world", location.getWorld().getName());
+        set("world", Objects.requireNonNull(location.getWorld()).getName());
         set("x", location.getX());
         set("y", location.getY());
         set("z", location.getZ());

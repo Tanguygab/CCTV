@@ -84,12 +84,8 @@ public class ComputerMainMenu extends ComputerMenu {
             case 27,36 -> setPage(slot == 27 ? page+1 : page-1);
             case 45 -> p.closeInventory();
             default -> {
-                if (item == null || item.getType() == Material.AIR) return;
-                ItemMeta meta = item.getItemMeta();
-                if (meta == null || !meta.hasDisplayName()) return;
-                String itemName = ChatColor.stripColor(meta.getDisplayName());
-                if (!itemName.startsWith("Camera: ")) return;
-                String cam = itemName.substring(8);
+                String cam = getItemName(item,"Camera: ");
+                if (cam == null) return;
                 Camera camera = cctv.getCameras().get(cam);
                 if (camera == null) {
                     p.sendMessage(lang.CAMERA_NOT_FOUND);

@@ -35,6 +35,7 @@ public class ComputerRemovePlayerMenu extends ComputerMenu {
             OfflinePlayer off = Bukkit.getOfflinePlayer(UUID.fromString(uuid));
             ItemStack item = getItem(Material.PLAYER_HEAD, ChatColor.YELLOW + "Player: " + off.getName());
             SkullMeta meta = (SkullMeta)item.getItemMeta();
+            assert meta != null;
             meta.setOwningPlayer(off);
             item.setItemMeta(meta);
             inv.addItem(item);
@@ -50,13 +51,10 @@ public class ComputerRemovePlayerMenu extends ComputerMenu {
             case 27,36 -> setPage(slot == 27 ? page+1 : page-1);
             case 45 -> back();
             default -> {
-                if (item == null || item.getType() == Material.AIR) return;
-                ItemMeta meta = item.getItemMeta();
-                if (meta == null || !meta.hasDisplayName()) return;
-                String itemName = ChatColor.stripColor(meta.getDisplayName());
-                if (!itemName.startsWith("Player: ")) return;
-                String player = itemName.substring(8);
+                String player = getItemName(item,"Player: ");
+                if (player == null) return;
                 OfflinePlayer off = Utils.getOfflinePlayer(player);
+                if (off == null) return;
                 computer.removePlayer(off.getUniqueId().toString());
                 setPage(page);
                 p.sendMessage(lang.PLAYER_REMOVED);

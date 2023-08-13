@@ -35,6 +35,7 @@ public class ComputerOptionsMenu extends ComputerMenu {
     private void setPublicItem() {
         ItemStack item = getItem(computer.isPublic() ? Material.CHEST : Material.ENDER_CHEST,"&aComputer Access");
         ItemMeta meta = item.getItemMeta();
+        assert meta != null;
         meta.setLore(List.of("",
                 ChatColor.GOLD+"Status: "+ChatColor.YELLOW+(computer.isPublic() ? "Public" : "Private"),
                 "",

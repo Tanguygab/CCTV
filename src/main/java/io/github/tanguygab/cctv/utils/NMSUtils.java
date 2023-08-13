@@ -83,6 +83,7 @@ public class NMSUtils {
     public final Map<Player, Location> oldLoc = new HashMap<>();
     private final Map<Player, Entity> oldEntity = new HashMap<>();
 
+    @SuppressWarnings("UnstableApiUsage")
     public void setCameraPacket(Player p, Entity entity) {
         if (CCTV.getInstance().getCameras().EXPERIMENTAL_VIEW) {
             try {

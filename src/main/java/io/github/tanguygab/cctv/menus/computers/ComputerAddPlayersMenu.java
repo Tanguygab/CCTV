@@ -12,7 +12,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.Arrays;
@@ -26,7 +25,7 @@ public class ComputerAddPlayersMenu extends ComputerMenu {
 
     @Override
     public void open() {
-        inv = Bukkit.getServer().createInventory(null, 54, lang.getGuiComputerAddPlayer(page+""));
+        inv = Bukkit.getServer().createInventory(null, 54, lang.getGuiComputerAddPlayer(String.valueOf(page)));
 
         fillSlots(0,9);
         inv.setItem(18, getItem(Material.PLAYER_HEAD,lang.GUI_COMPUTER_OPTIONS_ADD_PLAYER));
@@ -39,6 +38,7 @@ public class ComputerAddPlayersMenu extends ComputerMenu {
         list(list,off->{
             ItemStack item = getItem(Material.PLAYER_HEAD, ChatColor.YELLOW + "Player: " + off.getName());
             SkullMeta meta = (SkullMeta)item.getItemMeta();
+            assert meta != null;
             meta.setOwningPlayer(off);
             item.setItemMeta(meta);
             inv.addItem(item);
@@ -59,13 +59,10 @@ public class ComputerAddPlayersMenu extends ComputerMenu {
             case 27,36 -> setPage(slot == 27 ? page+1 : page-1);
             case 45 -> back();
             default -> {
-                if (item == null || item.getType() == Material.AIR) return;
-                ItemMeta meta = item.getItemMeta();
-                if (meta == null || !meta.hasDisplayName()) return;
-                String itemName = ChatColor.stripColor(meta.getDisplayName());
-                if (!itemName.startsWith("Player: ")) return;
-                String player = itemName.substring(8);
+                String player = getItemName(item,"Player: ");
+                if (player == null) return;
                 OfflinePlayer off = Utils.getOfflinePlayer(player);
+                if (off == null) return;
                 computer.addPlayer(off.getUniqueId().toString());
                 setPage(page);
                 p.sendMessage(lang.PLAYER_ADDED);

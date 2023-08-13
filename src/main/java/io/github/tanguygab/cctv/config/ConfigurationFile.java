@@ -115,7 +115,16 @@ public abstract class ConfigurationFile {
 				return map.get(mapKey);
 		return map.get(key);
 	}
-	
+
+	/**
+	 * Returns config option with specified path or null if not present
+	 * @param path - path to the value
+	 * @return value from file or null if not present
+	 */
+	public String getString(String path) {
+		return getString(path, null);
+	}
+
 	/**
 	 * Gets config option with specified path. If the option is not present and defaultValue is not null,
 	 * value is inserted, save() called and defaultValue returned.

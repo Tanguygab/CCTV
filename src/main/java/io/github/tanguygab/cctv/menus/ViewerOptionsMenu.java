@@ -94,18 +94,18 @@ public class ViewerOptionsMenu extends CCTVMenu {
         v.setNightVision(!v.hasNightVision());
         inv.setItem(0, v.hasNightVision() ? Heads.NIGHT_VISION_ON.get() : Heads.NIGHT_VISION_OFF.get());
     }
-    private void zoom(Player p, int zoomlevel) {
+    private void zoom(Player p, int zoomLevel) {
         if (!p.hasPermission("cctv.view.zoom")) {
             p.sendMessage(lang.NO_PERMISSIONS);
             return;
         }
         Inventory inv = p.getOpenInventory().getTopInventory();
-        if (zoomlevel == 0) {
+        if (zoomLevel == 0) {
             p.removePotionEffect(PotionEffectType.SLOW);
             inv.setItem(2, Heads.ZOOM.get());
             return;
         }
-        p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 60000000, zoomlevel - 1, false, false));
-        inv.setItem(2, getItem(Heads.ZOOM,lang.getCameraViewZoom(zoomlevel)));
+        p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 60000000, zoomLevel - 1, false, false));
+        inv.setItem(2, getItem(Heads.ZOOM,lang.getCameraViewZoom(zoomLevel)));
     }
 }

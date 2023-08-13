@@ -73,6 +73,14 @@ public abstract class CCTVMenu {
         menu.previousMenu = this;
     }
 
+    protected String getItemName(ItemStack item, String startsWith) {
+        if (item == null || item.getType() == Material.AIR) return null;
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null || !meta.hasDisplayName()) return null;
+        String name = ChatColor.stripColor(meta.getDisplayName());
+        return name.startsWith(startsWith) ? name.substring(startsWith.length()) : null;
+    }
+
     public static ItemStack getItem(ItemStack item, String name) {
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return item;

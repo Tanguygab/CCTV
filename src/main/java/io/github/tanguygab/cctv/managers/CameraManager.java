@@ -16,8 +16,7 @@ import java.util.*;
 public class CameraManager extends Manager<Camera> {
 
     public boolean EXPERIMENTAL_VIEW;
-    private final Map<String,List<Map<String,Object>>> unloadedWorlds = new HashMap<>();
-
+    private final Map<String,List<String>> unloadedWorlds = new HashMap<>();
     public List<Player> connecting = new ArrayList<>();
 
     public CameraManager() {
@@ -25,7 +24,6 @@ public class CameraManager extends Manager<Camera> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void load() {
         EXPERIMENTAL_VIEW = cctv.getConfiguration().getBoolean("camera.experimental_view",false);
 
@@ -33,30 +31,25 @@ public class CameraManager extends Manager<Camera> {
             EXPERIMENTAL_VIEW = false;
             cctv.getLogger().severe("Experimental View is enabled but your server doesn't support it! Switching back to normal view.");
         }
-        
-        Map<String, Object> cams = file.getValues();
-        cams.forEach((id,cfg)->{
-            Map<String,Object> config = (Map<String, Object>) cfg;
 
-            String w = String.valueOf(config.get("world"));
+        file.getValues().keySet().forEach(id->{
+            String w = file.getString(id+".world");
             World world = Bukkit.getServer().getWorld(w);
             if (world == null) {
-                unloadedWorlds.computeIfAbsent(w.toLowerCase(),wo->new ArrayList<>()).add(new HashMap<>(config) {{
-                    put("id",id);
-                }});
+                unloadedWorlds.computeIfAbsent(w.toLowerCase(),wo->new ArrayList<>()).add(id);
                 return;
             }
-            loadFromConfig(id,config,world);
+            loadFromConfig(id);
         });
     }
 
-    private void loadFromConfig(String id, Map<String,Object> config, World world) {
-        String owner = String.valueOf(config.get("owner"));
-        String skin = String.valueOf(config.getOrDefault("skin", "_DEFAULT_"));
-        boolean enabled = (boolean) config.getOrDefault("enabled",true);
-        boolean shown = (boolean) config.getOrDefault("shown",true);
+    private void loadFromConfig(String id) {
+        String owner = file.getString(id+".owner");
+        String skin = file.getString(id+".skin", "_DEFAULT_");
+        boolean enabled = file.getBoolean(id+".enabled",true);
+        boolean shown = file.getBoolean(id+".shown",true);
 
-        Location loc = Utils.loadLocation(world,config);
+        Location loc = Utils.loadLocation(id,file);
 
         for (Entity entity : loc.getChunk().getEntities()) {
             if ((entity instanceof ArmorStand || entity instanceof Creeper) && entity.getCustomName() != null && entity.getCustomName().equals("CAM-" + id))
@@ -121,7 +114,8 @@ public class CameraManager extends Manager<Camera> {
     }
 
     public void create(String id, Location loc, Player player, String skin) {
-        if (id != null && id.contains(".")) {
+        if (id == null) id = getRandomID();
+        if (id.contains(".")) {
             player.sendMessage(lang.DOT_IN_ID);
             return;
         }
@@ -129,7 +123,6 @@ public class CameraManager extends Manager<Camera> {
             player.sendMessage(lang.CAMERA_ALREADY_EXISTS);
             return;
         }
-        if (id == null) id = String.valueOf(Utils.getRandomNumber(999999, this));
 
         create(id,player.getUniqueId().toString(),loc,true,true,skin,true);
         player.sendMessage(lang.CAMERA_CREATE+"\n"+lang.getCameraID(id));
@@ -183,23 +176,13 @@ public class CameraManager extends Manager<Camera> {
         }, vm.TIME_TO_CONNECT * 20L);
     }
 
-    public void rotateHorizontally(Player p, Camera camera, int degrees) {
+    public void rotate(Player p, Camera camera, int degrees, boolean horizontal) {
         if (!p.hasPermission("cctv.view.move")) {
             p.sendMessage(lang.NO_PERMISSIONS);
             return;
         }
-        if (!camera.rotateHorizontally(degrees)) {
-            p.sendMessage(lang.MAX_ROTATION);
-            return;
-        }
-        if (!EXPERIMENTAL_VIEW && cctv.getViewers().exists(p)) p.teleport(camera.getArmorStand().getLocation());
-    }
-    public void rotateVertically(Player p, Camera camera, int degrees) {
-        if (!p.hasPermission("cctv.view.move")) {
-            p.sendMessage(lang.NO_PERMISSIONS);
-            return;
-        }
-        if (!camera.rotateVertically(degrees)) {
+        boolean rotate =  horizontal ? camera.rotateHorizontally(degrees) : camera.rotateVertically(degrees);
+        if (!rotate) {
             p.sendMessage(lang.MAX_ROTATION);
             return;
         }
@@ -208,9 +191,7 @@ public class CameraManager extends Manager<Camera> {
 
     public void loadWorld(World world) {
         String w = world.getName().toLowerCase();
-        if (!unloadedWorlds.containsKey(w)) return;
-        unloadedWorlds.get(w).forEach(cfg->loadFromConfig(String.valueOf(cfg.get("id")),cfg,world));
-        unloadedWorlds.remove(w);
+        if (unloadedWorlds.containsKey(w)) unloadedWorlds.remove(w).forEach(this::loadFromConfig);
     }
 
     public void createCamera(Player p, ItemStack item, Location loc, BlockFace face) {

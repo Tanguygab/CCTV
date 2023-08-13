@@ -19,6 +19,7 @@ public class CustomHeads {
         textures.forEach((name,base64)-> {
             ItemStack item = Heads.createSkull(base64,name);
             ItemMeta meta = item.getItemMeta();
+            assert meta != null;
             meta.getPersistentDataContainer().set(headKey, PersistentDataType.STRING,name);
             item.setItemMeta(meta);
             heads.put(name,item);

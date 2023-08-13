@@ -48,8 +48,8 @@ public class ViewerManager extends Manager<Viewer> {
         BOSSBAR = config.getBoolean("viewers.bossbar",true);
         blockedCmds.addAll(config.getStringList("viewers.blocked-commands",List.of()));
 
-        Map<String,Map<String,Object>> loggedOutViewers = file.getConfigurationSection("logged-out-viewers");
-        loggedOutViewers.forEach((uuid,loc)->viewersQuit.put(UUID.fromString(uuid),Utils.loadLocation(null,loc)));
+        Map<String,Object> loggedOutViewers = file.getConfigurationSection("logged-out-viewers");
+        loggedOutViewers.keySet().forEach(uuid->viewersQuit.put(UUID.fromString(uuid),Utils.loadLocation("logged-out-viewers."+uuid,file)));
         file.set("logged-out-viewers",null);
     }
 
@@ -127,8 +127,8 @@ public class ViewerManager extends Manager<Viewer> {
             return;
         }
         if (itemName.equals(lang.CAMERA_VIEW_OPTION)) cctv.openMenu(p,new ViewerOptionsMenu(p));
-        if (itemName.equals(lang.CAMERA_VIEW_ROTATE_LEFT)) cm.rotateHorizontally(p,get(p).getCamera(), -18);
-        if (itemName.equals(lang.CAMERA_VIEW_ROTATE_RIGHT)) cm.rotateHorizontally(p,get(p).getCamera(), 18);
+        if (itemName.equals(lang.CAMERA_VIEW_ROTATE_LEFT)) cm.rotate(p,get(p).getCamera(), -18,true);
+        if (itemName.equals(lang.CAMERA_VIEW_ROTATE_RIGHT)) cm.rotate(p,get(p).getCamera(), 18,true);
         if (itemName.equals(lang.CAMERA_VIEW_PREVIOUS)) switchCamera(p,true);
         if (itemName.equals(lang.CAMERA_VIEW_NEXT)) switchCamera(p,false);
     }
@@ -146,7 +146,7 @@ public class ViewerManager extends Manager<Viewer> {
         }
 
         List<Camera> cams = new ArrayList<>(computer.getCameras());
-        cams.removeIf(camera->cm.EXPERIMENTAL_VIEW && Utils.distance(viewer.getPlayer().getLocation(),camera.getArmorStand().getLocation()) >= 60);
+        cams.removeIf(camera->cm.EXPERIMENTAL_VIEW && Utils.distance(player.getLocation(),camera.getArmorStand().getLocation()) >= 60);
 
         if (cams.size() <= 1) {
             player.sendMessage(lang.NO_CAMERAS);

@@ -8,7 +8,6 @@ import io.github.tanguygab.cctv.listeners.ItemsAdderEvents;
 import io.github.tanguygab.cctv.menus.CCTVMenu;
 import io.github.tanguygab.cctv.menus.computers.ComputerMainMenu;
 import io.github.tanguygab.cctv.utils.Heads;
-import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -133,7 +132,7 @@ public class ComputerManager extends Manager<Computer> {
             if (loc.equals(computer.getLocation()) || computer.getId().equals(id))
                 return null;
 
-        id = id == null || id.equals("") ? String.valueOf(Utils.getRandomNumber(9999, this)) : id;
+        id = id == null || id.equals("") ? getRandomID() : id;
         Computer computer = new Computer(id,loc,owner,cameras,allowedPlayers,publik,admin);
         put(id,computer);
         return computer;
@@ -141,10 +140,8 @@ public class ComputerManager extends Manager<Computer> {
 
     public void create(String id, Player p, Location loc, boolean admin) {
         Computer computer = create(id,p.getUniqueId().toString(),loc, new ArrayList<>(), new ArrayList<>(),false,admin && p.hasPermission("cctv.admin.computer"));
-        if (computer != null) {
-            p.sendMessage(lang.COMPUTER_CREATE);
-            p.sendMessage(lang.getComputerID(computer.getId()));
-        } else p.sendMessage(lang.COMPUTER_ALREADY_EXISTS);
+        if (computer == null) p.sendMessage(lang.COMPUTER_ALREADY_EXISTS);
+        else p.sendMessage(lang.COMPUTER_CREATE+"\n"+lang.getComputerID(computer.getId()));
     }
 
     public void open(Player p, Computer computer) {

@@ -4,11 +4,13 @@ package io.github.tanguygab.cctv;
 import io.github.tanguygab.cctv.entities.Camera;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -51,11 +53,13 @@ public class CCTVExpansion extends PlaceholderExpansion {
         params = params.substring(8+cam.length());
         return switch (params) {
             case "viewers" -> cctv.getViewers().values().stream()
-                    .filter(v->v.getCamera() == camera)
-                    .map(v->cctv.getServer().getPlayer(UUID.fromString(v.getId())).getName())
+                    .filter(v -> v.getCamera() == camera)
+                    .map(v -> cctv.getServer().getPlayer(UUID.fromString(v.getId())))
+                    .filter(Objects::nonNull)
+                    .map(Player::getName)
                     .collect(Collectors.joining(", "));
-            case "viewercount" -> cctv.getViewers().values().stream().filter(v->v.getCamera() == camera).count()+"";
-            case "is_viewed" -> cctv.getViewers().values().stream().anyMatch(v->v.getCamera() == camera)+"";
+            case "viewercount" -> String.valueOf(cctv.getViewers().values().stream().filter(v -> v.getCamera() == camera).count());
+            case "is_viewed" -> String.valueOf(cctv.getViewers().values().stream().anyMatch(v -> v.getCamera() == camera));
             default -> null;
         };
     }
