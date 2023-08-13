@@ -32,7 +32,7 @@ public class CameraSkinMenu extends CCTVMenu {
         inv.setItem(36, Heads.MENU_PREVIOUS.get());
         inv.setItem(45, getItem(Heads.EXIT,lang.GUI_CAMERA_EXIT));
 
-        list(heads.getHeads(),skin-> inv.addItem(getItem(heads.get(skin),"&eSkin: "+skin.replace("_DEFAULT_","Default"))));
+        list(heads.getHeads(),skin-> inv.addItem(getItem(heads.get(skin),"&eSkin: "+skin)));
         p.openInventory(inv);
     }
 

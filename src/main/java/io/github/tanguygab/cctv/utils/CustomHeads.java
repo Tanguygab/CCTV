@@ -1,7 +1,6 @@
 package io.github.tanguygab.cctv.utils;
 
 import io.github.tanguygab.cctv.CCTV;
-import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -11,16 +10,22 @@ import java.util.*;
 public class CustomHeads {
 
     private final Map<String,ItemStack> heads = new LinkedHashMap<>();
-    private final NamespacedKey headKey = new NamespacedKey(CCTV.getInstance(),"head");
+    private final CCTV cctv = CCTV.getInstance();
 
     public CustomHeads() {
-        heads.put("_DEFAULT_",Heads.CAMERA.get());
-        Map<String,String> textures = CCTV.getInstance().getConfiguration().getConfigurationSection("camera.skins");
+        ItemStack defaultHead = Heads.CAMERA.get();
+        ItemMeta defaultMeta = defaultHead.getItemMeta();
+        assert defaultMeta != null;
+        defaultMeta.getPersistentDataContainer().set(cctv.getCameras().cameraKey, PersistentDataType.STRING,"_DEFAULT_");
+        defaultHead.setItemMeta(defaultMeta);
+        heads.put("_DEFAULT_",defaultHead);
+
+        Map<String,String> textures = cctv.getConfiguration().getConfigurationSection("camera.skins");
         textures.forEach((name,base64)-> {
             ItemStack item = Heads.createSkull(base64,name);
             ItemMeta meta = item.getItemMeta();
             assert meta != null;
-            meta.getPersistentDataContainer().set(headKey, PersistentDataType.STRING,name);
+            meta.getPersistentDataContainer().set(cctv.getCameras().cameraKey, PersistentDataType.STRING,name);
             item.setItemMeta(meta);
             heads.put(name,item);
         });
@@ -34,15 +39,4 @@ public class CustomHeads {
         return heads.getOrDefault(name,Heads.CAMERA.get()).clone();
     }
 
-    public String get(ItemStack item) {
-        ItemMeta meta = item.getItemMeta();
-        if (meta == null || !isCamera(item) || CCTV.getInstance().getLang().CAMERA_ITEM_NAME.equals(meta.getDisplayName())) return "_DEFAULT_";
-        return meta.getPersistentDataContainer().get(headKey, PersistentDataType.STRING);
-    }
-
-    public boolean isCamera(ItemStack item) {
-        ItemMeta meta = item.getItemMeta();
-        if (meta == null) return false;
-        return CCTV.getInstance().getLang().CAMERA_ITEM_NAME.equals(meta.getDisplayName()) || meta.getPersistentDataContainer().has(headKey,PersistentDataType.STRING);
-    }
 }

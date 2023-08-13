@@ -3,36 +3,41 @@ package io.github.tanguygab.cctv.managers;
 import dev.lone.itemsadder.api.CustomStack;
 import io.github.tanguygab.cctv.config.ConfigurationFile;
 import io.github.tanguygab.cctv.config.YamlConfigurationFile;
+import io.github.tanguygab.cctv.entities.Camera;
 import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.listeners.ItemsAdderEvents;
 import io.github.tanguygab.cctv.menus.CCTVMenu;
 import io.github.tanguygab.cctv.menus.computers.ComputerMainMenu;
 import io.github.tanguygab.cctv.utils.Heads;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import io.github.tanguygab.cctv.utils.Utils;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ComputerManager extends Manager<Computer> {
 
     public ItemStack COMPUTER_ITEM;
     public ItemStack ADMIN_COMPUTER_ITEM;
+    public final NamespacedKey computerKey = new NamespacedKey(cctv,"computer");
+    public final NamespacedKey computerCamerasKey = new NamespacedKey(cctv,"computer-cameras");
+    public final NamespacedKey computerPlayersKey = new NamespacedKey(cctv,"computer-players");
+    public final NamespacedKey computerPublicKey = new NamespacedKey(cctv,"computer-public");
 
     public ComputerManager() {
         super("computers.yml");
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void load() {
-        COMPUTER_ITEM = loadComputerMat("block",Material.NETHER_BRICK_STAIRS,lang.COMPUTER_ITEM_NAME);
+        COMPUTER_ITEM = loadComputerMat("block",Material.NETHER_BRICK_STAIRS,lang.COMPUTER_ITEM_NAME,false);
         ConfigurationFile groupCfg = null;
         File groupFile = new File(cctv.getDataFolder(), "cameragroups.yml");
         try {if (groupFile.exists()) groupCfg = new YamlConfigurationFile(null, groupFile);}
@@ -40,46 +45,45 @@ public class ComputerManager extends Manager<Computer> {
         ConfigurationFile finalGroupCfg = groupCfg;
 
         if (cctv.getConfiguration().getBoolean("computer.admin-computer.enabled",false))
-            ADMIN_COMPUTER_ITEM = loadComputerMat("admin-computer.block",Material.POLISHED_BLACKSTONE_STAIRS,lang.COMPUTER_ITEM_NAME_ADMIN);
+            ADMIN_COMPUTER_ITEM = loadComputerMat("admin-computer.block",Material.POLISHED_BLACKSTONE_STAIRS,lang.COMPUTER_ITEM_NAME_ADMIN,true);
 
-        Map<String,Object> map = file.getValues();
-        map.forEach((id, cfg)->{
-            Map<String,Object> config = (Map<String, Object>) cfg;
-            String owner = String.valueOf(config.get("owner"));
-            World world = cctv.getServer().getWorld(String.valueOf(config.get("world")));
-            double x = (double) config.get("x");
-            double y = (double) config.get("y");
-            double z = (double) config.get("z");
-            boolean publik = (boolean) config.getOrDefault("public",false);
-            boolean admin = (boolean) config.getOrDefault("admin",false);
+        file.getValues().keySet().forEach(id->{
+            String owner = file.getString(id+".owner");
+            boolean publik = file.getBoolean(id+".public",false);
+            boolean admin = file.getBoolean(id+".admin",false);
 
             List<String> cameras = null;
-            if (config.containsKey("camera-group")) {
-                String group = String.valueOf(config.get("camera-group"));
-                config.remove("camera-group");
-                if (finalGroupCfg != null && finalGroupCfg.hasConfigOption(group+".cameras"))
-                    cameras = finalGroupCfg.getStringList(group+".cameras");
+            if (file.hasConfigOption(id+".camera-group")) {
+                String group = String.valueOf(file.getString(id + ".camera-group"));
+                file.set(id + ".camera-group", null);
+                if (finalGroupCfg != null && finalGroupCfg.hasConfigOption(group + ".cameras"))
+                    cameras = finalGroupCfg.getStringList(group + ".cameras");
             }
-            if (cameras == null) cameras = config.containsKey("cameras") ? (List<String>) config.get("cameras") : new ArrayList<>();
-            List<String> allowedPlayers = config.containsKey("allowed-players") ? (List<String>) config.get("allowed-players") : new ArrayList<>();
+            if (cameras == null) cameras = file.getStringList(id+".cameras", new ArrayList<>());
+            List<String> allowedPlayers = file.getStringList(id+".allowed-players", new ArrayList<>());
 
-            create(id,owner,new Location(world,x,y,z),cameras,allowedPlayers,publik,admin);
+            create(id,owner,Utils.loadLocation(id,file),cameras,allowedPlayers,publik,admin);
         });
         if (groupFile.exists()) groupFile.delete();
     }
 
 
-    private ItemStack loadComputerMat(String path, Material def, String lang) {
-        ItemStack item = loadComputerMat0(path,def,lang);
-        return item == null ? CCTVMenu.getItem(def,lang) : item;
+    private ItemStack loadComputerMat(String path, Material def, String lang, boolean admin) {
+        ItemStack item = loadComputerMat0(path,def,lang,admin);
+        item = item == null ? CCTVMenu.getItem(def,lang) : item;
+        ItemMeta meta = item.getItemMeta();
+        assert meta != null;
+        meta.getPersistentDataContainer().set(computerKey,PersistentDataType.STRING,admin ? "admin" : "normal");
+        item.setItemMeta(meta);
+        return item;
     }
-    private ItemStack loadComputerMat0(String path, Material def, String lang) {
+    private ItemStack loadComputerMat0(String path, Material def, String lang, boolean admin) {
         String mat = cctv.getConfiguration().getString("computer."+path, def.toString());
         if (mat.startsWith("itemsadder:")) {
             if (!cctv.getServer().getPluginManager().isPluginEnabled("ItemsAdder"))
                 return null;
 
-            cctv.getServer().getPluginManager().registerEvents(new ItemsAdderEvents(this,mat.substring(11)),cctv);
+            cctv.getServer().getPluginManager().registerEvents(new ItemsAdderEvents(this,mat.substring(11),admin),cctv);
             CustomStack stack = CustomStack.getInstance(mat.substring(11));
             if (stack != null && stack.isBlock()) {
                 cctv.getLogger().info("ItemsAdder item "+stack.getNamespace()+" loaded!");
@@ -93,10 +97,15 @@ public class ComputerManager extends Manager<Computer> {
 
         Material material = Material.getMaterial(mat);
         if (material == null) {
-            cctv.getLogger().info("Invalid material for computer! Defaulting to Nether Brick Stairs...");
+            cctv.getLogger().warning("Invalid material for computer! Defaulting to Nether Brick Stairs...");
             return null;
         }
         return CCTVMenu.getItem(material, lang);
+    }
+    public String isComputer(ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null || !meta.getPersistentDataContainer().has(computerKey, PersistentDataType.STRING)) return null;
+        return meta.getPersistentDataContainer().get(computerKey, PersistentDataType.STRING);
     }
 
     @Override
@@ -127,21 +136,47 @@ public class ComputerManager extends Manager<Computer> {
         return list;
     }
 
-    private Computer create(String id, String owner, Location loc, List<String> cameras, List<String> allowedPlayers, boolean publik, boolean admin) {
-        for (Computer computer : values())
-            if (loc.equals(computer.getLocation()) || computer.getId().equals(id))
-                return null;
-
-        id = id == null || id.equals("") ? getRandomID() : id;
+    public void create(String id, String owner, Location loc, List<String> cameras, List<String> allowedPlayers, boolean publik, boolean admin) {
         Computer computer = new Computer(id,loc,owner,cameras,allowedPlayers,publik,admin);
         put(id,computer);
-        return computer;
     }
 
-    public void create(String id, Player p, Location loc, boolean admin) {
-        Computer computer = create(id,p.getUniqueId().toString(),loc, new ArrayList<>(), new ArrayList<>(),false,admin && p.hasPermission("cctv.admin.computer"));
-        if (computer == null) p.sendMessage(lang.COMPUTER_ALREADY_EXISTS);
-        else p.sendMessage(lang.COMPUTER_CREATE+"\n"+lang.getComputerID(computer.getId()));
+    public void create(ItemStack item, Player p, Location loc) {
+        assert item.getItemMeta() != null;
+        PersistentDataContainer data = item.getItemMeta().getPersistentDataContainer();
+        List<String> cameras = new ArrayList<>();
+        if (data.has(computerCamerasKey,PersistentDataType.STRING))
+            cameras.addAll(Arrays.asList(Objects.requireNonNull(data.get(computerCamerasKey, PersistentDataType.STRING)).split("\\.")));
+        List<String> allowedPlayers = new ArrayList<>();
+        if (data.has(computerPlayersKey,PersistentDataType.STRING))
+            allowedPlayers.addAll(Arrays.asList(Objects.requireNonNull(data.get(computerPlayersKey, PersistentDataType.STRING)).split(",")));
+        boolean admin = "admin".equals(data.get(computerKey,PersistentDataType.STRING));
+        boolean publik = Boolean.TRUE.equals(data.get(computerPublicKey, PersistentDataType.BOOLEAN));
+
+        if (!p.hasPermission("cctv.admin.computer")) admin = false;
+        String id = getRandomID();
+        create(id,p.getUniqueId().toString(),loc,cameras,allowedPlayers,publik,admin);
+        p.sendMessage(lang.COMPUTER_CREATE+"\n"+lang.getComputerID(id));
+    }
+
+    public ItemStack breakComputer(Computer computer) {
+        ItemStack item = (computer.isAdmin() ? ADMIN_COMPUTER_ITEM : COMPUTER_ITEM).clone();
+        ItemMeta meta = item.getItemMeta();
+        assert meta != null;
+        PersistentDataContainer data = meta.getPersistentDataContainer();
+
+        if (!computer.getCameras().isEmpty()) {
+            String cameras = computer.getCameras().stream().map(Camera::getId).collect(Collectors.joining("."));
+            data.set(computerCamerasKey, PersistentDataType.STRING, cameras);
+        }
+        if (!computer.getAllowedPlayers().isEmpty()) {
+            String allowedPlayers = String.join(",", computer.getAllowedPlayers());
+            data.set(computerPlayersKey, PersistentDataType.STRING, allowedPlayers);
+        }
+        data.set(computerPublicKey,PersistentDataType.BOOLEAN,computer.isPublic());
+        data.set(computerKey,PersistentDataType.STRING,computer.isAdmin() ? "admin" : "normal");
+        item.setItemMeta(meta);
+        return item;
     }
 
     public void open(Player p, Computer computer) {

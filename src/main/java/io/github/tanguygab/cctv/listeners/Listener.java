@@ -29,7 +29,6 @@ import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -73,11 +72,13 @@ public class Listener implements org.bukkit.event.Listener {
         if (computer == null) return;
         e.setCancelled(true);
         Player p = e.getPlayer();
-        if (!computer.getOwner().equals(p.getUniqueId().toString()) && !p.hasPermission("cctv.computer.other")) return;
+        if (!computer.getOwner().equals(p.getUniqueId().toString()) && !p.hasPermission("cctv.computer.other")) {
+            p.sendMessage(lang.COMPUTER_NOT_ALLOWED);
+            return;
+        }
         e.getBlock().setType(Material.AIR);
 
-        if (p.getGameMode() != GameMode.CREATIVE)
-            Utils.giveOrDrop(p,cpm.COMPUTER_ITEM.clone());
+        Utils.giveOrDrop(p,cpm.breakComputer(computer));
         cpm.delete(computer.getId(),p);
     }
 
@@ -85,13 +86,11 @@ public class Listener implements org.bukkit.event.Listener {
     public void onBlockPlace(BlockPlaceEvent e) {
         Player p = e.getPlayer();
         ItemStack item = e.getItemInHand();
-        boolean isAdminComputer = item.isSimilar(cpm.ADMIN_COMPUTER_ITEM);
-        if (isAdminComputer || item.isSimilar(cpm.COMPUTER_ITEM)) {
-            cpm.create(null, p, e.getBlock().getLocation(), isAdminComputer);
+        if (cpm.isComputer(item) != null) {
+            cpm.create(item, p, e.getBlock().getLocation());
             return;
         }
-        ItemMeta meta = item.getItemMeta();
-        if (meta != null && meta.hasDisplayName() && item.getType() == Material.PLAYER_HEAD && cctv.getCustomHeads().isCamera(item)) {
+        if (cm.isCamera(item)) {
             cm.createCamera(p, item, e.getBlockAgainst().getLocation(), e.getBlockAgainst().getFace(e.getBlockPlaced()));
             e.setCancelled(true);
         }
@@ -180,8 +179,8 @@ public class Listener implements org.bukkit.event.Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player p = event.getPlayer();
-        p.discoverRecipe(Utils.cameraKey);
-        p.discoverRecipe(Utils.computerKey);
+        p.discoverRecipe(cm.cameraKey);
+        p.discoverRecipe(cpm.computerKey);
         if (!cm.EXPERIMENTAL_VIEW)
             for (Viewer viewer : vm.values()) p.hidePlayer(cctv,vm.get(viewer));
         if (!vm.viewersQuit.containsKey(p.getUniqueId())) return;

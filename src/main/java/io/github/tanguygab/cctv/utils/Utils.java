@@ -1,6 +1,5 @@
 package io.github.tanguygab.cctv.utils;
 
-import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.config.ConfigurationFile;
 import io.github.tanguygab.cctv.entities.ID;
 import org.bukkit.*;
@@ -11,9 +10,6 @@ import org.bukkit.util.NumberConversions;
 import java.util.List;
 
 public class Utils {
-
-    public static NamespacedKey cameraKey = new NamespacedKey(CCTV.getInstance(), "camera");
-    public static NamespacedKey computerKey = new NamespacedKey(CCTV.getInstance(), "computer");
 
     public static OfflinePlayer getOfflinePlayer(String player) {
         for (OfflinePlayer off : Bukkit.getServer().getOfflinePlayers())

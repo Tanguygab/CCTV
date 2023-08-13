@@ -36,13 +36,12 @@ cameras:
 computers:
   create: "&aComputer created!"
   delete: "&cComputer deleted!"
-  already-exists: "&cThis block already is a computer!"
   not-found: "&cThis computer doesn't exist!"
   id: "&eComputer ID: %computerID%"
   owner-changed: "&6Computer owner is set to &a%player%&6!"
   player-already-owner: "&cThis player is already the owner of this computer!"
   change-no-perms: "&cYou can only edit your own computers!"
-  not-allowed: "&cYou aren't allowed to open this computer!"
+  not-allowed: "&cYou aren't allowed to interact with this computer!"
   item-name: "&9Computer"
   item-name-admin: "&dAdmin Computer"
   camera:

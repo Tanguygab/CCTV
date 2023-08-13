@@ -1,5 +1,8 @@
 package io.github.tanguygab.cctv.config;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,7 +21,7 @@ public abstract class ConfigurationFile {
 	//comments in the header of the file
 	
 	//config values
-	protected Map<String, Object> values;
+	@Getter protected Map<String, Object> values;
 	
 	//the file
 	protected File file;
@@ -50,22 +53,6 @@ public abstract class ConfigurationFile {
 	 */
 	public String getName() {
 		return file.getName();
-	}
-	
-	/**
-	 * Returns the root map
-	 * @return all values
-	 */
-	public Map<String, Object> getValues(){
-		return values;
-	}
-	
-	/**
-	 * Replaces values with provided map
-	 * @param values - values to replace map with
-	 */
-	public void setValues(Map<String, Object> values){
-		this.values = values;
 	}
 	
 	/**

@@ -1,6 +1,5 @@
 package io.github.tanguygab.cctv.managers;
 
-import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.entities.Camera;
 import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.utils.Heads;
@@ -9,12 +8,16 @@ import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.EulerAngle;
 
 import java.util.*;
 
 public class CameraManager extends Manager<Camera> {
 
+
+    public final NamespacedKey cameraKey = new NamespacedKey(cctv,"camera");
     public boolean EXPERIMENTAL_VIEW;
     private final Map<String,List<String>> unloadedWorlds = new HashMap<>();
     public List<Player> connecting = new ArrayList<>();
@@ -56,6 +59,12 @@ public class CameraManager extends Manager<Camera> {
                 entity.remove();
         }
         create(id,owner,loc,enabled,shown,skin,loc.getChunk().isLoaded());
+    }
+
+    public boolean isCamera(ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) return false;
+        return meta.getPersistentDataContainer().has(cameraKey, PersistentDataType.STRING);
     }
 
     public void unload() {
@@ -214,7 +223,12 @@ public class CameraManager extends Manager<Camera> {
         loc.setY(loc.getY()-y);
         loc.setYaw(yaw);
 
-        create(null, loc, p,CCTV.getInstance().getCustomHeads().get(item));
+
+        ItemMeta meta = item.getItemMeta();
+        String skin = "_DEFAULT_";
+        if (meta != null && isCamera(item))
+            skin = meta.getPersistentDataContainer().get(cameraKey, PersistentDataType.STRING);
+        create(null, loc, p, skin);
     }
 
 }

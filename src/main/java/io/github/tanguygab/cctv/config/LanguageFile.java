@@ -56,7 +56,6 @@ public class LanguageFile extends YamlConfigurationFile {
 
     public final String COMPUTER_CREATE = get("computers.create", "&aComputer created!");
     public final String COMPUTER_DELETE = get("computers.delete", "&cComputer deleted!");
-    public final String COMPUTER_ALREADY_EXISTS = get("computers.already-exists", "&cThis block already is a computer!");
     public final String COMPUTER_NOT_FOUND = get("computers.not-found", "&cThis computer doesn't exist!");
     private final String COMPUTER_ID = get("computers.id", "&eComputer ID: %computerID%");
     public String getComputerID(String id) {
@@ -68,7 +67,7 @@ public class LanguageFile extends YamlConfigurationFile {
     }
     public final String COMPUTER_PLAYER_ALREADY_OWNER = get("computers.player-already-owner","&cThis player is already the owner of this computer!");
     public final String COMPUTER_CHANGE_NO_PERMS = get("computers.change-no-perms", "&cYou can only edit your own computers!");
-    public final String COMPUTER_NOT_ALLOWED = get("computers.not-allowed", "&cYou aren't allowed to open this computer!");
+    public final String COMPUTER_NOT_ALLOWED = get("computers.not-allowed", "&cYou aren't allowed to interact with this computer!");
     public final String COMPUTER_ITEM_NAME = get("computers.item-name", "&9Computer");
     public final String COMPUTER_ITEM_NAME_ADMIN = get("computers.item-name-creative", "&dAdmin Computer");
     public final String COMPUTER_CAMERA_ADDED = get("computers.camera.added","&aCamera added to the computer!");

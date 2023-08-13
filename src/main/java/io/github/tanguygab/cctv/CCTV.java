@@ -16,7 +16,6 @@ import io.github.tanguygab.cctv.menus.CCTVMenu;
 import io.github.tanguygab.cctv.utils.CustomHeads;
 import io.github.tanguygab.cctv.utils.Heads;
 import io.github.tanguygab.cctv.utils.NMSUtils;
-import io.github.tanguygab.cctv.utils.Utils;
 
 import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
@@ -133,7 +132,7 @@ public class CCTV extends JavaPlugin {
             put("L","DAYLIGHT_DETECTOR");
             put("C","COMPARATOR");
         }};
-        loadRecipe(Utils.cameraKey, Heads.CAMERA.get(),"camera",List.of("RPP","PDG","LCP"),camItems);
+        loadRecipe(cameras.cameraKey, Heads.CAMERA.get(),"camera",List.of("RPP","PDG","LCP"),camItems);
 
         Map<String,String> computerItems = new HashMap<>() {{
             put("I","REDSTONE");
@@ -143,7 +142,7 @@ public class CCTV extends JavaPlugin {
             put("R","REPEATER");
             put("T","REDSTONE_TORCH");
         }};
-        loadRecipe(Utils.computerKey,computers.COMPUTER_ITEM.clone(),"computer",List.of("ITI","PGP","RCR"),computerItems);
+        loadRecipe(computers.computerKey,computers.COMPUTER_ITEM.clone(),"computer",List.of("ITI","PGP","RCR"),computerItems);
     }
     private void loadRecipe(NamespacedKey key, ItemStack item, String cfg, List<String> defShape, Map<String,String> defItems) {
         if (getServer().getRecipe(key) != null) getServer().removeRecipe(key);

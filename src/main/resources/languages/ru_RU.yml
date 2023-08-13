@@ -33,7 +33,6 @@ cameras:
 computers:
   create: '&aКомпьютер создан!'
   delete: '&cКомпьютер удален!'
-  already-exists: '&cЭтот блок уже является компьютером!'
   not-found: '&cЭтот компьютер не найден!'
   id: '&eID компьютера: %computerID%'
   owner-changed: '&6Владелец компьютера установлен на &a%player%&6!'
