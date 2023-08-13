@@ -1,7 +1,6 @@
 package io.github.tanguygab.cctv.utils;
 
 import io.github.tanguygab.cctv.CCTV;
-import org.bukkit.ChatColor;
 import org.bukkit.boss.BarColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -23,6 +22,25 @@ public class CustomHeads {
         defaultHead.setItemMeta(defaultMeta);
         heads.put("_DEFAULT_",defaultHead);
 
+        Map<String,BarColor> colors = new HashMap<>() {{
+            put("&c",BarColor.RED);
+            put("&4",BarColor.RED);
+            put("&e",BarColor.YELLOW);
+            put("&6",BarColor.YELLOW);
+            put("&a",BarColor.GREEN);
+            put("&2",BarColor.GREEN);
+            put("&b",BarColor.BLUE);
+            put("&1",BarColor.BLUE);
+            put("&3",BarColor.BLUE);
+            put("&9",BarColor.BLUE);
+            put("&d",BarColor.PINK);
+            put("&5",BarColor.PURPLE);
+            put("&f",BarColor.WHITE);
+            put("&7",BarColor.WHITE);
+            put("&8",BarColor.WHITE);
+            put("&0",BarColor.PURPLE);
+        }};
+
         Map<String,String> textures = cctv.getConfiguration().getConfigurationSection("camera.skins");
         textures.forEach((name,base64)-> {
             ItemStack item = Heads.createSkull(base64,name);
@@ -30,14 +48,10 @@ public class CustomHeads {
             assert meta != null;
             meta.getPersistentDataContainer().set(cctv.getCameras().cameraKey, PersistentDataType.STRING,name);
             item.setItemMeta(meta);
-            for (BarColor color : BarColor.values()) {
-                ChatColor equivalent = color == BarColor.PINK ? ChatColor.LIGHT_PURPLE
-                        : color == BarColor.PURPLE ? ChatColor.DARK_PURPLE
-                        : ChatColor.valueOf(color.toString());
-                if (name.contains(equivalent.toString()))
-                    barColors.put(name,color);
-            }
             heads.put(name,item);
+            for (String color : colors.keySet())
+                if (name.contains(color))
+                    barColors.put(name, colors.get(color));
         });
     }
 
@@ -50,6 +64,6 @@ public class CustomHeads {
     }
 
     public BarColor getBarColor(String skin) {
-        return barColors.getOrDefault(skin,BarColor.YELLOW);
+        return barColors.getOrDefault(skin,BarColor.PURPLE);
     }
 }

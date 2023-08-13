@@ -74,10 +74,15 @@ public abstract class CCTVMenu {
     }
 
     protected String getItemName(ItemStack item, String startsWith) {
+        return getItemName(item,startsWith,true);
+    }
+    protected String getItemName(ItemStack item, String startsWith, boolean stripColors) {
         if (item == null || item.getType() == Material.AIR) return null;
         ItemMeta meta = item.getItemMeta();
         if (meta == null || !meta.hasDisplayName()) return null;
-        String name = ChatColor.stripColor(meta.getDisplayName());
+        String name = meta.getDisplayName();
+        if (stripColors) name = ChatColor.stripColor(name);
+        else name = name.replace(ChatColor.COLOR_CHAR,'&');
         return name.startsWith(startsWith) ? name.substring(startsWith.length()) : null;
     }
 

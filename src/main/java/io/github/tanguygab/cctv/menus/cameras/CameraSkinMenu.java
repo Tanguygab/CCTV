@@ -46,7 +46,8 @@ public class CameraSkinMenu extends CCTVMenu {
             case 27,36 -> setPage(slot == 27 ? page+1 : page-1);
             case 45 -> back();
             default -> {
-                String skin = getItemName(item,"Skin: ");
+                String skin = getItemName(item,"&eSkin: ",false);
+                System.out.println(skin);
                 if (skin == null) return;
                 camera.setSkin(skin.replace("Default","_DEFAULT_"));
                 updateCameraItem();
