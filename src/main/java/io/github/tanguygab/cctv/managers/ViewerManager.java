@@ -144,19 +144,23 @@ public class ViewerManager extends Manager<Viewer> {
             player.sendMessage(lang.SWITCHING_NOT_POSSIBLE);
             return;
         }
-        if (computer.getCameras().size() <= 1) {
+
+        List<Camera> cams = new ArrayList<>(computer.getCameras());
+        cams.removeIf(camera->cm.EXPERIMENTAL_VIEW && Utils.distance(viewer.getPlayer().getLocation(),camera.getArmorStand().getLocation()) >= 60);
+
+        if (cams.size() <= 1) {
             player.sendMessage(lang.NO_CAMERAS);
             return;
         }
 
-        List<Camera> cams = new ArrayList<>(computer.getCameras());
         if (previous) Collections.reverse(cams);
 
         Camera currentCam = viewer.getCamera();
         Camera cam = cams.indexOf(currentCam) == cams.size()-1
                 ? cams.get(0)
                 : cams.get(cams.indexOf(currentCam)+1);
-        cm.viewCameraInstant(cam, viewer);
+
+        viewer.setCamera(cam);
     }
 
 }

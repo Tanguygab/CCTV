@@ -3,22 +3,15 @@ package io.github.tanguygab.cctv.managers;
 import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.entities.Camera;
 import io.github.tanguygab.cctv.entities.Computer;
-import io.github.tanguygab.cctv.entities.Viewer;
 import io.github.tanguygab.cctv.utils.Heads;
 import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Creeper;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.EulerAngle;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CameraManager extends Manager<Camera> {
 
@@ -88,10 +81,8 @@ public class CameraManager extends Manager<Camera> {
             return;
         }
         cam.getArmorStand().remove();
-        if (cam.getCreeper() != null)
-            cam.getCreeper().remove();
-        player.sendMessage(lang.CAMERA_DELETE);
-        player.sendMessage(lang.getCameraID(cam.getId()));
+        if (cam.getCreeper() != null) cam.getCreeper().remove();
+        player.sendMessage(lang.CAMERA_DELETE+"\n"+lang.getCameraID(cam.getId()));
         cctv.getViewers().values().stream().filter(viewer -> viewer.getCamera() == cam).forEach(p -> disconnectFromCamera(Bukkit.getPlayer(p.getId())));
         cctv.getComputers().values().forEach(computer->computer.removeCamera(cam));
         delete(cam.getId());
@@ -103,32 +94,30 @@ public class CameraManager extends Manager<Camera> {
         ArmorStand as = null;
         Creeper creeper = null;
         if (isLoaded) {
-            as = loc.getWorld().spawn(loc, ArmorStand.class);
-            as.setGravity(false);
-            as.setCollidable(false);
-            as.setInvulnerable(true);
-            as.setVisible(false);
-            as.setCustomName("CAM-" + id);
-            as.setSilent(true);
+            as = (ArmorStand) spawnEntity(id,loc.clone(),EntityType.ARMOR_STAND);
+            if (shown) Objects.requireNonNull(as.getEquipment()).setHelmet(Heads.CAMERA.get());
             as.setHeadPose(new EulerAngle(Math.toRadians(loc.getPitch()), 0.0D, 0.0D));
-            if (shown) as.getEquipment().setHelmet(Heads.CAMERA.get());
+            as.setVisible(false);
 
             if (EXPERIMENTAL_VIEW) {
-                loc.add(0, 0.5, 0);
-                creeper = loc.getWorld().spawn(loc, Creeper.class);
-                loc.add(0, -0.5, 0);
-                creeper.setCustomName("CAM-" + id);
+                creeper = (Creeper) spawnEntity(id,loc.clone().add(0,0.5,0),EntityType.CREEPER);
                 creeper.setInvisible(true);
-                creeper.setAI(false);
-                creeper.setInvulnerable(true);
-                creeper.setGravity(false);
-                creeper.setSilent(true);
-                creeper.setCollidable(false);
                 creeper.setExplosionRadius(0);
             }
         }
         Camera camera = new Camera(id,owner,loc,enabled,shown,as,creeper,skin);
         put(id,camera);
+    }
+
+    private LivingEntity spawnEntity(String id, Location loc, EntityType entityType) {
+        LivingEntity entity = (LivingEntity) Objects.requireNonNull(loc.getWorld()).spawnEntity(loc, entityType);
+        entity.setCustomName("CAM-"+id);
+        entity.setInvulnerable(true);
+        entity.setGravity(false);
+        entity.setSilent(true);
+        entity.setCollidable(false);
+        entity.setAI(false);
+        return entity;
     }
 
     public void create(String id, Location loc, Player player, String skin) {
@@ -143,8 +132,7 @@ public class CameraManager extends Manager<Camera> {
         if (id == null) id = String.valueOf(Utils.getRandomNumber(999999, this));
 
         create(id,player.getUniqueId().toString(),loc,true,true,skin,true);
-        player.sendMessage(lang.CAMERA_CREATE);
-        player.sendMessage(lang.getCameraID(id));
+        player.sendMessage(lang.CAMERA_CREATE+"\n"+lang.getCameraID(id));
     }
 
 
@@ -195,18 +183,6 @@ public class CameraManager extends Manager<Camera> {
         }, vm.TIME_TO_CONNECT * 20L);
     }
 
-    public void viewCameraInstant(Camera cam, Viewer viewer) {
-        if (cam == null) {
-            viewer.getPlayer().sendMessage(lang.CAMERA_NOT_FOUND);
-            return;
-        }
-        if (EXPERIMENTAL_VIEW && Utils.distance(viewer.getPlayer().getLocation(),cam.getArmorStand().getLocation()) >= 60) {
-            viewer.getPlayer().sendMessage(lang.CAMERA_TOO_FAR);
-            return;
-        }
-        viewer.setCamera(cam);
-    }
-
     public void rotateHorizontally(Player p, Camera camera, int degrees) {
         if (!p.hasPermission("cctv.view.move")) {
             p.sendMessage(lang.NO_PERMISSIONS);
@@ -240,22 +216,24 @@ public class CameraManager extends Manager<Camera> {
     public void createCamera(Player p, ItemStack item, Location loc, BlockFace face) {
         if (p.getGameMode() == GameMode.SURVIVAL || p.getGameMode() == GameMode.ADVENTURE)
             item.setAmount(item.getAmount()-1);
-        switch (face) {
-            case UP -> setLoc(loc,0.5D,0.5D,0.47D,loc.getYaw()+180.0F);
-            case DOWN -> setLoc(loc,0.5D,0.5D,2.03D,loc.getYaw()+180.0F);
-            case EAST -> setLoc(loc,1.29D,0.5D,1.24D,270.0F);
-            case WEST -> setLoc(loc,-0.29D,0.5D,1.24D,90.0F);
-            case NORTH -> setLoc(loc,0.5D,-0.29D,1.24D,180.0F);
-            case SOUTH -> setLoc(loc,0.5D,1.29D,1.24D,0.0F);
-        }
-        create(null, loc, p,CCTV.getInstance().getCustomHeads().get(item));
-    }
 
-    private void setLoc(Location loc, double x, double z, double y, float yaw) {
+        double x,y,z;
+        float yaw;
+        switch (face) {
+            case UP -> {x=0.5D;z=0.5D;y=0.47D;yaw=loc.getYaw()+180.0F;}
+            case DOWN -> {x=0.5D;z=0.5D;y=2.03D;yaw=loc.getYaw()+180.0F;}
+            case EAST -> {x=1.29D;z=0.5D;y=1.24D;yaw=270.0F;}
+            case WEST -> {x=-0.29D;z=0.5D;y=1.24D;yaw=90.0F;}
+            case NORTH -> {x=0.5D;z=-0.29D;y=1.24D;yaw=180.0F;}
+            case SOUTH -> {x=0.5D;z=1.29D;y=1.24D;yaw=0.0F;}
+            default -> {x=0;z=0;y=0;yaw=0;}
+        }
         loc.setX(loc.getX()+x);
         loc.setZ(loc.getZ()+z);
         loc.setY(loc.getY()-y);
         loc.setYaw(yaw);
+
+        create(null, loc, p,CCTV.getInstance().getCustomHeads().get(item));
     }
 
 }
