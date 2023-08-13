@@ -1,6 +1,8 @@
 package io.github.tanguygab.cctv.utils;
 
 import io.github.tanguygab.cctv.CCTV;
+import org.bukkit.ChatColor;
+import org.bukkit.boss.BarColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -10,6 +12,7 @@ import java.util.*;
 public class CustomHeads {
 
     private final Map<String,ItemStack> heads = new LinkedHashMap<>();
+    private final Map<String,BarColor> barColors = new HashMap<>();
     private final CCTV cctv = CCTV.getInstance();
 
     public CustomHeads() {
@@ -27,6 +30,13 @@ public class CustomHeads {
             assert meta != null;
             meta.getPersistentDataContainer().set(cctv.getCameras().cameraKey, PersistentDataType.STRING,name);
             item.setItemMeta(meta);
+            for (BarColor color : BarColor.values()) {
+                ChatColor equivalent = color == BarColor.PINK ? ChatColor.LIGHT_PURPLE
+                        : color == BarColor.PURPLE ? ChatColor.DARK_PURPLE
+                        : ChatColor.valueOf(color.toString());
+                if (name.contains(equivalent.toString()))
+                    barColors.put(name,color);
+            }
             heads.put(name,item);
         });
     }
@@ -39,4 +49,7 @@ public class CustomHeads {
         return heads.getOrDefault(name,Heads.CAMERA.get()).clone();
     }
 
+    public BarColor getBarColor(String skin) {
+        return barColors.getOrDefault(skin,BarColor.YELLOW);
+    }
 }

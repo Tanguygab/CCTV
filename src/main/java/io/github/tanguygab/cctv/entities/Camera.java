@@ -3,6 +3,7 @@ package io.github.tanguygab.cctv.entities;
 import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.config.LanguageFile;
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.boss.BarColor;
@@ -24,8 +25,8 @@ public class Camera extends ID {
     @Getter private boolean enabled;
     @Getter private boolean shown;
     @Getter private String skin;
-    @Getter private ArmorStand armorStand;
-    @Getter private Creeper creeper;
+    @Getter @Setter private ArmorStand armorStand;
+    @Getter @Setter private Creeper creeper;
     @Getter private BossBar bossbar;
 
     public Camera(String name, String owner, Location loc, boolean enabled, boolean shown, ArmorStand armorStand, Creeper creeper, String skin) {
@@ -36,9 +37,9 @@ public class Camera extends ID {
         setLocation(loc);
         setEnabled(enabled);
         setShown(shown);
-        setSkin(skin);
         if (CCTV.getInstance().getViewers().BOSSBAR)
-            this.bossbar = Bukkit.getServer().createBossBar(name, BarColor.BLUE, BarStyle.SOLID);
+            this.bossbar = Bukkit.getServer().createBossBar(name, BarColor.YELLOW, BarStyle.SOLID);
+        setSkin(skin);
     }
 
     @Override
@@ -138,17 +139,11 @@ public class Camera extends ID {
             Objects.requireNonNull(armorStand.getEquipment()).setHelmet(shown ? CCTV.getInstance().getCustomHeads().get(skin) : null);
     }
 
-    public void setArmorStand(ArmorStand armorStand) {
-        this.armorStand = armorStand;
-    }
-    public void setCreeper(Creeper creeper) {
-        this.creeper = creeper;
-    }
-
     public void setSkin(String skin) {
         this.skin = skin;
         set("skin",skin);
         setShown(shown);
+        if (bossbar != null) bossbar.setColor(cctv.getCustomHeads().getBarColor(skin));
     }
 
     public boolean is(Entity entity) {
