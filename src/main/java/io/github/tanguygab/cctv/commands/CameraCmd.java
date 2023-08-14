@@ -39,7 +39,7 @@ public class CameraCmd extends Command<Camera> {
                 String skin = "_DEFAULT_";
                 if (args.length > 2) {
                     String[] skinArg = Arrays.copyOfRange(args,2,args.length);
-                    skin = String.join(" ",skinArg).replace("Default","_DEFAULT_");
+                    skin = String.join(" ",skinArg);
                 }
                 p.getInventory().addItem(cctv.getCustomHeads().get(skin));
                 p.sendMessage(ChatColor.GREEN + "Place down this item to create a camera!");
@@ -61,9 +61,9 @@ public class CameraCmd extends Command<Camera> {
                 p.spigot().sendMessage(list("Cameras",cm.get(p),"view","Click to view!",page));
             }
             case "connected" -> {
-                Camera camera = checkExist(p,true,args);
+                Camera camera = checkExist(p,args);
                 if (camera != null)
-                    p.sendMessage(lang.getCameraViewCount(Math.toIntExact(cctv.getViewers().values().stream().filter(viewer->viewer.getCamera()==camera).count()),camera.getId()));
+                    p.sendMessage(lang.getCameraViewCount(Math.toIntExact(cctv.getViewers().values().stream().filter(viewer->viewer.getCamera()==camera).count()),camera.getName()));
             }
             case "disconnect" -> cm.disconnectFromCamera(p);
             case "teleport" -> {
@@ -71,17 +71,17 @@ public class CameraCmd extends Command<Camera> {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
-                Camera camera = checkExist(p,true,args);
+                Camera camera = checkExist(p,args);
                 if (camera != null) p.teleport(camera.getArmorStand());
             }
             case "movehere" -> {
-                Camera camera = checkExist(p,true,args);
+                Camera camera = checkExist(p,args);
                 if (camera == null) return;
                 camera.setLocation(p.getLocation());
                 p.sendMessage(lang.CAMERA_MOVED);
             }
             case "rename" -> {
-                Camera camera = checkExist(p,true,args);
+                Camera camera = checkExist(p,args);
                 if (camera == null) return;
 
                 if (args.length < 4) {
@@ -94,7 +94,7 @@ public class CameraCmd extends Command<Camera> {
                 else p.sendMessage(lang.CAMERA_ALREADY_EXISTS);
             }
             case "setowner" -> {
-                Camera camera = checkExist(p,true,args);
+                Camera camera = checkExist(p,args);
                 if (camera == null) return;
 
                 if (args.length < 4) {
@@ -128,7 +128,7 @@ public class CameraCmd extends Command<Camera> {
                 }
                 p.sendMessage(i+" entities removed.");
             }
-            default -> sender.spigot().sendMessage(helpPage("Camera commands",
+            default -> helpPage(p,"Camera commands",
                     "get:Get the camera item",
                     "create <name>:Create a new camera",
                     "list:Get the list of all cameras",
@@ -137,17 +137,17 @@ public class CameraCmd extends Command<Camera> {
                     "teleport <camera>:Teleport to the camera",
                     "movehere <camera>:Move the camera to your location",
                     "rename <camera> <name>:Rename the camera",
-                    "setowner <camera> <player>:Set the camera's owner"));
+                    "setowner <camera> <player>:Set the camera's owner");
         }
     }
 
     public List<String> onTabComplete(CommandSender sender, String[] args) {
         return switch (args.length) {
-            case 2 -> List.of("get","create","list","connected","return","teleport","movehere","rename","setowner");
+            case 2 -> List.of("get","create","list","connected","disconnect","teleport","movehere","rename","setowner");
             case 3 -> switch (args[1].toLowerCase()) {
-                case "create","list","return" -> null;
+                case "create","list","disconnect" -> null;
                 case "get" -> cctv.getCustomHeads().getHeads();
-                default -> sender instanceof Player p ? cm.get(p) : Utils.list(cm.values());
+                default -> sender instanceof Player p ? cm.get(p) : cm.values().stream().map(Camera::getName).toList();
             };
             case 4 -> switch (args[1].toLowerCase()) {
                 case "setowner" -> Arrays.stream(Bukkit.getOfflinePlayers()).map(OfflinePlayer::getName).toList();

@@ -1,6 +1,8 @@
 package io.github.tanguygab.cctv.managers;
 
 import io.github.tanguygab.cctv.entities.Camera;
+import io.github.tanguygab.cctv.entities.CameraGroup;
+import io.github.tanguygab.cctv.entities.Computable;
 import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.utils.Heads;
 import io.github.tanguygab.cctv.utils.Utils;
@@ -35,30 +37,57 @@ public class CameraManager extends Manager<Camera> {
             cctv.getLogger().severe("Experimental View is enabled but your server doesn't support it! Switching back to normal view.");
         }
 
-        file.getValues().keySet().forEach(id->{
-            String w = file.getString(id+".world");
+        file.getValues().keySet().forEach(name->{
+            String w = file.getString(name+".world");
             World world = Bukkit.getServer().getWorld(w);
             if (world == null) {
-                unloadedWorlds.computeIfAbsent(w.toLowerCase(),wo->new ArrayList<>()).add(id);
+                unloadedWorlds.computeIfAbsent(w.toLowerCase(),wo->new ArrayList<>()).add(name);
                 return;
             }
-            loadFromConfig(id);
+            loadFromConfig(name);
         });
     }
 
-    private void loadFromConfig(String id) {
-        String owner = file.getString(id+".owner");
-        String skin = file.getString(id+".skin", "_DEFAULT_");
-        boolean enabled = file.getBoolean(id+".enabled",true);
-        boolean shown = file.getBoolean(id+".shown",true);
+    @Override
+    public void unload() {
+        map.values().forEach(cam-> {
+            saveToConfig(cam);
+            cam.getArmorStand().remove();
+            if (cam.getCreeper() != null)
+                cam.getCreeper().remove();
+        });
+    }
 
-        Location loc = Utils.loadLocation(id,file);
+    @Override
+    protected void loadFromConfig(String name) {
+        String owner = file.getString(name+".owner");
+        String skin = file.getString(name+".skin", "_DEFAULT_");
+        boolean enabled = file.getBoolean(name+".enabled",true);
+        boolean shown = file.getBoolean(name+".shown",true);
+
+        Location loc = Utils.loadLocation(name,file);
 
         for (Entity entity : loc.getChunk().getEntities()) {
-            if ((entity instanceof ArmorStand || entity instanceof Creeper) && entity.getCustomName() != null && entity.getCustomName().equals("CAM-" + id))
+            if ((entity instanceof ArmorStand || entity instanceof Creeper) && entity.getCustomName() != null && entity.getCustomName().equals("CAM-" + name))
                 entity.remove();
         }
-        create(id,owner,loc,enabled,shown,skin,loc.getChunk().isLoaded());
+        create(name,owner,loc,enabled,shown,skin,loc.getChunk().isLoaded());
+    }
+
+    @Override
+    protected void saveToConfig(Camera camera) {
+        String name = camera.getName();
+        set(name,"owner",camera.getOwner());
+        Location loc = camera.getLocation();
+        set(name,"world", Objects.requireNonNull(loc.getWorld()).getName());
+        set(name,"x",loc.getX());
+        set(name,"y",loc.getY());
+        set(name,"z",loc.getZ());
+        set(name,"pitch", loc.getPitch());
+        set(name,"yaw", loc.getYaw());
+        set(name,"enabled",camera.isEnabled());
+        set(name,"shown",camera.isShown());
+        set(name,"skin",camera.getSkin());
     }
 
     public boolean isCamera(ItemStack item) {
@@ -67,53 +96,46 @@ public class CameraManager extends Manager<Camera> {
         return meta.getPersistentDataContainer().has(cameraKey, PersistentDataType.STRING);
     }
 
-    public void unload() {
-        map.forEach((id, cam)-> {
-            cam.getArmorStand().remove();
-            if (cam.getCreeper() != null)
-                cam.getCreeper().remove();
-        });
-    }
-
     @Override
-    public void delete(String id, Player player) {
-        Camera cam = get(id);
+    public void delete(String name, Player player) {
+        Camera cam = get(name);
         if (cam == null) {
             player.sendMessage(lang.CAMERA_NOT_FOUND);
             return;
         }
         cam.getArmorStand().remove();
         if (cam.getCreeper() != null) cam.getCreeper().remove();
-        player.sendMessage(lang.CAMERA_DELETE+"\n"+lang.getCameraID(cam.getId()));
-        cctv.getViewers().values().stream().filter(viewer -> viewer.getCamera() == cam).forEach(p -> disconnectFromCamera(Bukkit.getPlayer(p.getId())));
+        player.sendMessage(lang.CAMERA_DELETE+"\n"+lang.getCameraName(cam.getName()));
+        cctv.getViewers().values().stream().filter(viewer -> viewer.getCamera() == cam).forEach(p -> disconnectFromCamera(Bukkit.getPlayer(p.getUuid())));
         cctv.getComputers().values().forEach(computer->computer.removeCamera(cam));
-        delete(cam.getId());
+        delete(cam.getName());
         Utils.giveOrDrop(player,cctv.getCustomHeads().get(cam.getSkin()));
     }
 
-    public void create(String id, String owner, Location loc, boolean enabled, boolean shown, String skin, boolean isLoaded) {
-        if (exists(id)) return;
+    public Camera create(String name, String owner, Location loc, boolean enabled, boolean shown, String skin, boolean isLoaded) {
+        if (exists(name)) return null;
         ArmorStand as = null;
         Creeper creeper = null;
         if (isLoaded) {
-            as = (ArmorStand) spawnEntity(id,loc.clone(),EntityType.ARMOR_STAND);
+            as = (ArmorStand) spawnEntity(name,loc.clone(),EntityType.ARMOR_STAND);
             if (shown) Objects.requireNonNull(as.getEquipment()).setHelmet(Heads.CAMERA.get());
             as.setHeadPose(new EulerAngle(Math.toRadians(loc.getPitch()), 0.0D, 0.0D));
             as.setVisible(false);
 
             if (EXPERIMENTAL_VIEW) {
-                creeper = (Creeper) spawnEntity(id,loc.clone().add(0,0.5,0),EntityType.CREEPER);
+                creeper = (Creeper) spawnEntity(name,loc.clone().add(0,0.5,0),EntityType.CREEPER);
                 creeper.setInvisible(true);
                 creeper.setExplosionRadius(0);
             }
         }
-        Camera camera = new Camera(id,owner,loc,enabled,shown,as,creeper,skin);
-        put(id,camera);
+        Camera camera = new Camera(name,owner,loc,enabled,shown,as,creeper,skin);
+        put(name,camera);
+        return camera;
     }
 
-    private LivingEntity spawnEntity(String id, Location loc, EntityType entityType) {
+    private LivingEntity spawnEntity(String name, Location loc, EntityType entityType) {
         LivingEntity entity = (LivingEntity) Objects.requireNonNull(loc.getWorld()).spawnEntity(loc, entityType);
-        entity.setCustomName("CAM-"+id);
+        entity.setCustomName("CAM-"+name);
         entity.setInvulnerable(true);
         entity.setGravity(false);
         entity.setSilent(true);
@@ -122,19 +144,18 @@ public class CameraManager extends Manager<Camera> {
         return entity;
     }
 
-    public void create(String id, Location loc, Player player, String skin) {
-        if (id == null) id = getRandomID();
-        if (id.contains(".")) {
-            player.sendMessage(lang.DOT_IN_ID);
+    public void create(String name, Location loc, Player player, String skin) {
+        if (name == null) name = getRandomID();
+        if (name.contains(".")) {
+            player.sendMessage(lang.DOT_IN_NAME);
             return;
         }
-        if (exists(id)) {
+        if (exists(name)) {
             player.sendMessage(lang.CAMERA_ALREADY_EXISTS);
             return;
         }
-
-        create(id,player.getUniqueId().toString(),loc,true,true,skin,true);
-        player.sendMessage(lang.CAMERA_CREATE+"\n"+lang.getCameraID(id));
+        saveToConfig(create(name,player.getUniqueId().toString(),loc,true,true,skin,true));
+        player.sendMessage(lang.CAMERA_CREATE+"\n"+lang.getCameraName(name));
     }
 
 
@@ -148,7 +169,7 @@ public class CameraManager extends Manager<Camera> {
         List<String> cameras = new ArrayList<>();
         for (Camera camera : values())
             if (camera.getOwner().equals(p.getUniqueId().toString()) || p.hasPermission("cctv.camera.other"))
-                cameras.add(camera.getId());
+                cameras.add(camera.getName());
         return cameras;
     }
     public Camera get(Location loc) {
@@ -158,7 +179,7 @@ public class CameraManager extends Manager<Camera> {
         return null;
     }
 
-    public void viewCamera(Player p, Camera cam, Computer computer) {
+    public void viewCamera(Player p, Camera cam, Computable group, Computer computer) {
         if (cam == null) {
             p.sendMessage(lang.CAMERA_NOT_FOUND);
             return;
@@ -180,7 +201,7 @@ public class CameraManager extends Manager<Camera> {
         p.sendTitle(" ", lang.CAMERA_CONNECTING, 0, vm.TIME_TO_CONNECT*20, 0);
         connecting.add(p);
         Bukkit.getScheduler().scheduleSyncDelayedTask(cctv,  () -> {
-            vm.createPlayer(p, cam, computer);
+            vm.createPlayer(p, cam, group, computer);
             connecting.remove(p);
         }, vm.TIME_TO_CONNECT * 20L);
     }

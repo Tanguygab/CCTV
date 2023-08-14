@@ -22,14 +22,14 @@ public class CameraMenu extends CCTVMenu {
 
     @Override
     public void open() {
-        inv = Bukkit.getServer().createInventory(null, 45, lang.getGuiCamera(camera.getId()));
+        inv = Bukkit.getServer().createInventory(null, 45, lang.getGuiCamera(camera.getName()));
 
         fillSlots(0,1,2,3,4,5,6,7,8,9,17,18,26,27,35,36,37,38,39,41,42,43);
         inv.setItem(15,getItem(cctv.getCustomHeads().get(camera.getSkin()),lang.GUI_CAMERA_CHANGE_SKIN));
         updateVisibilityItem();
         updateEnabledItem();
-        inv.setItem(33,getItem(Material.NAME_TAG,"&aRename Camera"));
-        inv.setItem(24,getItem(Material.ITEM_FRAME,"&aView"));
+        inv.setItem(33,getItem(Material.NAME_TAG,lang.GUI_CAMERA_RENAME));
+        inv.setItem(24,getItem(Material.ITEM_FRAME,lang.GUI_CAMERA_VIEW));
 
         inv.setItem(11,Heads.ROTATE_UP.get());
         inv.setItem(19,Heads.ROTATE_LEFT.get());
@@ -43,13 +43,13 @@ public class CameraMenu extends CCTVMenu {
 
     private void updateVisibilityItem() {
         inv.setItem(23,camera.isShown()
-                ? getItem(Material.ENDER_EYE,"&aCamera Shown")
-                : getItem(Material.ENDER_PEARL,"&cCamera Hidden"));
+                ? getItem(Material.ENDER_EYE,lang.GUI_CAMERA_SHOWN)
+                : getItem(Material.ENDER_PEARL,lang.GUI_CAMERA_HIDDEN));
     }
     private void updateEnabledItem() {
         inv.setItem(25,camera.isEnabled()
-                ? getItem(Material.REDSTONE_TORCH,"&aCamera Enabled")
-                : getItem(Material.LEVER,"&cCamera Disabled"));
+                ? getItem(Material.REDSTONE_TORCH,lang.GUI_CAMERA_ENABLED)
+                : getItem(Material.LEVER,lang.GUI_CAMERA_DISABLED));
     }
 
     @Override
@@ -63,7 +63,7 @@ public class CameraMenu extends CCTVMenu {
             }
             case 24 -> {
                 p.closeInventory();
-                cm.viewCamera(p, camera, null);
+                cm.viewCamera(p,camera,null,null);
             }
             case 25 -> {
                 camera.setEnabled(!camera.isEnabled());
@@ -82,7 +82,7 @@ public class CameraMenu extends CCTVMenu {
             case 40 -> back();
             case 44 -> {
                 p.closeInventory();
-                cm.delete(camera.getId(), p);
+                cm.delete(camera.getName(), p);
             }
         }
     }

@@ -16,67 +16,51 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.EulerAngle;
 
 import java.util.Objects;
-import java.util.UUID;
 
-public class Camera extends ID {
+public class Camera implements Computable {
 
-    @Getter private String owner;
+    @Getter @Setter private String name;
+    @Getter @Setter private String owner;
     @Getter private Location location;
     @Getter private boolean enabled;
     @Getter private boolean shown;
     @Getter private String skin;
     @Getter @Setter private ArmorStand armorStand;
     @Getter @Setter private Creeper creeper;
-    @Getter private BossBar bossbar;
+    @Getter private final BossBar bossbar;
 
     public Camera(String name, String owner, Location loc, boolean enabled, boolean shown, ArmorStand armorStand, Creeper creeper, String skin) {
-        super(name,CCTV.getInstance().getCameras());
-        setOwner(owner);
+        this.name = name;
+        this.owner = owner;
         this.armorStand = armorStand;
         this.creeper = creeper;
         setLocation(loc);
-        setEnabled(enabled);
-        setShown(shown);
-        if (CCTV.getInstance().getViewers().BOSSBAR)
-            this.bossbar = Bukkit.getServer().createBossBar(name, BarColor.YELLOW, BarStyle.SOLID);
-        setSkin(skin);
+        this.enabled = enabled;
+        this.shown = shown;
+        this.bossbar = CCTV.getInstance().getViewers().BOSSBAR ? Bukkit.getServer().createBossBar(name, BarColor.YELLOW, BarStyle.SOLID) : null;
+        this.skin = skin;
     }
 
     @Override
-    protected void save() {
-        setOwner(owner);
-        setLocation(location);
-        setEnabled(enabled);
-        setShown(shown);
-        setSkin(skin);
+    public boolean contains(Computable computable) {
+        return computable == this;
+    }
+    @Override
+    public Camera get(Viewer viewer) {
+        return this;
     }
 
     public boolean rename(String newName) {
-        if (CCTV.getInstance().getCameras().exists(newName)) {
-            return false;
+        if (CCTV.getInstance().getCameras().rename(name,newName)) {
+            name = newName;
+            armorStand.setCustomName("CAM-" + name);
+            return true;
         }
-        setId(newName);
-        CCTV.getInstance().getComputers().values().forEach(computer->{
-            if (computer.getCameras().contains(this))
-                computer.saveCams();
-        });
-        armorStand.setCustomName("CAM-"+getId());
-        return true;
-    }
-
-    public void setOwner(String owner) {
-        this.owner = owner;
-        set("owner",owner);
+        return false;
     }
 
     public void setLocation(Location loc) {
         this.location = loc;
-        set("world", Objects.requireNonNull(loc.getWorld()).getName());
-        set("x", loc.getX());
-        set("y", loc.getY());
-        set("z", loc.getZ());
-        set("pitch", loc.getPitch());
-        set("yaw", loc.getYaw());
         if (armorStand != null) {
             armorStand.teleport(loc);
             armorStand.setHeadPose(new EulerAngle(Math.toRadians(loc.getPitch()), 0.0D, 0.0D));
@@ -99,10 +83,7 @@ public class Camera extends ID {
         if (newYaw < Math.round(check-36.0F) || newYaw > Math.round(check+36.0F)) return false;
         asLoc.setYaw(newYaw);
         armorStand.teleport(asLoc);
-        asLoc.add(0,0.5,0);
-        if (creeper != null)
-            creeper.teleport(asLoc);
-        asLoc.add(0,-0.5,0);
+        if (creeper != null) creeper.teleport(asLoc.clone().add(0,0.5,0));
         return true;
     }
     public boolean rotateVertically(int degrees) {
@@ -116,13 +97,11 @@ public class Camera extends ID {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-        set("enabled", enabled);
         if (enabled) return;
         LanguageFile lang = CCTV.getInstance().getLang();
         for (Viewer viewer : CCTV.getInstance().getViewers().values()) {
             if (viewer.getCamera() != this) continue;
-            Player target = Bukkit.getServer().getPlayer(UUID.fromString(viewer.getId()));
-            if (target == null) continue;
+            Player target = viewer.getPlayer();
             if (!target.hasPermission("cctv.camera.view.override") && !target.hasPermission("cctv.admin")) {
                 target.sendTitle(lang.CAMERA_OFFLINE,"",0,15,0);
                 CCTV.getInstance().getCameras().disconnectFromCamera(target);
@@ -134,16 +113,14 @@ public class Camera extends ID {
 
     public void setShown(boolean shown) {
         this.shown = shown;
-        set("shown",shown);
-        if (armorStand != null)
-            Objects.requireNonNull(armorStand.getEquipment()).setHelmet(shown ? CCTV.getInstance().getCustomHeads().get(skin) : null);
+        if (armorStand == null) return;
+        Objects.requireNonNull(armorStand.getEquipment()).setHelmet(shown ? CCTV.getInstance().getCustomHeads().get(skin) : null);
     }
 
     public void setSkin(String skin) {
         this.skin = skin;
-        set("skin",skin);
         setShown(shown);
-        if (bossbar != null) bossbar.setColor(cctv.getCustomHeads().getBarColor(skin));
+        if (bossbar != null) bossbar.setColor(CCTV.getInstance().getCustomHeads().getBarColor(skin));
     }
 
     public boolean is(Entity entity) {
@@ -153,7 +130,7 @@ public class Camera extends ID {
                 return true;
             }
         }
-        if (entity instanceof ArmorStand as) {
+        if (entity instanceof ArmorStand as && armorStand != null) {
             if (armorStand.getUniqueId().equals(as.getUniqueId())) {
                 if (armorStand != as) armorStand = as;
                 return true;

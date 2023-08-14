@@ -1,7 +1,6 @@
 package io.github.tanguygab.cctv.config;
 
 import lombok.Getter;
-import lombok.Setter;
 
 import java.io.File;
 import java.io.IOException;
@@ -128,10 +127,10 @@ public abstract class ConfigurationFile {
 	/**
 	 * Returns config option with specified path or null if not present
 	 * @param path - path to the value
-	 * @return value from file or null if not present
+	 * @return value from file or a new ArrayList if not present
 	 */
 	public List<String> getStringList(String path) {
-		return getStringList(path, null);
+		return getStringList(path, new ArrayList<>());
 	}
 	
 	/**

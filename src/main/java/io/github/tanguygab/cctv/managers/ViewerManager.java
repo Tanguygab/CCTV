@@ -2,6 +2,7 @@ package io.github.tanguygab.cctv.managers;
 
 import io.github.tanguygab.cctv.config.ConfigurationFile;
 import io.github.tanguygab.cctv.entities.Camera;
+import io.github.tanguygab.cctv.entities.Computable;
 import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.entities.Viewer;
 import io.github.tanguygab.cctv.menus.CCTVMenu;
@@ -49,12 +50,13 @@ public class ViewerManager extends Manager<Viewer> {
         blockedCmds.addAll(config.getStringList("viewers.blocked-commands",List.of()));
 
         Map<String,Object> loggedOutViewers = file.getConfigurationSection("logged-out-viewers");
-        loggedOutViewers.keySet().forEach(uuid->viewersQuit.put(UUID.fromString(uuid),Utils.loadLocation("logged-out-viewers."+uuid,file)));
+        loggedOutViewers.keySet().forEach(this::loadFromConfig);
         file.set("logged-out-viewers",null);
     }
 
+    @Override
     public void unload() {
-        values().forEach(v-> cctv.getCameras().disconnectFromCamera(get(v)));
+        values().forEach(v-> cctv.getCameras().disconnectFromCamera(v.getPlayer()));
         viewersQuit.forEach((uuid,loc)->{
             Map<String,Object> locMap = new HashMap<>();
             locMap.put("world",loc.getWorld() != null ? loc.getWorld().getName() : "");
@@ -66,6 +68,14 @@ public class ViewerManager extends Manager<Viewer> {
             file.set("logged-out-viewers."+uuid,locMap);
         });
     }
+
+    @Override
+    protected void loadFromConfig(String uuid) {
+        viewersQuit.put(UUID.fromString(uuid),Utils.loadLocation("logged-out-viewers."+uuid,file));
+    }
+
+    @Override
+    protected void saveToConfig(Viewer value) {}
 
     @SuppressWarnings("UnstableApiUsage")
     public void delete(Player p) {
@@ -79,23 +89,19 @@ public class ViewerManager extends Manager<Viewer> {
         p.removePotionEffect(PotionEffectType.NIGHT_VISION);
         p.setCanPickupItems(true);
         p.showEntity(cctv, viewer.getCamera().getArmorStand());
-        delete(viewer.getId());
+        delete(viewer.getUuid().toString());
     }
     public Viewer get(Player p) {
         return get(p.getUniqueId().toString());
-    }
-
-    public Player get(Viewer viewer) {
-        return Bukkit.getServer().getPlayer(UUID.fromString(viewer.getId()));
     }
 
     public boolean exists(Player p) {
         return exists(p.getUniqueId().toString());
     }
 
-    public void createPlayer(Player p, Camera cam, Computer computer) {
-        Viewer viewer = new Viewer(p,cam,computer);
-        put(viewer.getId(),viewer);
+    public void createPlayer(Player p, Camera cam, Computable group, Computer computer) {
+        Viewer viewer = new Viewer(p,cam,group,computer);
+        put(viewer.getUuid().toString(),viewer);
 
         p.setCanPickupItems(false);
         giveViewerItems(p,computer);
@@ -145,7 +151,7 @@ public class ViewerManager extends Manager<Viewer> {
             return;
         }
 
-        List<Camera> cams = new ArrayList<>(computer.getCameras());
+        List<Computable> cams = new ArrayList<>(computer.getCameras());
         cams.removeIf(camera->cm.EXPERIMENTAL_VIEW && Utils.distance(player.getLocation(),camera.getArmorStand().getLocation()) >= 60);
 
         if (cams.size() <= 1) {
@@ -155,12 +161,14 @@ public class ViewerManager extends Manager<Viewer> {
 
         if (previous) Collections.reverse(cams);
 
-        Camera currentCam = viewer.getCamera();
-        Camera cam = cams.indexOf(currentCam) == cams.size()-1
-                ? cams.get(0)
-                : cams.get(cams.indexOf(currentCam)+1);
+        Computable currentCam = viewer.getCamera();
+        Computable computable = currentCam.next(viewer)
+                ? currentCam.get(viewer)
+                : cams.indexOf(currentCam) == cams.size()-1
+                    ? cams.get(0)
+                    : cams.get(cams.indexOf(currentCam)+1);
 
-        viewer.setCamera(cam);
+        viewer.setCamera(computable);
     }
 
 }

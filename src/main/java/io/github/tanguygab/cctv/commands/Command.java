@@ -31,13 +31,16 @@ public abstract class Command<T> {
     }
 
     @SuppressWarnings("unchecked")
-    protected T checkExist(Player player, boolean isCam, String[] args) {
+    protected T checkExist(Player player, String[] args) {
         if (args.length < 3) {
-            player.sendMessage(ChatColor.RED + "Please specify a "+(isCam ? "camera" : "computer")+" name!");
+            player.sendMessage(ChatColor.RED + "Please specify a "+type+" name!");
             return null;
         }
+        boolean isCam = type.equals("");
         T obj = (T) (isCam ? cctv.getCameras() : cctv.getComputers()).get(args[2]);
+
         String owner = obj == null ? "" : isCam ? ((Camera)obj).getOwner() : ((Computer)obj).getOwner();
+
         if (obj == null || (!owner.equals(player.getUniqueId().toString()) && noPerm(player, ".other"))) {
             player.sendMessage(isCam ? lang.CAMERA_NOT_FOUND : lang.COMPUTER_NOT_FOUND);
             return null;
@@ -60,7 +63,7 @@ public abstract class Command<T> {
         comp.setBold(false);
         return comp;
     }
-    protected TextComponent helpPage(String info, String... cmds) {
+    protected void helpPage(Player player, String info, String... commands) {
         TextComponent comp = new TextComponent();
         comp.setColor(ChatColor.GOLD);
         TextComponent strikeThrough = new TextComponent("\n                                        ");
@@ -69,7 +72,7 @@ public abstract class Command<T> {
         TextComponent infoComp = new TextComponent("\n"+info);
         infoComp.setBold(true);
         comp.addExtra(infoComp);
-        for (String str : cmds) {
+        for (String str : commands) {
             String[] els = str.split(":");
             comp.addExtra(comp("\n - ",ChatColor.GRAY));
             TextComponent cmdComp2 = new TextComponent("/cctv "+type+" "+els[0]);
@@ -79,7 +82,7 @@ public abstract class Command<T> {
             comp.addExtra(comp(els[1],ChatColor.YELLOW));
         }
         comp.addExtra(strikeThrough);
-        return comp;
+        player.spigot().sendMessage(comp);
     }
     protected TextComponent list(String name, List<String> list, String cmd, String hover, int page) {
         Map<Integer,List<String>> pages = new HashMap<>();

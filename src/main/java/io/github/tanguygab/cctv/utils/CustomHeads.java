@@ -10,17 +10,17 @@ import java.util.*;
 
 public class CustomHeads {
 
+    private final ItemStack defaultHead;
     private final Map<String,ItemStack> heads = new LinkedHashMap<>();
     private final Map<String,BarColor> barColors = new HashMap<>();
     private final CCTV cctv = CCTV.getInstance();
 
     public CustomHeads() {
-        ItemStack defaultHead = Heads.CAMERA.get();
+        defaultHead = Heads.CAMERA.get();
         ItemMeta defaultMeta = defaultHead.getItemMeta();
         assert defaultMeta != null;
         defaultMeta.getPersistentDataContainer().set(cctv.getCameras().cameraKey, PersistentDataType.STRING,"_DEFAULT_");
         defaultHead.setItemMeta(defaultMeta);
-        heads.put("_DEFAULT_",defaultHead);
 
         Map<String,BarColor> colors = new HashMap<>() {{
             put("&c",BarColor.RED);
@@ -56,11 +56,11 @@ public class CustomHeads {
     }
 
     public List<String> getHeads() {
-        return heads.keySet().stream().map(n->n.replace("_DEFAULT_","Default")).toList();
+        return new ArrayList<>(heads.keySet());
     }
 
     public ItemStack get(String name) {
-        return heads.getOrDefault(name,Heads.CAMERA.get()).clone();
+        return heads.getOrDefault(name,defaultHead).clone();
     }
 
     public BarColor getBarColor(String skin) {

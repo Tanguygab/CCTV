@@ -1,6 +1,6 @@
 package io.github.tanguygab.cctv.commands;
 
-import io.github.tanguygab.cctv.entities.Camera;
+import io.github.tanguygab.cctv.entities.Computable;
 import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.managers.ComputerManager;
 import io.github.tanguygab.cctv.utils.Utils;
@@ -59,14 +59,14 @@ public class ComputerCmd extends Command<Computer> {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
-                Computer computer = checkExist(p,false,args);
+                Computer computer = checkExist(p,args);
                 if (computer == null) return;
                 Location loc = computer.getLocation().clone();
                 loc.add(1.0D,0.5D,0.5D);
                 p.teleport(loc);
             }
             case "setowner" -> {
-                Computer computer = checkExist(p,false,args);
+                Computer computer = checkExist(p,args);
                 if (computer == null) return;
                 if (args.length < 4) {
                     p.sendMessage(ChatColor.RED + "Please specify a new owner!");
@@ -86,30 +86,30 @@ public class ComputerCmd extends Command<Computer> {
                 p.sendMessage(lang.getComputerOwnerChanged(newOwner.getName()));
             }
             case "info" -> {
-                Computer computer = checkExist(p,false,args);
+                Computer computer = checkExist(p,args);
                 if (computer == null) return;
                 OfflinePlayer off = Bukkit.getServer().getOfflinePlayer(UUID.fromString(computer.getOwner()));
                 String owner = off.getName() == null ? "Unknown" : off.getName();
                 TextComponent comp = comp("Computer Info:",ChatColor.GOLD);
                 comp.setBold(true);
-                comp.addExtra(comp("\nName: ", computer.getId()));
+                comp.addExtra(comp("\nName: ", computer.getName()));
                 comp.addExtra(comp("\nOwner: ", owner));
                 comp.addExtra(comp("\nCameras:",ChatColor.GOLD));
 
-                for (Camera cam : computer.getCameras()) {
-                    TextComponent camComp = comp("\n - "+cam.getId(),ChatColor.YELLOW);
+                for (Computable cam : computer.getCameras()) {
+                    TextComponent camComp = comp("\n - "+cam.getName(),ChatColor.YELLOW);
                     camComp.setBold(false);
                     comp.addExtra(camComp);
                 }
                 p.spigot().sendMessage(comp);
             }
-            default -> sender.spigot().sendMessage(helpPage("Computer commands",
+            default -> helpPage(p,"Computer commands",
                     "get:Get the computer item",
                     "list:Get the list of all computers",
                     "open <computer>:Open the computer's menu",
                     "teleport <computer>:Teleport to the computer",
                     "setowner <computer> <player>:Set the computer's owner",
-                    "info <group>:Get the computer's info"));
+                    "info <group>:Get the computer's info");
         }
     }
 
@@ -118,7 +118,7 @@ public class ComputerCmd extends Command<Computer> {
             case 2 -> List.of("get","list","teleport","setowner","info");
             case 3 -> switch (args[1].toLowerCase()) {
                 case "get","list" -> null;
-                default -> sender instanceof Player p ? cpm.get(p) : Utils.list(cpm.values());
+                default -> sender instanceof Player p ? cpm.get(p) : cpm.values().stream().map(Computer::getName).toList();
             };
             case 4 -> args[1].equalsIgnoreCase("setowner") ? Arrays.stream(Bukkit.getOfflinePlayers()).map(OfflinePlayer::getName).toList() : null;
             default -> null;

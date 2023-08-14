@@ -79,7 +79,7 @@ public class Listener implements org.bukkit.event.Listener {
         e.getBlock().setType(Material.AIR);
 
         Utils.giveOrDrop(p,cpm.breakComputer(computer));
-        cpm.delete(computer.getId(),p);
+        cpm.delete(computer.getName(),p);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST,ignoreCancelled = true)
@@ -124,7 +124,7 @@ public class Listener implements org.bukkit.event.Listener {
             return;
         }
 
-        if (!cm.get(p).contains(camera.getId())) return;
+        if (!cm.get(p).contains(camera.getName())) return;
         cctv.openMenu(p,new CameraMenu(p,camera));
     }
 
@@ -182,7 +182,7 @@ public class Listener implements org.bukkit.event.Listener {
         p.discoverRecipe(cm.cameraKey);
         p.discoverRecipe(cpm.computerKey);
         if (!cm.EXPERIMENTAL_VIEW)
-            for (Viewer viewer : vm.values()) p.hidePlayer(cctv,vm.get(viewer));
+            for (Viewer viewer : vm.values()) p.hidePlayer(cctv,viewer.getPlayer());
         if (!vm.viewersQuit.containsKey(p.getUniqueId())) return;
         p.teleport(vm.viewersQuit.get(p.getUniqueId()));
         vm.viewersQuit.remove(p.getUniqueId());

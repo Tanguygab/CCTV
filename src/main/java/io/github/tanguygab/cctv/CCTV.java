@@ -1,21 +1,11 @@
 package io.github.tanguygab.cctv;
 
-import io.github.tanguygab.cctv.api.CCTVAPI;
-import io.github.tanguygab.cctv.commands.CameraCmd;
-import io.github.tanguygab.cctv.commands.ComputerCmd;
-import io.github.tanguygab.cctv.config.ConfigurationFile;
-import io.github.tanguygab.cctv.config.LanguageFile;
-import io.github.tanguygab.cctv.config.YamlConfigurationFile;
-import io.github.tanguygab.cctv.listeners.ComputersEvents;
-import io.github.tanguygab.cctv.listeners.ViewersEvents;
-import io.github.tanguygab.cctv.listeners.Listener;
-import io.github.tanguygab.cctv.managers.CameraManager;
-import io.github.tanguygab.cctv.managers.ComputerManager;
-import io.github.tanguygab.cctv.managers.ViewerManager;
+import io.github.tanguygab.cctv.commands.*;
+import io.github.tanguygab.cctv.config.*;
+import io.github.tanguygab.cctv.listeners.*;
+import io.github.tanguygab.cctv.managers.*;
 import io.github.tanguygab.cctv.menus.CCTVMenu;
-import io.github.tanguygab.cctv.utils.CustomHeads;
-import io.github.tanguygab.cctv.utils.Heads;
-import io.github.tanguygab.cctv.utils.NMSUtils;
+import io.github.tanguygab.cctv.utils.*;
 
 import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
@@ -33,7 +23,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,28 +38,30 @@ public class CCTV extends JavaPlugin {
     @Getter private CCTVExpansion expansion;
 
     private CameraCmd cameraCmd;
+    private GroupCmd groupCmd;
     private ComputerCmd computerCmd;
 
     @Getter private CameraManager cameras;
+    @Getter private CameraGroupManager groups;
     @Getter private ComputerManager computers;
     @Getter private ViewerManager viewers;
 
-    private final List<String> toggledCoords = new ArrayList<>();
+    private List<String> toggledCoords;
 
     @Override
     public void onEnable() {
         instance = this;
-        new CCTVAPI(this);
         try {
             configuration = new YamlConfigurationFile(getResource("config.yml"), new File(getDataFolder(), "config.yml"));
             String langPath = "languages/"+ configuration.getString("lang","en_US")+".yml";
             InputStream langResource = getResource(langPath);
             lang = new LanguageFile(langResource == null ? getResource("languages/en_US.yml") : langResource, new File(getDataFolder(), langPath));
             cameras = new CameraManager();
+            groups = new CameraGroupManager();
             viewers = new ViewerManager();
             computers = new ComputerManager();
 
-            viewers.file.getStringList("toggled-computer-coords", new ArrayList<>());
+            toggledCoords = viewers.file.getStringList("toggled-computer-coords");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -79,6 +70,7 @@ public class CCTV extends JavaPlugin {
         nms = new NMSUtils();
 
         cameraCmd = new CameraCmd();
+        groupCmd = new GroupCmd();
         computerCmd = new ComputerCmd();
 
         viewers.load();
@@ -189,6 +181,7 @@ public class CCTV extends JavaPlugin {
         switch (arg) {
             case "camera" -> cameraCmd.onCommand(sender,args);
             case "computer" -> computerCmd.onCommand(sender,args);
+            case "group" -> groupCmd.onCommand(sender,args);
             case "reload" -> {
                 if (!sender.hasPermission("cctv.reload")) {
                     sender.sendMessage(lang.NO_PERMISSIONS);
@@ -205,6 +198,8 @@ public class CCTV extends JavaPlugin {
                     + "   &8| &eDefault help page\n"
                     + " &7- &6/cctv camera\n"
                     + "   &8| &eCamera commands\n"
+                    + " &7- &6/cctv group\n"
+                    + "   &8| &eGroup commands\n"
                     + " &7- &6/cctv computer\n"
                     + "   &8| &eComputer commands\n"
                     + " &7- &6/cctv reload\n"
@@ -218,8 +213,9 @@ public class CCTV extends JavaPlugin {
         String arg = args.length > 1 ? args[0] : "";
         return switch (arg) {
             case "camera" -> cameraCmd.onTabComplete(sender,args);
+            case "group" -> groupCmd.onTabComplete(sender,args);
             case "computer" -> computerCmd.onTabComplete(sender,args);
-            default -> List.of("camera","computer","reload");
+            default -> List.of("camera","group","computer","reload");
         };
     }
 }

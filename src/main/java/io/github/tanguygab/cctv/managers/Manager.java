@@ -29,23 +29,29 @@ public abstract class Manager<T> {
     }
 
     public abstract void load();
+    public abstract void unload();
 
     public boolean exists(String id) {
         return map.containsKey(id);
     }
-    public T get(String id) {
-        return map.get(id);
+    public T get(String key) {
+        return map.get(key);
     }
     public List<T> values() {
         return new ArrayList<>(map.values());
     }
     @SuppressWarnings("unchecked")
-    public void put(String id, Object element) {
-        map.put(id, (T) element);
+    public void put(String key, Object element) {
+        map.put(key, (T) element);
     }
-    public void delete(String id) {
-        map.remove(id);
-        if (file != null) file.set(id,null);
+    public boolean rename(String name, String newName) {
+        if (exists(newName)) return false;
+        map.put(newName,map.remove(name));
+        return true;
+    }
+    public void delete(String key) {
+        map.remove(key);
+        if (file != null) file.set(key,null);
     }
     public void delete(String id, Player player) {}
 
@@ -53,4 +59,10 @@ public abstract class Manager<T> {
         int number = random.nextInt(999999);
         return map.containsKey(String.valueOf(number)) ? getRandomID() : String.valueOf(number);
     }
+
+    protected void set(String id, String path, Object value) {
+        file.set(id+"."+path,value);
+    }
+    protected abstract void loadFromConfig(String key);
+    protected abstract void saveToConfig(T value);
 }

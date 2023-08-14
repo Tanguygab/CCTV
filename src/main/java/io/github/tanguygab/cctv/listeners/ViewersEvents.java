@@ -87,7 +87,7 @@ public class ViewersEvents implements Listener {
         if (vm.exists(p)) {
             if (!e.getKeepInventory()) {
                 e.getDrops().clear();
-                e.getDrops().addAll(Arrays.asList(vm.get(p).getInv()));
+                e.getDrops().addAll(Arrays.asList(vm.get(p).getInventory()));
             }
             vm.delete(p);
             if (!e.getKeepInventory())

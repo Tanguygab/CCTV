@@ -54,7 +54,7 @@ public class CCTVExpansion extends PlaceholderExpansion {
         return switch (params) {
             case "viewers" -> cctv.getViewers().values().stream()
                     .filter(v -> v.getCamera() == camera)
-                    .map(v -> cctv.getServer().getPlayer(UUID.fromString(v.getId())))
+                    .map(v -> cctv.getServer().getPlayer(UUID.fromString(v.getUuid())))
                     .filter(Objects::nonNull)
                     .map(Player::getName)
                     .collect(Collectors.joining(", "));

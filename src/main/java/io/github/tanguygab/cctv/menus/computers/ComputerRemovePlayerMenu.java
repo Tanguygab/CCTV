@@ -3,16 +3,14 @@ package io.github.tanguygab.cctv.menus.computers;
 import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.menus.ComputerMenu;
 import io.github.tanguygab.cctv.utils.Heads;
-import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.UUID;
 
@@ -24,7 +22,7 @@ public class ComputerRemovePlayerMenu extends ComputerMenu {
 
     @Override
     public void open() {
-        inv = Bukkit.getServer().createInventory(null, 54, lang.getGuiComputerRemovePlayer(page+""));
+        inv = Bukkit.getServer().createInventory(null, 54, lang.getGuiComputerRemovePlayer(page));
 
         fillSlots(0,9,18);
         inv.setItem(27, Heads.MENU_NEXT.get());
@@ -33,10 +31,11 @@ public class ComputerRemovePlayerMenu extends ComputerMenu {
 
         list(computer.getAllowedPlayers(),uuid->{
             OfflinePlayer off = Bukkit.getOfflinePlayer(UUID.fromString(uuid));
-            ItemStack item = getItem(Material.PLAYER_HEAD, ChatColor.YELLOW + "Player: " + off.getName());
+            ItemStack item = getItem(Material.PLAYER_HEAD, off.getName());
             SkullMeta meta = (SkullMeta)item.getItemMeta();
             assert meta != null;
             meta.setOwningPlayer(off);
+            meta.getPersistentDataContainer().set(itemKey, PersistentDataType.STRING,off.getUniqueId().toString());
             item.setItemMeta(meta);
             inv.addItem(item);
         });
@@ -51,10 +50,9 @@ public class ComputerRemovePlayerMenu extends ComputerMenu {
             case 27,36 -> setPage(slot == 27 ? page+1 : page-1);
             case 45 -> back();
             default -> {
-                String player = getItemName(item,"Player: ");
+                String player = getKey(item, itemKey);
                 if (player == null) return;
-                OfflinePlayer off = Utils.getOfflinePlayer(player);
-                if (off == null) return;
+                OfflinePlayer off = Bukkit.getServer().getOfflinePlayer(UUID.fromString(player));
                 computer.removePlayer(off.getUniqueId().toString());
                 setPage(page);
                 p.sendMessage(lang.PLAYER_REMOVED);

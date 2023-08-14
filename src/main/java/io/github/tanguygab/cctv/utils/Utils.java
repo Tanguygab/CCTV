@@ -1,13 +1,10 @@
 package io.github.tanguygab.cctv.utils;
 
 import io.github.tanguygab.cctv.config.ConfigurationFile;
-import io.github.tanguygab.cctv.entities.ID;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.NumberConversions;
-
-import java.util.List;
 
 public class Utils {
 
@@ -16,10 +13,6 @@ public class Utils {
             if (player.equalsIgnoreCase(off.getName()))
                 return off;
         return null;
-    }
-
-    public static List<String> list(List<?> list) {
-        return list.stream().map(el->el instanceof ID id ? id.getId() : String.valueOf(el)).toList();
     }
 
     public static double distance(Location loc1, Location loc2) {

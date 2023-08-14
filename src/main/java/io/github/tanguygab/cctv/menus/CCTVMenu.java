@@ -6,11 +6,13 @@ import io.github.tanguygab.cctv.listeners.Listener;
 import io.github.tanguygab.cctv.utils.Heads;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -23,6 +25,7 @@ public abstract class CCTVMenu {
     protected final Player p;
     public Inventory inv;
     protected CCTV cctv = CCTV.getInstance();
+    protected final NamespacedKey itemKey = new NamespacedKey(cctv,"item");
     protected LanguageFile lang = cctv.getLang();
     public boolean renaming = false;
     private CCTVMenu previousMenu;
@@ -73,16 +76,19 @@ public abstract class CCTVMenu {
         menu.previousMenu = this;
     }
 
-    protected String getItemName(ItemStack item, String startsWith) {
-        return getItemName(item,startsWith,true);
+    protected String getKey(ItemStack item, NamespacedKey key) {
+        if (item == null || item.getType() == Material.AIR) return null;
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null || !meta.getPersistentDataContainer().has(key, PersistentDataType.STRING)) return null;
+        String text = meta.getPersistentDataContainer().get(key,PersistentDataType.STRING);
+        return text == null ? null : text.replace(ChatColor.COLOR_CHAR,'&');
     }
-    protected String getItemName(ItemStack item, String startsWith, boolean stripColors) {
+    protected String getItemName(ItemStack item, String startsWith) {
         if (item == null || item.getType() == Material.AIR) return null;
         ItemMeta meta = item.getItemMeta();
         if (meta == null || !meta.hasDisplayName()) return null;
         String name = meta.getDisplayName();
-        if (stripColors) name = ChatColor.stripColor(name);
-        else name = name.replace(ChatColor.COLOR_CHAR,'&');
+        name = ChatColor.stripColor(name);
         return name.startsWith(startsWith) ? name.substring(startsWith.length()) : null;
     }
 

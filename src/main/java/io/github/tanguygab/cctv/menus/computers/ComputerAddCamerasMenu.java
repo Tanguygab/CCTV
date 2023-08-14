@@ -29,14 +29,14 @@ public class ComputerAddCamerasMenu extends ComputerMenu {
 
         list(cctv.getCameras().get(p).stream().filter(cam->!computer.getCameras().contains(cctv.getCameras().get(cam))).toList(),camera->{
             Camera cam = cctv.getCameras().get(camera);
-            ItemStack item = getItem(cctv.getCustomHeads().get(cam.getSkin()), "&eCamera: " + cam.getId());
+            ItemStack item = getItem(cctv.getCustomHeads().get(cam.getSkin()), lang.GUI_COMPUTER_CAMERA_ITEM_NAME + cam.getName());
             Location loc = cam.getLocation();
             ItemMeta meta = item.getItemMeta();
             assert meta != null;
             meta.setLore(List.of("",ChatColor.translateAlternateColorCodes('&',
-                            "&6X: &7"+ posFormat.format(loc.getX())
-                                    +" &6Y: &7"+ posFormat.format(loc.getY())
-                                    +" &6Z: &7"+ posFormat.format(loc.getZ())
+                    lang.GUI_COMPUTER_CAMERA_ITEM_X+ posFormat.format(loc.getX())
+                                    +lang.GUI_COMPUTER_CAMERA_ITEM_Y+ posFormat.format(loc.getY())
+                                    +lang.GUI_COMPUTER_CAMERA_ITEM_Z+ posFormat.format(loc.getZ())
             )));
             item.setItemMeta(meta);
             inv.addItem(item);
@@ -51,7 +51,7 @@ public class ComputerAddCamerasMenu extends ComputerMenu {
             case 27,36 -> setPage(slot == 27 ? page+1 : page-1);
             case 45 -> back();
             default -> {
-                String camera = getItemName(item,"Camera: ");
+                String camera = getKey(item,cctv.getCameras().cameraKey);
                 if (camera == null) return;
                 Camera cam = cctv.getCameras().get(camera);
                 computer.addCamera(cam);
