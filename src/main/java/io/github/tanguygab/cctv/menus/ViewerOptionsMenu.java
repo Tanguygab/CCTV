@@ -21,11 +21,11 @@ public class ViewerOptionsMenu extends CCTVMenu {
 
     public ViewerOptionsMenu(Player p) {
         super(p);
+        inv = Bukkit.getServer().createInventory(null, InventoryType.HOPPER, lang.CAMERA_VIEW_OPTIONS_TITLE);
     }
 
     @Override
     public void open() {
-        inv = Bukkit.getServer().createInventory(null, InventoryType.HOPPER, lang.CAMERA_VIEW_OPTIONS_TITLE);
         inv.setItem(0, vm.get(p).isNightVision() ? Heads.NIGHT_VISION_ON.get() : Heads.NIGHT_VISION_OFF.get());
 
         inv.setItem(1, getItem(Heads.SPOTTING,lang.CAMERA_VIEW_OPTIONS_SPOT));

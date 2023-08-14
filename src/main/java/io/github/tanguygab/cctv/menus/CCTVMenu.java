@@ -6,17 +6,13 @@ import io.github.tanguygab.cctv.listeners.Listener;
 import io.github.tanguygab.cctv.utils.Heads;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.text.DecimalFormat;
-import java.util.List;
-import java.util.function.Consumer;
 
 public abstract class CCTVMenu {
 
@@ -25,11 +21,9 @@ public abstract class CCTVMenu {
     protected final Player p;
     public Inventory inv;
     protected CCTV cctv = CCTV.getInstance();
-    protected final NamespacedKey itemKey = new NamespacedKey(cctv,"item");
     protected LanguageFile lang = cctv.getLang();
     public boolean renaming = false;
     private CCTVMenu previousMenu;
-    protected int page = 1;
 
     protected CCTVMenu(Player p) {
         this.p = p;
@@ -57,39 +51,9 @@ public abstract class CCTVMenu {
         for (Integer slot : slots) inv.setItem(slot,filler);
     }
 
-
-    protected void setPage(int page) {
-        if (page < 1) return;
-        this.page = page;
-        renaming = true;
-        open();
-    }
-
-    public <T> void list(List<T> list, Consumer<T> run) {
-        for (int i = (page - 1) * 48; i < 48 * page && i < list.size(); i++) {
-            run.accept(list.get(i));
-        }
-    }
-
     public void open(CCTVMenu menu) {
         cctv.openMenu(p,menu);
         menu.previousMenu = this;
-    }
-
-    protected String getKey(ItemStack item, NamespacedKey key) {
-        if (item == null || item.getType() == Material.AIR) return null;
-        ItemMeta meta = item.getItemMeta();
-        if (meta == null || !meta.getPersistentDataContainer().has(key, PersistentDataType.STRING)) return null;
-        String text = meta.getPersistentDataContainer().get(key,PersistentDataType.STRING);
-        return text == null ? null : text.replace(ChatColor.COLOR_CHAR,'&');
-    }
-    protected String getItemName(ItemStack item, String startsWith) {
-        if (item == null || item.getType() == Material.AIR) return null;
-        ItemMeta meta = item.getItemMeta();
-        if (meta == null || !meta.hasDisplayName()) return null;
-        String name = meta.getDisplayName();
-        name = ChatColor.stripColor(name);
-        return name.startsWith(startsWith) ? name.substring(startsWith.length()) : null;
     }
 
     public static ItemStack getItem(ItemStack item, String name) {

@@ -59,7 +59,7 @@ public class ComputerManager extends Manager<Computer> {
             String group = String.valueOf(file.getString(name + ".camera-group"));
             file.set(name + ".camera-group", null);
             cameras = new ArrayList<>();
-            cameras.add("group:"+group);
+            cameras.add("group."+group);
         }
         if (cameras == null) cameras = file.getStringList(name+".cameras");
         List<String> allowedPlayers = file.getStringList(name+".allowed-players");
@@ -76,7 +76,7 @@ public class ComputerManager extends Manager<Computer> {
         set(name,"x",loc.getX());
         set(name,"y",loc.getY());
         set(name,"z",loc.getZ());
-        set(name,"cameras",computer.getCameras().stream().map(c->(c instanceof CameraGroup ? "group:":"")+c.getName()).toList());
+        set(name,"cameras",computer.getCameras().stream().map(c->(c instanceof CameraGroup ? "group.":"")+c.getName()).toList());
         set(name,"allowed-players",computer.getAllowedPlayers());
         set(name,"public",computer.isPublik());
         set(name,"admin",computer.isAdmin());
@@ -153,7 +153,7 @@ public class ComputerManager extends Manager<Computer> {
     public Computer create(String id, String owner, Location loc, List<String> cameras, List<String> allowedPlayers, boolean publik, boolean admin) {
         List<Computable> cameras0 = new ArrayList<>();
         cameras.forEach(str->{
-            Computable computable = str.startsWith("group:") ? cctv.getGroups().get(str) : cctv.getCameras().get(str);
+            Computable computable = str.startsWith("group.") ? cctv.getGroups().get(str.substring(6)) : cctv.getCameras().get(str);
             if (computable != null) cameras0.add(computable);
         });
         Computer computer = new Computer(id,loc,owner,cameras0,allowedPlayers,publik,admin);

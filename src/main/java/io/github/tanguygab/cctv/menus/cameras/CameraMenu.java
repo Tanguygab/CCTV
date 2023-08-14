@@ -18,12 +18,11 @@ public class CameraMenu extends CCTVMenu {
     public CameraMenu(Player p, Camera camera) {
         super(p);
         this.camera = camera;
+        inv = Bukkit.getServer().createInventory(null, 45, lang.getGuiCamera(camera.getName()));
     }
 
     @Override
     public void open() {
-        inv = Bukkit.getServer().createInventory(null, 45, lang.getGuiCamera(camera.getName()));
-
         fillSlots(0,1,2,3,4,5,6,7,8,9,17,18,26,27,35,36,37,38,39,41,42,43);
         inv.setItem(15,getItem(cctv.getCustomHeads().get(camera.getSkin()),lang.GUI_CAMERA_CHANGE_SKIN));
         updateVisibilityItem();

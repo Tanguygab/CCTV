@@ -1,7 +1,7 @@
 package io.github.tanguygab.cctv.menus.computers;
 
 import io.github.tanguygab.cctv.entities.Computer;
-import io.github.tanguygab.cctv.menus.ComputerMenu;
+import io.github.tanguygab.cctv.menus.CCTVMenu;
 import io.github.tanguygab.cctv.utils.Heads;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -13,18 +13,19 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
 
-public class ComputerOptionsMenu extends ComputerMenu {
+public class ComputerOptionsMenu extends CCTVMenu {
+
+    protected final Computer computer;
 
     public ComputerOptionsMenu(Player p, Computer computer) {
-        super(p, computer);
+        super(p);
+        this.computer = computer;
+        inv = Bukkit.getServer().createInventory(null, InventoryType.HOPPER, lang.GUI_COMPUTER_OPTIONS_TITLE);
     }
 
     @Override
     public void open() {
-        inv = Bukkit.getServer().createInventory(null, InventoryType.HOPPER, lang.GUI_COMPUTER_OPTIONS_TITLE);
-
         inv.setItem(0, Heads.COMPUTER_BACK.get());
-
         inv.setItem(3, getItem(Heads.CAMERA.get(),lang.GUI_COMPUTER_OPTIONS_ADD_CAMERAS));
         setPublicItem();
 

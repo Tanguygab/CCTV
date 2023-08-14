@@ -4,10 +4,9 @@ import io.github.tanguygab.cctv.entities.Camera;
 import io.github.tanguygab.cctv.entities.CameraGroup;
 import io.github.tanguygab.cctv.entities.Computable;
 import io.github.tanguygab.cctv.entities.Computer;
+import io.github.tanguygab.cctv.menus.ListMenu;
 import io.github.tanguygab.cctv.menus.cameras.CameraMenu;
-import io.github.tanguygab.cctv.menus.ComputerMenu;
 import io.github.tanguygab.cctv.utils.Heads;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -15,27 +14,37 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ComputerMainMenu extends ComputerMenu {
+public class ComputerMainMenu extends ListMenu {
+
+    protected final Computer computer;
 
     public ComputerMainMenu(Player p, Computer computer) {
-        super(p,computer);
+        super(p);
+        this.computer = computer;
     }
 
     @Override
-    public void open() {
-        inv = Bukkit.getServer().createInventory(null, 54, lang.getGuiComputerDefault(page));
+    protected String getTitle(int page) {
+        return lang.getGuiComputerDefault(page);
+    }
 
-        fillSlots(18);
-        inv.setItem(0, getItem(Heads.OPTIONS,lang.GUI_COMPUTER_DEFAULT_ITEM_OPTION));
-        inv.setItem(9, getItem(Material.COMPASS,(showCoords() ? ChatColor.GREEN : ChatColor.RED)+lang.GUI_COMPUTER_TOGGLE_COORDS));
-        inv.setItem(27, Heads.MENU_NEXT.get());
-        inv.setItem(36, Heads.MENU_PREVIOUS.get());
-        inv.setItem(45, getItem(Heads.EXIT,lang.GUI_COMPUTER_DEFAULT_ITEM_EXIT));
+    private boolean showCoords() {
+        return !cctv.hasToggledComputerCoords(p);
+    }
+
+    private boolean canEdit() {
+        return computer.getOwner().equals(p.getUniqueId().toString()) || p.hasPermission("cctv.computer.other");
+    }
+
+    @Override
+    protected void onOpen() {
+        addClickableItem(45,Heads.EXIT.get());
+        addClickableItem(0, getItem(Heads.OPTIONS,lang.GUI_COMPUTER_DEFAULT_ITEM_OPTION));
+        addClickableItem(9, getItem(Material.COMPASS,(showCoords() ? ChatColor.GREEN : ChatColor.RED)+lang.GUI_COMPUTER_TOGGLE_COORDS));
 
         if (computer.isAdmin()) {
             List<Computable> list = new ArrayList<>();
@@ -43,11 +52,49 @@ public class ComputerMainMenu extends ComputerMenu {
             list.addAll(cctv.getGroups().values());
             list(list,this::loadItem);
         } else list(computer.getCameras(),this::loadItem);
-        p.openInventory(inv);
     }
 
-    private boolean showCoords() {
-        return !cctv.hasToggledComputerCoords(p);
+    @Override
+    protected void onClick(String name, ClickType click) {
+        if (name.startsWith("group.")) {
+            CameraGroup group = cctv.getGroups().get(name.substring(6));
+            if (group == null) {
+                p.sendMessage(lang.GROUP_NOT_FOUND);
+                return;
+            }
+            handleClick(click, group, () -> {
+                if (!group.getOwner().equals(p.getUniqueId().toString()) && !p.hasPermission("cctv.group.other"))
+                    p.sendMessage(lang.NO_PERMISSIONS);
+                //else open(new GroupMenu(p,group));
+            });
+            return;
+        }
+
+        Camera camera = cctv.getCameras().get(name);
+        if (camera == null) {
+            p.sendMessage(lang.CAMERA_NOT_FOUND);
+            return;
+        }
+        handleClick(click,camera,()->{
+            if (!camera.getOwner().equals(p.getUniqueId().toString()) && !p.hasPermission("cctv.camera.other"))
+                p.sendMessage(lang.NO_PERMISSIONS);
+            else open(new CameraMenu(p,camera));
+        });
+    }
+
+    @Override
+    protected void onClick(int slot) {
+        switch (slot) {
+            case 45 -> p.closeInventory();
+            case 0 -> {
+                if (canEdit()) open(new ComputerOptionsMenu(p,computer));
+                else p.sendMessage(lang.COMPUTER_CHANGE_NO_PERMS);
+            }
+            case 9 -> {
+                cctv.toggleComputerCoords(p);
+                open();
+            }
+        }
     }
 
     private void loadItem(Computable computable) {
@@ -66,59 +113,10 @@ public class ComputerMainMenu extends ComputerMenu {
                 + "\n\n"+lang.GUI_COMPUTER_CAMERA_ITEM_GO_UP
                 + "\n"+lang.GUI_COMPUTER_CAMERA_ITEM_GO_DOWN
                 + (canEdit() ? "\n"+lang.GUI_COMPUTER_CAMERA_ITEM_REMOVE : "");
-        lore = ChatColor.translateAlternateColorCodes('&',lore);
         meta.setLore(List.of(lore.split("\n")));
-        meta.getPersistentDataContainer().set(computable instanceof Camera
-                ? cctv.getCameras().cameraKey
-                : itemKey, PersistentDataType.STRING, computable.getName());
+        setMeta(meta,(computable instanceof CameraGroup ? "group.":"")+computable.getName());
         item.setItemMeta(meta);
         inv.addItem(item);
-    }
-
-    private boolean canEdit() {
-        return computer.getOwner().equals(p.getUniqueId().toString()) || p.hasPermission("cctv.computer.other");
-    }
-
-    @Override
-    public void onClick(ItemStack item, int slot, ClickType click) {
-        switch (slot) {
-            case 0 -> {
-                if (canEdit()) open(new ComputerOptionsMenu(p,computer));
-                else p.sendMessage(lang.COMPUTER_CHANGE_NO_PERMS);
-            }
-            case 9 -> {
-                cctv.toggleComputerCoords(p);
-                open();
-            }
-            case 27,36 -> setPage(slot == 27 ? page+1 : page-1);
-            case 45 -> p.closeInventory();
-            default -> {
-                String cam = getKey(item,cctv.getCameras().cameraKey);
-                if (cam == null) {
-                    CameraGroup group = cctv.getGroups().get(getKey(item,itemKey));
-                    if (group == null) {
-                        p.sendMessage(lang.GROUP_NOT_FOUND);
-                        return;
-                    }
-                    handleClick(click,group,()->{
-                        if (!group.getOwner().equals(p.getUniqueId().toString()) && !p.hasPermission("cctv.group.other"))
-                            p.sendMessage(lang.NO_PERMISSIONS);
-                        //else open(new GroupMenu(p,group));
-                    });
-                    return;
-                }
-                Camera camera = cctv.getCameras().get(cam);
-                if (camera == null) {
-                    p.sendMessage(lang.CAMERA_NOT_FOUND);
-                    return;
-                }
-                handleClick(click,camera,()->{
-                    if (!camera.getOwner().equals(p.getUniqueId().toString()) && !p.hasPermission("cctv.camera.other"))
-                        p.sendMessage(lang.NO_PERMISSIONS);
-                    else open(new CameraMenu(p,camera));
-                });
-            }
-        }
     }
 
     private void handleClick(ClickType click, Computable computable, Runnable rightClick) {

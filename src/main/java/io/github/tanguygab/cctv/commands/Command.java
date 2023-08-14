@@ -84,7 +84,7 @@ public abstract class Command<T> {
         comp.addExtra(strikeThrough);
         player.spigot().sendMessage(comp);
     }
-    protected TextComponent list(String name, List<String> list, String cmd, String hover, int page) {
+    protected TextComponent list(String name, List<String> list, String hover, int page) {
         Map<Integer,List<String>> pages = new HashMap<>();
         if (list.size() < 10) pages.put(0,list);
         else list.forEach(el->{
@@ -102,7 +102,6 @@ public abstract class Command<T> {
             TextComponent subComp = comp(" - "+el+"\n",ChatColor.YELLOW);
             subComp.setBold(false);
             subComp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,new Text(new BaseComponent[]{comp(hover,ChatColor.YELLOW)})));
-            subComp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,"/cctv "+type+" "+cmd+" "+el));
             comp.addExtra(subComp);
         });
 

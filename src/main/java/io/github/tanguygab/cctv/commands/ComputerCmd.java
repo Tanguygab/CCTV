@@ -52,7 +52,7 @@ public class ComputerCmd extends Command<Computer> {
                     try {page = Integer.parseInt(args[2]);}
                     catch (Exception ignored) {}
                 }
-                p.spigot().sendMessage(list("Computers",cpm.get(p),"open","Click to open!",page));
+                p.spigot().sendMessage(list("Computers",cpm.get(p), "Click to open!",page));
             }
             case "teleport" -> {
                 if (noPerm(p, "teleport")) {

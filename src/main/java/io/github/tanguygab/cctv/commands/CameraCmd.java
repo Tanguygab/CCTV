@@ -58,7 +58,7 @@ public class CameraCmd extends Command<Camera> {
                     try {page = Integer.parseInt(args[2]);}
                     catch (Exception ignored) {}
                 }
-                p.spigot().sendMessage(list("Cameras",cm.get(p),"view","Click to view!",page));
+                p.spigot().sendMessage(list("Cameras",cm.get(p), "Click to view!",page));
             }
             case "connected" -> {
                 Camera camera = checkExist(p,args);
