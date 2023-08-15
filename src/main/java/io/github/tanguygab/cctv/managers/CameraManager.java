@@ -17,7 +17,6 @@ import java.util.*;
 
 public class CameraManager extends Manager<Camera> {
 
-
     public final NamespacedKey cameraKey = new NamespacedKey(cctv,"camera");
     public boolean EXPERIMENTAL_VIEW;
     private final Map<String,List<String>> unloadedWorlds = new HashMap<>();
@@ -104,15 +103,14 @@ public class CameraManager extends Manager<Camera> {
         }
         cam.getArmorStand().remove();
         if (cam.getCreeper() != null) cam.getCreeper().remove();
-        player.sendMessage(lang.CAMERA_DELETE+"\n"+lang.getCameraName(cam.getName()));
+        player.sendMessage(lang.CAMERA_DELETE,lang.getCameraName(cam.getName()));
         cctv.getViewers().values().stream().filter(viewer -> viewer.getCamera() == cam).forEach(p -> disconnectFromCamera(Bukkit.getPlayer(p.getUuid())));
         cctv.getComputers().values().forEach(computer->computer.removeCamera(cam));
         delete(cam.getName());
         Utils.giveOrDrop(player,cctv.getCustomHeads().get(cam.getSkin()));
     }
 
-    public Camera create(String name, String owner, Location loc, boolean enabled, boolean shown, String skin, boolean isLoaded) {
-        if (exists(name)) return null;
+    private Camera create(String name, String owner, Location loc, boolean enabled, boolean shown, String skin, boolean isLoaded) {
         ArmorStand as = null;
         Creeper creeper = null;
         if (isLoaded) {
@@ -154,7 +152,7 @@ public class CameraManager extends Manager<Camera> {
             return;
         }
         saveToConfig(create(name,player.getUniqueId().toString(),loc,true,true,skin,true));
-        player.sendMessage(lang.CAMERA_CREATE+"\n"+lang.getCameraName(name));
+        player.sendMessage(lang.CAMERA_CREATE,lang.getCameraName(name));
     }
 
 
@@ -170,12 +168,6 @@ public class CameraManager extends Manager<Camera> {
             if (camera.getOwner().equals(p.getUniqueId().toString()) || p.hasPermission("cctv.camera.other"))
                 cameras.add(camera.getName());
         return cameras;
-    }
-    public Camera get(Location loc) {
-        for (Camera cam : values())
-            if (cam.getLocation().equals(loc))
-                return cam;
-        return null;
     }
 
     public void viewCamera(Player p, Camera cam, Computable group, Computer computer) {

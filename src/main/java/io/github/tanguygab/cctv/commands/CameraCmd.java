@@ -52,14 +52,7 @@ public class CameraCmd extends Command<Camera> {
                 if (args.length > 2) cm.create(args[2],p.getLocation(),p,"_DEFAULT_");
                 else p.sendMessage(ChatColor.RED + "Please specify a camera name!");
             }
-            case "list" -> {
-                int page = 1;
-                if (args.length > 2) {
-                    try {page = Integer.parseInt(args[2]);}
-                    catch (Exception ignored) {}
-                }
-                p.spigot().sendMessage(list("Cameras",cm.get(p), "Click to view!",page));
-            }
+            case "list" -> list(p,"Cameras",cm.get(p), "Click to view!",args);
             case "connected" -> {
                 Camera camera = checkExist(p,args);
                 if (camera != null)

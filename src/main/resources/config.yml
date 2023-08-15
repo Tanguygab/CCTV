@@ -36,6 +36,11 @@ viewers:
     - "/suicide"
 camera:
   experimental_view: false
+  group-icons:
+    - CHEST
+    - ENDER_CHEST
+    - SHULKER_BOX
+    - BARREL
   craft:
     enabled: true
     shape:

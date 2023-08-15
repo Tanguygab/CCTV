@@ -71,7 +71,7 @@ public class CameraMenu extends CCTVMenu {
             case 33 -> {
                 Listener.cameraRename.put(p,camera);
                 p.closeInventory();
-                p.sendMessage(lang.CHAT_PROVIDE_NAME+"\n"+lang.CHAT_TYPE_CANCEL);
+                p.sendMessage(lang.CHAT_PROVIDE_NAME,lang.CHAT_TYPE_CANCEL);
             }
             case 11 -> cm.rotate(p,camera, -9,false);
             case 19 -> cm.rotate(p,camera, 18,true);

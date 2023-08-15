@@ -10,6 +10,7 @@ import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -19,7 +20,7 @@ public class CameraGroup implements Computable {
     @Setter private String name;
     @Setter private String owner;
     @Setter private Material icon;
-    private final List<Computable> cameras;
+    private final List<Computable> cameras = new ArrayList<>();
     private final BossBar bossbar = CCTV.getInstance().getViewers().BOSSBAR ? Bukkit.getServer().createBossBar(name, BarColor.YELLOW, BarStyle.SOLID) : null;
 
     public void addCamera(Computable camera) {
@@ -44,7 +45,7 @@ public class CameraGroup implements Computable {
     }
 
     public boolean rename(String newName) {
-        if (CCTV.getInstance().getCameras().rename(name,newName)) {
+        if (CCTV.getInstance().getGroups().rename(name,newName)) {
             name = newName;
             return true;
         }

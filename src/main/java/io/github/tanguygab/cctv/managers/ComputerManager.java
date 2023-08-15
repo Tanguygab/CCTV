@@ -176,7 +176,7 @@ public class ComputerManager extends Manager<Computer> {
         if (!p.hasPermission("cctv.admin.computer")) admin = false;
         String id = getRandomID();
         saveToConfig(create(id,p.getUniqueId().toString(),loc,cameras,allowedPlayers,publik,admin));
-        p.sendMessage(lang.COMPUTER_CREATE+"\n"+lang.getComputerName(id));
+        p.sendMessage(lang.COMPUTER_CREATE,lang.getComputerName(id));
     }
 
     public ItemStack breakComputer(Computer computer) {

@@ -36,7 +36,7 @@ public abstract class Command<T> {
             player.sendMessage(ChatColor.RED + "Please specify a "+type+" name!");
             return null;
         }
-        boolean isCam = type.equals("");
+        boolean isCam = type.equals("camera");
         T obj = (T) (isCam ? cctv.getCameras() : cctv.getComputers()).get(args[2]);
 
         String owner = obj == null ? "" : isCam ? ((Camera)obj).getOwner() : ((Computer)obj).getOwner();
@@ -84,7 +84,16 @@ public abstract class Command<T> {
         comp.addExtra(strikeThrough);
         player.spigot().sendMessage(comp);
     }
-    protected TextComponent list(String name, List<String> list, String hover, int page) {
+
+    private int getPage(String[] args) {
+        if (args.length < 3) return 1;
+        try {return Integer.parseInt(args[2]);}
+        catch (Exception ignored) {return 1;}
+    }
+
+    protected void list(Player p, String name, List<String> list, String hover, String[] args) {
+        int page = getPage(args);
+
         Map<Integer,List<String>> pages = new HashMap<>();
         if (list.size() < 10) pages.put(0,list);
         else list.forEach(el->{
@@ -102,6 +111,7 @@ public abstract class Command<T> {
             TextComponent subComp = comp(" - "+el+"\n",ChatColor.YELLOW);
             subComp.setBold(false);
             subComp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,new Text(new BaseComponent[]{comp(hover,ChatColor.YELLOW)})));
+            subComp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,"/cctv "+type+" info "+el));
             comp.addExtra(subComp);
         });
 
@@ -123,7 +133,7 @@ public abstract class Command<T> {
         comp.addExtra(next);
         comp.addExtra(filler);
 
-        return comp;
+        p.spigot().sendMessage(comp);
     }
 
     public abstract void onCommand(CommandSender sender, String[] args);

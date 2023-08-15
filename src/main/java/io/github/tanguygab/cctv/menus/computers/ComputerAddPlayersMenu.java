@@ -47,7 +47,7 @@ public class ComputerAddPlayersMenu extends ListMenu {
     protected void onClick(int slot) {
         Listener.computerAddPlayer.put(p,computer);
         p.closeInventory();
-        p.sendMessage(lang.CHAT_PROVIDE_PLAYER+"\n"+lang.CHAT_TYPE_CANCEL);
+        p.sendMessage(lang.CHAT_PROVIDE_PLAYER,lang.CHAT_TYPE_CANCEL);
     }
 
     @Override

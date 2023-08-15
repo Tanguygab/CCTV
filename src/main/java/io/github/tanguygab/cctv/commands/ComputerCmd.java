@@ -1,5 +1,6 @@
 package io.github.tanguygab.cctv.commands;
 
+import io.github.tanguygab.cctv.entities.CameraGroup;
 import io.github.tanguygab.cctv.entities.Computable;
 import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.managers.ComputerManager;
@@ -46,14 +47,7 @@ public class ComputerCmd extends Command<Computer> {
                 ).clone());
                 p.sendMessage(ChatColor.GREEN + "Place down this item to create a computer!");
             }
-            case "list" -> {
-                int page = 1;
-                if (args.length > 2) {
-                    try {page = Integer.parseInt(args[2]);}
-                    catch (Exception ignored) {}
-                }
-                p.spigot().sendMessage(list("Computers",cpm.get(p), "Click to open!",page));
-            }
+            case "list" -> list(p,"Computers",cpm.get(p), "Click to open!",args);
             case "teleport" -> {
                 if (noPerm(p, "teleport")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
@@ -98,7 +92,7 @@ public class ComputerCmd extends Command<Computer> {
 
                 for (Computable cam : computer.getCameras()) {
                     TextComponent camComp = comp("\n - "+cam.getName(),ChatColor.YELLOW);
-                    camComp.setBold(false);
+                    camComp.setBold(cam instanceof CameraGroup);
                     comp.addExtra(camComp);
                 }
                 p.spigot().sendMessage(comp);

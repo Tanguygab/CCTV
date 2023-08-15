@@ -152,7 +152,7 @@ public class ViewerManager extends Manager<Viewer> {
         }
 
         List<Computable> cams = new ArrayList<>(computer.getCameras());
-        cams.removeIf(camera->cm.EXPERIMENTAL_VIEW && Utils.distance(player.getLocation(),camera.getArmorStand().getLocation()) >= 60);
+        //cams.removeIf(camera->cm.EXPERIMENTAL_VIEW && Utils.distance(player.getLocation(),camera.getArmorStand().getLocation()) >= 60);
 
         if (cams.size() <= 1) {
             player.sendMessage(lang.NO_CAMERAS);
@@ -168,7 +168,7 @@ public class ViewerManager extends Manager<Viewer> {
                     ? cams.get(0)
                     : cams.get(cams.indexOf(currentCam)+1);
 
-        viewer.setCamera(computable);
+        //viewer.setCamera(computable);
     }
 
 }

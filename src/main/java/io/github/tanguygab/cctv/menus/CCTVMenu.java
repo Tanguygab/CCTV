@@ -53,7 +53,7 @@ public abstract class CCTVMenu {
 
     public void open(CCTVMenu menu) {
         cctv.openMenu(p,menu);
-        menu.previousMenu = this;
+        if (previousMenu != menu) menu.previousMenu = this;
     }
 
     public static ItemStack getItem(ItemStack item, String name) {

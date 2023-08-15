@@ -1,7 +1,11 @@
 package io.github.tanguygab.cctv.utils;
 
 import io.github.tanguygab.cctv.config.ConfigurationFile;
-import org.bukkit.*;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.NumberConversions;
