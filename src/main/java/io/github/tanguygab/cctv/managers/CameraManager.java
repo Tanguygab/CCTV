@@ -1,7 +1,6 @@
 package io.github.tanguygab.cctv.managers;
 
 import io.github.tanguygab.cctv.entities.Camera;
-import io.github.tanguygab.cctv.entities.CameraGroup;
 import io.github.tanguygab.cctv.entities.Computable;
 import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.utils.Heads;
