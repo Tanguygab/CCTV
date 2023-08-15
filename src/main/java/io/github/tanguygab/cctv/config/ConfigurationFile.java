@@ -219,7 +219,7 @@ public abstract class ConfigurationFile {
 	 * @return value from file or empty map if not present
 	 */
 	public <K, V> Map<K, V> getConfigurationSection(String path) {
-		if (path == null || path.length() == 0) return (Map<K, V>) values;
+		if (path == null || path.isEmpty()) return (Map<K, V>) values;
 		Object value = getObject(path, null);
 		return value instanceof Map ? (Map<K, V>) value : new HashMap<>();
 	}

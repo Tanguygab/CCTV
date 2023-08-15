@@ -168,7 +168,7 @@ public class Listener implements org.bukkit.event.Listener {
             return;
         }
 
-        if (msg.equals("")) {
+        if (msg.isEmpty()) {
             p.sendMessage(ChatColor.RED + "Please specify a name!");
             return;
         }

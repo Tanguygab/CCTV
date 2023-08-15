@@ -17,17 +17,18 @@ import org.bukkit.util.EulerAngle;
 
 import java.util.Objects;
 
+@Getter
 public class Camera implements Computable {
 
-    @Getter @Setter private String name;
-    @Getter @Setter private String owner;
-    @Getter private Location location;
-    @Getter private boolean enabled;
-    @Getter private boolean shown;
-    @Getter private String skin;
-    @Getter @Setter private ArmorStand armorStand;
-    @Getter @Setter private Creeper creeper;
-    @Getter private final BossBar bossbar;
+    @Setter private String name;
+    @Setter private String owner;
+    private Location location;
+    private boolean enabled;
+    private boolean shown;
+    private String skin;
+    @Setter private ArmorStand armorStand;
+    @Setter private Creeper creeper;
+    private final BossBar bossbar;
 
     public Camera(String name, String owner, Location loc, boolean enabled, boolean shown, ArmorStand armorStand, Creeper creeper, String skin) {
         this.name = name;

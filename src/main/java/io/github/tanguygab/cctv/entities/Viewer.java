@@ -10,15 +10,16 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.UUID;
 
+@Getter
 public class Viewer {
 
-    @Getter private final UUID uuid;
-    @Getter private final Player player;
-    @Getter private final ItemStack[] inventory;
-    @Getter private Computable group;
-    @Getter private Camera camera;
-    @Getter @Setter private Computer computer;
-    @Getter private boolean nightVision;
+    private final UUID uuid;
+    private final Player player;
+    private final ItemStack[] inventory;
+    private Computable group;
+    private Camera camera;
+    @Setter private Computer computer;
+    private boolean nightVision;
 
     public Viewer(Player player, Camera camera, Computable group, Computer computer) {
         this.uuid = player.getUniqueId();

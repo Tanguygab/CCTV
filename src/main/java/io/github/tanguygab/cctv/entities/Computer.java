@@ -8,16 +8,17 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
+@Getter
 @AllArgsConstructor
 public class Computer {
 
-    @Getter private final String name;
-    @Getter private final Location location;
-    @Getter @Setter private String owner;
-    @Getter private final List<Computable> cameras;
-    @Getter private final List<String> allowedPlayers;
-    @Getter @Setter private boolean publik;
-    @Getter private final boolean admin;
+    private final String name;
+    private final Location location;
+    @Setter private String owner;
+    private final List<Computable> cameras;
+    private final List<String> allowedPlayers;
+    @Setter private boolean publik;
+    private final boolean admin;
 
     public void addCamera(Computable camera) {
         cameras.add(camera);

@@ -12,14 +12,15 @@ import org.bukkit.boss.BossBar;
 
 import java.util.List;
 
+@Getter
 @AllArgsConstructor
 public class CameraGroup implements Computable {
 
-    @Getter @Setter private String name;
-    @Getter @Setter private String owner;
-    @Getter @Setter private Material icon;
-    @Getter private final List<Computable> cameras;
-    @Getter private final BossBar bossbar = CCTV.getInstance().getViewers().BOSSBAR ? Bukkit.getServer().createBossBar(name, BarColor.YELLOW, BarStyle.SOLID) : null;
+    @Setter private String name;
+    @Setter private String owner;
+    @Setter private Material icon;
+    private final List<Computable> cameras;
+    private final BossBar bossbar = CCTV.getInstance().getViewers().BOSSBAR ? Bukkit.getServer().createBossBar(name, BarColor.YELLOW, BarStyle.SOLID) : null;
 
     public void addCamera(Computable camera) {
         cameras.add(camera);

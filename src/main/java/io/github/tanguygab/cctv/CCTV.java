@@ -7,6 +7,7 @@ import io.github.tanguygab.cctv.managers.*;
 import io.github.tanguygab.cctv.menus.CCTVMenu;
 import io.github.tanguygab.cctv.utils.*;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
@@ -27,30 +28,32 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Getter
 public class CCTV extends JavaPlugin {
 
     @Getter private static CCTV instance;
 
-    @Getter private ConfigurationFile configuration;
-    @Getter private LanguageFile lang;
-    @Getter private CustomHeads customHeads;
-    @Getter private NMSUtils nms;
-    @Getter private CCTVExpansion expansion;
+    private ConfigurationFile configuration;
+    private LanguageFile lang;
+    private CustomHeads customHeads;
+    private NMSUtils nms;
+    private CCTVExpansion expansion;
 
-    private CameraCmd cameraCmd;
-    private GroupCmd groupCmd;
-    private ComputerCmd computerCmd;
+    @Getter(AccessLevel.NONE) private CameraCmd cameraCmd;
+    @Getter(AccessLevel.NONE) private GroupCmd groupCmd;
+    @Getter(AccessLevel.NONE) private ComputerCmd computerCmd;
 
-    @Getter private CameraManager cameras;
-    @Getter private CameraGroupManager groups;
-    @Getter private ComputerManager computers;
-    @Getter private ViewerManager viewers;
+    private CameraManager cameras;
+    private CameraGroupManager groups;
+    private ComputerManager computers;
+    private ViewerManager viewers;
 
-    private List<String> toggledCoords;
+    @Getter(AccessLevel.NONE) private List<String> toggledCoords;
 
     @Override
     public void onEnable() {
         instance = this;
+        PluginManager plm = getServer().getPluginManager();
         try {
             configuration = new YamlConfigurationFile(getResource("config.yml"), new File(getDataFolder(), "config.yml"));
             String langPath = "languages/"+ configuration.getString("lang","en_US")+".yml";
@@ -64,6 +67,8 @@ public class CCTV extends JavaPlugin {
             toggledCoords = viewers.file.getStringList("toggled-computer-coords");
         } catch (Exception e) {
             e.printStackTrace();
+            plm.disablePlugin(this);
+            return;
         }
 
         customHeads = new CustomHeads();
@@ -78,7 +83,6 @@ public class CCTV extends JavaPlugin {
         computers.load();
 
         loadRecipes();
-        PluginManager plm = getServer().getPluginManager();
         if (plm.isPluginEnabled("PlaceholderAPI")) (expansion = new CCTVExpansion(this)).register();
         plm.registerEvents(new Listener(),this);
         plm.registerEvents(new ViewersEvents(),this);

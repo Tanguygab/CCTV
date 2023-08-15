@@ -2,6 +2,7 @@ package io.github.tanguygab.cctv;
 
 
 import io.github.tanguygab.cctv.entities.Camera;
+import io.github.tanguygab.cctv.entities.Viewer;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -10,8 +11,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class CCTVExpansion extends PlaceholderExpansion {
@@ -54,8 +53,7 @@ public class CCTVExpansion extends PlaceholderExpansion {
         return switch (params) {
             case "viewers" -> cctv.getViewers().values().stream()
                     .filter(v -> v.getCamera() == camera)
-                    .map(v -> cctv.getServer().getPlayer(UUID.fromString(v.getUuid())))
-                    .filter(Objects::nonNull)
+                    .map(Viewer::getPlayer)
                     .map(Player::getName)
                     .collect(Collectors.joining(", "));
             case "viewercount" -> String.valueOf(cctv.getViewers().values().stream().filter(v -> v.getCamera() == camera).count());

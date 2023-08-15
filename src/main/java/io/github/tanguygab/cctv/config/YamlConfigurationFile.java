@@ -10,6 +10,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.logging.Level;
 
 import io.github.tanguygab.cctv.CCTV;
 import org.yaml.snakeyaml.DumperOptions;
@@ -59,8 +60,7 @@ public class YamlConfigurationFile extends ConfigurationFile {
 			yaml.dump(values, writer);
 			writer.close();
 		} catch (Throwable e) {
-			CCTV.getInstance().getLogger().severe("Failed to save yaml file " + file.getPath() + " with content " + values.toString());
-			e.printStackTrace();
+			CCTV.getInstance().getLogger().log(Level.SEVERE,"Failed to save yaml file " + file.getPath() + " with content " + values.toString(),e);
 		}
 	}
 }
