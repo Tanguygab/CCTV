@@ -5,6 +5,8 @@ import io.github.tanguygab.cctv.entities.Computable;
 import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.managers.ComputerManager;
 import io.github.tanguygab.cctv.utils.Utils;
+import lombok.AccessLevel;
+import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -20,9 +22,20 @@ import java.util.UUID;
 public class ComputerCmd extends Command<Computer> {
 
     private final ComputerManager cpm = cctv.getComputers();
+    @Getter(AccessLevel.PROTECTED) private final String notFound = lang.COMPUTER_NOT_FOUND;
 
     public ComputerCmd() {
         super("computer");
+    }
+
+    @Override
+    protected Computer get(String name) {
+        return cpm.get(name);
+    }
+
+    @Override
+    protected String getOwner(Computer computer) {
+        return computer.getOwner();
     }
 
     public void onCommand(CommandSender sender, String[] args) {

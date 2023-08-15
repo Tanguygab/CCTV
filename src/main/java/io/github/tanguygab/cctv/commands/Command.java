@@ -2,8 +2,6 @@ package io.github.tanguygab.cctv.commands;
 
 import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.config.LanguageFile;
-import io.github.tanguygab.cctv.entities.Camera;
-import io.github.tanguygab.cctv.entities.Computer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -30,19 +28,21 @@ public abstract class Command<T> {
         return !p.hasPermission("cctv." + type + "." + perm);
     }
 
-    @SuppressWarnings("unchecked")
+
+    protected abstract T get(String name);
+    protected abstract String getOwner(T object);
+    protected abstract String getNotFound();
+
     protected T checkExist(Player player, String[] args) {
         if (args.length < 3) {
             player.sendMessage(ChatColor.RED + "Please specify a "+type+" name!");
             return null;
         }
-        boolean isCam = type.equals("camera");
-        T obj = (T) (isCam ? cctv.getCameras() : cctv.getComputers()).get(args[2]);
-
-        String owner = obj == null ? "" : isCam ? ((Camera)obj).getOwner() : ((Computer)obj).getOwner();
+        T obj = get(args[2]);
+        String owner = obj == null ? "" : getOwner(obj);
 
         if (obj == null || (!owner.equals(player.getUniqueId().toString()) && noPerm(player, ".other"))) {
-            player.sendMessage(isCam ? lang.CAMERA_NOT_FOUND : lang.COMPUTER_NOT_FOUND);
+            player.sendMessage(getNotFound());
             return null;
         }
         return obj;

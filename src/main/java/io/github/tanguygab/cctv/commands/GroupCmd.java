@@ -6,6 +6,9 @@ import io.github.tanguygab.cctv.entities.Computable;
 import io.github.tanguygab.cctv.managers.CameraGroupManager;
 import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.utils.Utils;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.experimental.Accessors;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -22,9 +25,20 @@ public class GroupCmd extends Command<CameraGroup> {
 
     private final CameraGroupManager cgm = cctv.getGroups();
     private final CameraManager cm = cctv.getCameras();
+    @Getter(AccessLevel.PROTECTED) private final String notFound = lang.GROUP_NOT_FOUND;
 
     public GroupCmd() {
         super("group");
+    }
+
+    @Override
+    protected CameraGroup get(String name) {
+        return cgm.get(name);
+    }
+
+    @Override
+    protected String getOwner(CameraGroup group) {
+        return group.getOwner();
     }
 
     @Override

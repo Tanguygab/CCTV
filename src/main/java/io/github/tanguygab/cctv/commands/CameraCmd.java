@@ -3,6 +3,8 @@ package io.github.tanguygab.cctv.commands;
 import io.github.tanguygab.cctv.entities.Camera;
 import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.utils.Utils;
+import lombok.AccessLevel;
+import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -18,9 +20,21 @@ import java.util.List;
 public class CameraCmd extends Command<Camera> {
 
     private final CameraManager cm = cctv.getCameras();
+    @Getter(AccessLevel.PROTECTED) private final String notFound = lang.CAMERA_NOT_FOUND;
 
     public CameraCmd() {
         super("camera");
+    }
+
+
+    @Override
+    protected Camera get(String name) {
+        return cm.get(name);
+    }
+
+    @Override
+    protected String getOwner(Camera camera) {
+        return camera.getOwner();
     }
 
     public void onCommand(CommandSender sender, String[] args) {
