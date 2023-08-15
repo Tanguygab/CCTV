@@ -23,7 +23,7 @@ public class CameraSkinMenu extends ListMenu {
 
     @Override
     protected String getTitle(int page) {
-        return lang.getGuiComputerAddCamera(page);
+        return lang.getGuiCameraSkin(page);
     }
 
     @Override
