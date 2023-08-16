@@ -26,7 +26,8 @@ public class ComputerOptionsMenu extends CCTVMenu {
     @Override
     public void open() {
         inv.setItem(0, Heads.COMPUTER_BACK.get());
-        inv.setItem(3, getItem(Heads.CAMERA.get(),lang.GUI_COMPUTER_OPTIONS_ADD_CAMERAS));
+        inv.setItem(2, getItem(Heads.CAMERA.get(),lang.GUI_COMPUTER_OPTIONS_ADD_CAMERAS));
+        inv.setItem(3, getItem(Material.CHEST,lang.GUI_COMPUTER_OPTIONS_ADD_GROUPS));
         setPublicItem();
 
         player.openInventory(inv);
@@ -51,7 +52,8 @@ public class ComputerOptionsMenu extends CCTVMenu {
     public void onClick(ItemStack item, int slot, ClickType click) {
         switch (slot) {
             case 0 -> open(new ComputerMainMenu(player,computer));
-            case 3 -> open(new ComputerAddCamerasMenu(player,computer));
+            case 2 -> open(new ComputerAddCamerasMenu(player,computer));
+            case 3 -> open(new ComputerAddGroupsMenu(player,computer));
             case 4 -> {
                 switch (click) {
                     case LEFT -> open(new ComputerAddPlayersMenu(player,computer));

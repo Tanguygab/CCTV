@@ -189,9 +189,13 @@ public class LanguageFile extends YamlConfigurationFile {
     public String getGuiComputerAddPlayer(int page) {
         return GUI_COMPUTER_ADD_PLAYER.replace("%page%",String.valueOf(page));
     }
-    private final String GUI_COMPUTER_ADD_CAMERA = get("gui.computer.add-camera", "&aAdd camera (page: %page%)");
+    private final String GUI_COMPUTER_ADD_CAMERA = get("gui.computer.add-camera", "&aAdd Camera (page: %page%)");
     public String getGuiComputerAddCamera(int page) {
         return GUI_COMPUTER_ADD_CAMERA.replace("%page%",String.valueOf(page));
+    }
+    private final String GUI_COMPUTER_ADD_GROUP = get("gui.computer.add-group", "&aAdd Group (page: %page%)");
+    public String getGuiComputerAddGroup(int page) {
+        return GUI_COMPUTER_ADD_GROUP.replace("%page%",String.valueOf(page));
     }
     public final String GUI_COMPUTER_DEFAULT_ITEM_OPTION = get("gui.computer.default-item.option", "&6Options");
     public final String GUI_COMPUTER_DEFAULT_ITEM_NEXT_PAGE = get("gui.computer.default-item.next-page", "&8Next Page");
@@ -201,6 +205,7 @@ public class LanguageFile extends YamlConfigurationFile {
 
     public final String GUI_COMPUTER_OPTIONS_ADD_PLAYER = get("gui.computer.options.add-player", "&aAdd player");
     public final String GUI_COMPUTER_OPTIONS_ADD_CAMERAS = get("gui.computer.options.add-cameras","&aAdd Cameras");
+    public final String GUI_COMPUTER_OPTIONS_ADD_GROUPS = get("gui.computer.options.add-groups","&aAdd Groups");
     public final String GUI_COMPUTER_OPTIONS_ACCESS_ITEM_NAME = get("gui.computer.options.access-item.name", "&aComputer Access");
     private final String GUI_COMPUTER_OPTIONS_ACCESS_ITEM_STATUS = get("gui.computer.options.access-item.status", "&6Status: %status%");
     public final String GUI_COMPUTER_OPTIONS_ACCESS_ITEM_PUBLIC = get("gui.computer.options.access-item.public", "&aPublic");

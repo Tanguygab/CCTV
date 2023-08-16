@@ -1,7 +1,7 @@
 package io.github.tanguygab.cctv.menus.computers;
 
-import io.github.tanguygab.cctv.entities.Camera;
 import io.github.tanguygab.cctv.entities.Computer;
+import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.menus.ListMenu;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -14,11 +14,12 @@ import java.util.List;
 public class ComputerAddCamerasMenu extends ListMenu {
 
     private final Computer computer;
+    private final CameraManager cm = cctv.getCameras();
 
     protected ComputerAddCamerasMenu(Player p, Computer computer) {
         super(p);
         this.computer = computer;
-        itemKey = cctv.getCameras().cameraKey;
+        itemKey = cm.cameraKey;
     }
 
     @Override
@@ -28,12 +29,12 @@ public class ComputerAddCamerasMenu extends ListMenu {
 
     @Override
     protected void onOpen() {
-        list(cctv.getCameras().get(player).stream()
-                .filter(cam->!computer.getCameras().contains(cctv.getCameras().get(cam)))
+        list(cm.get(player).stream()
+                .map(cm::get)
+                .filter(camera->!computer.getCameras().contains(camera))
                 .toList(),camera->{
-            Camera cam = cctv.getCameras().get(camera);
-            ItemStack item = getItem(cctv.getCustomHeads().get(cam.getSkin()), lang.GUI_COMPUTER_CAMERA_ITEM_NAME + cam.getName());
-            Location loc = cam.getLocation();
+            ItemStack item = getItem(cctv.getCustomHeads().get(camera.getSkin()), lang.GUI_COMPUTER_CAMERA_ITEM_NAME + camera.getName());
+            Location loc = camera.getLocation();
             ItemMeta meta = item.getItemMeta();
             assert meta != null;
             meta.setLore(List.of("",lang.GUI_COMPUTER_CAMERA_ITEM_X+posFormat.format(loc.getX())
@@ -47,8 +48,7 @@ public class ComputerAddCamerasMenu extends ListMenu {
 
     @Override
     protected void onClick(String name, ClickType click) {
-        Camera camera = cctv.getCameras().get(name);
-        computer.addCamera(camera);
+        computer.addCamera(cm.get(name));
         open();
         player.sendMessage(lang.getEditCameras(true,true,true,true));
     }

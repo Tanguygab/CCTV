@@ -95,7 +95,8 @@ gui:
       default: "Default"
   computer:
     default: "&eCCTV (page: %page%)"
-    options-title: "&eOptions"
+    add-camera: "&aAdd Camera (page: %page%)"
+    add-group: "&aAdd Group (page: %page%)"
     toggle-coords: "Toggle Camera Coordinates"
     group-item: "&eGroup: &6"
     camera-item:
@@ -115,8 +116,10 @@ gui:
       exit: "&4Exit"
       back: "&8Back"
     options:
+      title: "&eOptions"
       add-player: "&aAdd player"
       add-cameras: "&aAdd Cameras"
+      add-groups: "&aAdd Groups"
       access-item:
         name: "&aComputer Access"
         status: "&6Status: %status%"

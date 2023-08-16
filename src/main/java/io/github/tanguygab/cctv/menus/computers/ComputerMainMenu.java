@@ -35,7 +35,6 @@ public class ComputerMainMenu extends ListMenu {
     private boolean showCoords() {
         return !cctv.hasToggledComputerCoords(player);
     }
-
     private boolean canEdit() {
         return computer.getOwner().equals(player.getUniqueId().toString()) || player.hasPermission("cctv.computer.other");
     }
@@ -65,7 +64,8 @@ public class ComputerMainMenu extends ListMenu {
             handleClick(click, group, () -> {
                 if (!group.getOwner().equals(player.getUniqueId().toString()) && !player.hasPermission("cctv.group.other"))
                     player.sendMessage(lang.NO_PERMISSIONS);
-                //else open(new GroupMenu(p,group));
+                player.closeInventory();
+                player.performCommand("/cctv group "+group.getName()+" info");
             });
             return;
         }
