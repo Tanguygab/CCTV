@@ -51,9 +51,8 @@ public abstract class Manager<T> {
     }
     public void delete(String key) {
         map.remove(key);
-        if (file != null) file.set(key,null);
+        if (!(this instanceof ViewerManager)) file.set(key,null);
     }
-    public void delete(String id, Player player) {}
 
     public String getRandomID() {
         int number = random.nextInt(999999);

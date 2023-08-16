@@ -71,15 +71,16 @@ public class Listener implements org.bukkit.event.Listener {
         Computer computer = cpm.get(e.getBlock());
         if (computer == null) return;
         e.setCancelled(true);
-        Player p = e.getPlayer();
-        if (!computer.getOwner().equals(p.getUniqueId().toString()) && !p.hasPermission("cctv.computer.other")) {
-            p.sendMessage(lang.COMPUTER_NOT_ALLOWED);
+        Player player = e.getPlayer();
+        if (!computer.getOwner().equals(player.getUniqueId().toString()) && !player.hasPermission("cctv.computer.other")) {
+            player.sendMessage(lang.COMPUTER_NOT_ALLOWED);
             return;
         }
         e.getBlock().setType(Material.AIR);
 
-        Utils.giveOrDrop(p,cpm.breakComputer(computer));
-        cpm.delete(computer.getName(),p);
+        cpm.delete(computer.getName());
+        Utils.giveOrDrop(player,cpm.breakComputer(computer));
+        player.sendMessage(lang.getComputerDeleted(computer.getName()));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST,ignoreCancelled = true)
@@ -164,12 +165,12 @@ public class Listener implements org.bukkit.event.Listener {
 
     private void onChat(Player p, String msg, Consumer<String> run) {
         if (msg.equals("cancel")) {
-            p.sendMessage(ChatColor.RED + "Cancelled!");
+            p.sendMessage(lang.CHAT_CANCELLED);
             return;
         }
 
         if (msg.isEmpty()) {
-            p.sendMessage(ChatColor.RED + "Please specify a name!");
+            p.sendMessage(lang.COMMANDS_PROVIDE_NAME);
             return;
         }
         String newName = msg.split(" ")[0];

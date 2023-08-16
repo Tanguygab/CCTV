@@ -41,7 +41,7 @@ public abstract class ListMenu extends CCTVMenu {
 
         onOpen();
 
-        p.openInventory(inv);
+        player.openInventory(inv);
     }
 
     @Override

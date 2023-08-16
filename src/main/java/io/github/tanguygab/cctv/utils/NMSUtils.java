@@ -1,7 +1,6 @@
 package io.github.tanguygab.cctv.utils;
 
 import io.github.tanguygab.cctv.CCTV;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -68,7 +67,7 @@ public class NMSUtils {
 
     public void glow(Player viewer, Player viewed, boolean glow) {
         if (!nmsSupported) {
-            viewer.sendMessage(ChatColor.DARK_RED+"Unsupported!");
+            viewer.sendMessage(CCTV.getInstance().getLang().UNSUPPORTED);
             return;
         }
         try {

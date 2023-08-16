@@ -26,13 +26,13 @@ public class ViewerOptionsMenu extends CCTVMenu {
 
     @Override
     public void open() {
-        inv.setItem(0, vm.get(p).isNightVision() ? Heads.NIGHT_VISION_ON.get() : Heads.NIGHT_VISION_OFF.get());
+        inv.setItem(0, vm.get(player).isNightVision() ? Heads.NIGHT_VISION_ON.get() : Heads.NIGHT_VISION_OFF.get());
 
         inv.setItem(1, getItem(Heads.SPOTTING,lang.CAMERA_VIEW_OPTIONS_SPOT));
 
         if (vm.ZOOM_ITEM) {
             if (!cctv.getCameras().EXPERIMENTAL_VIEW) {
-                PotionEffect effect = p.getPotionEffect(PotionEffectType.SLOW);
+                PotionEffect effect = player.getPotionEffect(PotionEffectType.SLOW);
                 inv.setItem(2, getItem(Heads.ZOOM,
                         effect != null
                                 ? lang.getCameraViewZoom(effect.getAmplifier() + 1)
@@ -42,30 +42,30 @@ public class ViewerOptionsMenu extends CCTVMenu {
         }
 
         inv.setItem(4, getItem(Heads.EXIT,lang.CAMERA_VIEW_OPTIONS_BACK));
-        p.openInventory(inv);
+        player.openInventory(inv);
     }
 
     @Override
     public void onClick(ItemStack item, int slot, ClickType click) {
         switch (slot) {
             case 0 -> {
-                Inventory inv = p.getOpenInventory().getTopInventory();
-                Viewer v = vm.get(p);
+                Inventory inv = player.getOpenInventory().getTopInventory();
+                Viewer v = vm.get(player);
                 v.setNightVision(!v.isNightVision());
                 inv.setItem(0, v.isNightVision() ? Heads.NIGHT_VISION_ON.get() : Heads.NIGHT_VISION_OFF.get());
             }
-            case 1 -> spotting(p);
+            case 1 -> spotting(player);
             case 2 -> {
                 if (!vm.ZOOM_ITEM || cctv.getCameras().EXPERIMENTAL_VIEW) return;
-                PotionEffect effect = p.getPotionEffect(PotionEffectType.SLOW);
+                PotionEffect effect = player.getPotionEffect(PotionEffectType.SLOW);
                 if (effect == null) {
-                    zoom(p, 1);
+                    zoom(player, 1);
                     return;
                 }
                 int zoom = effect.getAmplifier()+1;
-                zoom(p, zoom == 6 ? 0 : zoom+1);
+                zoom(player, zoom == 6 ? 0 : zoom+1);
             }
-            case 4 -> p.closeInventory();
+            case 4 -> player.closeInventory();
         }
     }
 

@@ -4,7 +4,6 @@ import io.github.tanguygab.cctv.entities.CameraGroup;
 import io.github.tanguygab.cctv.entities.Computable;
 import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.managers.ComputerManager;
-import io.github.tanguygab.cctv.utils.Utils;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
@@ -37,15 +36,16 @@ public class ComputerCmd extends Command<Computer> {
     protected String getOwner(Computer computer) {
         return computer.getOwner();
     }
+    @Override
+    protected void setOwner(Computer computer, String name) {
+        computer.setOwner(name);
+    }
 
     public void onCommand(CommandSender sender, String[] args) {
-        if (!(sender instanceof Player p)) {
-            sender.sendMessage("You have to be a player to do this!");
-            return;
-        }
-        String arg = args.length > 1 ? args[1] : "";
+        Player p = getPlayer(sender);
+        if (p == null) return;
 
-        switch (arg) {
+        switch (getFirstArg(args)) {
             case "get" -> {
                 if (noPerm(p, "get")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
@@ -58,9 +58,9 @@ public class ComputerCmd extends Command<Computer> {
                         ? cpm.ADMIN_COMPUTER_ITEM
                         : cpm.COMPUTER_ITEM
                 ).clone());
-                p.sendMessage(ChatColor.GREEN + "Place down this item to create a computer!");
+                p.sendMessage(lang.COMPUTER_ITEM_PLACE);
             }
-            case "list" -> list(p,"Computers",cpm.get(p), "Click to open!",args);
+            case "list" -> listCmd(p,lang.COMMANDS_LIST_COMPUTERS,cpm.get(p),args);
             case "teleport" -> {
                 if (noPerm(p, "teleport")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
@@ -73,24 +73,8 @@ public class ComputerCmd extends Command<Computer> {
                 p.teleport(loc);
             }
             case "setowner" -> {
-                Computer computer = checkExist(p,args);
-                if (computer == null) return;
-                if (args.length < 4) {
-                    p.sendMessage(ChatColor.RED + "Please specify a new owner!");
-                    return;
-                }
-                OfflinePlayer newOwner = Utils.getOfflinePlayer(args[3]);
-                if (newOwner == null) {
-                    p.sendMessage(lang.PLAYER_NOT_FOUND);
-                    return;
-                }
-                String uuid = newOwner.getUniqueId().toString();
-                if (computer.getOwner().equals(uuid)) {
-                    p.sendMessage(lang.COMPUTER_PLAYER_ALREADY_OWNER);
-                    return;
-                }
-                computer.setOwner(uuid);
-                p.sendMessage(lang.getComputerOwnerChanged(newOwner.getName()));
+                String owner = setOwnerCmd(p,args,lang.COMPUTER_PLAYER_ALREADY_OWNER);
+                if (owner != null) p.sendMessage(lang.getComputerOwnerChanged(owner));
             }
             case "info" -> {
                 Computer computer = checkExist(p,args);

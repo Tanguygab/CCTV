@@ -122,17 +122,6 @@ public class ComputerManager extends Manager<Computer> {
         return meta.getPersistentDataContainer().get(computerKey, PersistentDataType.STRING);
     }
 
-    @Override
-    public void delete(String name, Player player) {
-        Computer computer = get(name);
-        if (computer == null) {
-            player.sendMessage(lang.COMPUTER_NOT_FOUND);
-            return;
-        }
-        delete(name);
-        player.sendMessage(lang.COMPUTER_DELETE);
-    }
-
     public boolean exists(Block block) {
         return get(block) != null;
     }
@@ -150,14 +139,14 @@ public class ComputerManager extends Manager<Computer> {
         return list;
     }
 
-    public Computer create(String id, String owner, Location loc, List<String> cameras, List<String> allowedPlayers, boolean publik, boolean admin) {
+    public Computer create(String name, String owner, Location loc, List<String> cameras, List<String> allowedPlayers, boolean publik, boolean admin) {
         List<Computable> cameras0 = new ArrayList<>();
         cameras.forEach(str->{
             Computable computable = str.startsWith("group.") ? cctv.getGroups().get(str.substring(6)) : cctv.getCameras().get(str);
             if (computable != null) cameras0.add(computable);
         });
-        Computer computer = new Computer(id,loc,owner,cameras0,allowedPlayers,publik,admin);
-        put(id,computer);
+        Computer computer = new Computer(name,loc,owner,cameras0,allowedPlayers,publik,admin);
+        put(name,computer);
         return computer;
     }
 
@@ -174,9 +163,9 @@ public class ComputerManager extends Manager<Computer> {
         boolean publik = Boolean.TRUE.equals(data.get(computerPublicKey, PersistentDataType.BOOLEAN));
 
         if (!p.hasPermission("cctv.admin.computer")) admin = false;
-        String id = getRandomID();
-        saveToConfig(create(id,p.getUniqueId().toString(),loc,cameras,allowedPlayers,publik,admin));
-        p.sendMessage(lang.COMPUTER_CREATE,lang.getComputerName(id));
+        String name = getRandomID();
+        saveToConfig(create(name,p.getUniqueId().toString(),loc,cameras,allowedPlayers,publik,admin));
+        p.sendMessage(lang.getComputerCreated(name));
     }
 
     public ItemStack breakComputer(Computer computer) {

@@ -2,7 +2,6 @@ package io.github.tanguygab.cctv.managers;
 
 import io.github.tanguygab.cctv.entities.CameraGroup;
 import io.github.tanguygab.cctv.entities.Computable;
-import lombok.Getter;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -11,7 +10,7 @@ import java.util.List;
 
 public class CameraGroupManager extends Manager<CameraGroup> {
 
-    @Getter private final List<Material> allowedIcons = new ArrayList<>();
+    private final List<Material> allowedIcons = new ArrayList<>();
 
     public CameraGroupManager() {
         super("cameragroups.yml");
@@ -45,6 +44,10 @@ public class CameraGroupManager extends Manager<CameraGroup> {
         create(name,owner,allowedIcons.contains(material) ? material : allowedIcons.get(0));
     }
 
+    public List<String> getAllowedIcons() {
+        return allowedIcons.stream().map(Material::toString).toList();
+    }
+
     @Override
     protected void saveToConfig(CameraGroup group) {
         String name = group.getName();
@@ -56,8 +59,18 @@ public class CameraGroupManager extends Manager<CameraGroup> {
     private void create(String name, String owner, Material icon) {
         put(name,new CameraGroup(name,owner,icon));
     }
-    public void create(String name, Player p) {
-        create(name,p.getUniqueId().toString(),allowedIcons.get(0));
+    public void create(String name, Player player) {
+        if (name == null) name = getRandomID();
+        if (name.contains(".")) {
+            player.sendMessage(lang.DOT_IN_NAME);
+            return;
+        }
+        if (exists(name)) {
+            player.sendMessage(lang.GROUP_ALREADY_EXISTS);
+            return;
+        }
+        create(name,player.getUniqueId().toString(),allowedIcons.get(0));
+        player.sendMessage(lang.getGroupCreated(name));
     }
 
     public List<String> get(Player p) {

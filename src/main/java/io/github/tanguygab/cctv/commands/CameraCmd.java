@@ -2,10 +2,8 @@ package io.github.tanguygab.cctv.commands;
 
 import io.github.tanguygab.cctv.entities.Camera;
 import io.github.tanguygab.cctv.managers.CameraManager;
-import io.github.tanguygab.cctv.utils.Utils;
 import lombok.AccessLevel;
 import lombok.Getter;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -26,7 +24,6 @@ public class CameraCmd extends Command<Camera> {
         super("camera");
     }
 
-
     @Override
     protected Camera get(String name) {
         return cm.get(name);
@@ -36,37 +33,46 @@ public class CameraCmd extends Command<Camera> {
     protected String getOwner(Camera camera) {
         return camera.getOwner();
     }
+    @Override
+    protected void setOwner(Camera camera, String name) {
+        camera.setOwner(name);
+    }
 
     public void onCommand(CommandSender sender, String[] args) {
-        if (!(sender instanceof Player p)) {
-            sender.sendMessage("You have to be a player to do this!");
-            return;
-        }
-        String arg = args.length > 1 ? args[1] : "";
+        Player p = getPlayer(sender);
+        if (p == null) return;
 
-        switch (arg) {
+        switch (getFirstArg(args)) {
             case "get" -> {
                 if (noPerm(p, "get")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
-                String skin = "_DEFAULT_";
+                String skin = null;
                 if (args.length > 2) {
                     String[] skinArg = Arrays.copyOfRange(args,2,args.length);
                     skin = String.join(" ",skinArg);
                 }
                 p.getInventory().addItem(cctv.getCustomHeads().get(skin));
-                p.sendMessage(ChatColor.GREEN + "Place down this item to create a camera!");
+                p.sendMessage(lang.CAMERA_ITEM_PLACE);
             }
             case "create" -> {
                 if (noPerm(p, "create")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
-                if (args.length > 2) cm.create(args[2],p.getLocation(),p,"_DEFAULT_");
-                else p.sendMessage(ChatColor.RED + "Please specify a camera name!");
+                if (args.length < 3) {
+                    p.sendMessage(lang.COMMANDS_PROVIDE_NAME);
+                    return;
+                }
+                String skin = null;
+                if (args.length > 3) {
+                    String[] skinArg = Arrays.copyOfRange(args,3,args.length);
+                    skin = String.join(" ",skinArg);
+                }
+                cm.create(args[2],p.getLocation(),p,skin);
             }
-            case "list" -> list(p,"Cameras",cm.get(p), "Click to view!",args);
+            case "list" -> listCmd(p,lang.COMMANDS_LIST_CAMERAS,cm.get(p),args);
             case "connected" -> {
                 Camera camera = checkExist(p,args);
                 if (camera != null)
@@ -88,38 +94,16 @@ public class CameraCmd extends Command<Camera> {
                 p.sendMessage(lang.CAMERA_MOVED);
             }
             case "rename" -> {
-                Camera camera = checkExist(p,args);
+                Camera camera = renameCmd(p,args);
                 if (camera == null) return;
-
-                if (args.length < 4) {
-                    p.sendMessage(ChatColor.RED + "Please specify a new name!");
-                    return;
-                }
                 String newName = args[3];
                 if (camera.rename(newName))
                     p.sendMessage(lang.getCameraRenamed(newName));
                 else p.sendMessage(lang.CAMERA_ALREADY_EXISTS);
             }
             case "setowner" -> {
-                Camera camera = checkExist(p,args);
-                if (camera == null) return;
-
-                if (args.length < 4) {
-                    p.sendMessage(ChatColor.RED + "Please specify a new owner!");
-                    return;
-                }
-                OfflinePlayer newOwner = Utils.getOfflinePlayer(args[3]);
-                if (newOwner == null) {
-                    p.sendMessage(lang.PLAYER_NOT_FOUND);
-                    return;
-                }
-                String uuid = newOwner.getUniqueId().toString();
-                if (camera.getOwner().equals(uuid)) {
-                    p.sendMessage(lang.CAMERA_PLAYER_ALREADY_OWNER);
-                    return;
-                }
-                camera.setOwner(uuid);
-                p.sendMessage(lang.getCameraOwnerChanged(newOwner.getName()));
+                String owner = setOwnerCmd(p,args,lang.CAMERA_PLAYER_ALREADY_OWNER);
+                if (owner != null) p.sendMessage(lang.getCameraOwnerChanged(owner));
             }
             case "killall" -> {
                 if (p.hasPermission("cctv.admin")) {
@@ -158,14 +142,13 @@ public class CameraCmd extends Command<Camera> {
             };
             case 4 -> switch (args[1].toLowerCase()) {
                 case "setowner" -> Arrays.stream(Bukkit.getOfflinePlayers()).map(OfflinePlayer::getName).toList();
-                case "get" -> cctv.getCustomHeads().getHeads();
+                case "get","create" -> cctv.getCustomHeads().getHeads();
                 default -> null;
             };
-            default -> {
-                if (args[1].equalsIgnoreCase("get"))
-                    yield cctv.getCustomHeads().getHeads();
-                yield null;
-            }
+            default -> args[1].equalsIgnoreCase("get")
+                    || args[1].equalsIgnoreCase("create")
+                    ? cctv.getCustomHeads().getHeads()
+                    : null;
         };
     }
 

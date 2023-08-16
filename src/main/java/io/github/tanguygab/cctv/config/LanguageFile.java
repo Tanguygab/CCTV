@@ -23,15 +23,56 @@ public class LanguageFile extends YamlConfigurationFile {
     public final String SWITCHING_NOT_POSSIBLE = get("switching-not-possible","&cSwitching through cameras is not possible!");
     public final String COMMAND_BLOCKED = get("command-blocked","&cYou can't use this command right now!");
     public final String DOT_IN_NAME = get("dot-in-name","&cName can't contain any dot.");
+    public final String UNSUPPORTED = get("unsupported","&4Unsupported!");
 
-    public final String CAMERA_CREATE = get("cameras.create","&aCamera created!");
-    public final String CAMERA_DELETE = get("cameras.delete","&cCamera deleted!");
+    public final String CHAT_PROVIDE_NAME = get("chat.provide-name", "&aProvide a name you would like your camera to have!");
+    public final String CHAT_PROVIDE_PLAYER = get("chat.provide-player", "&aProvide a player to add!");
+    public final String CHAT_TYPE_CANCEL = get("chat.type-cancel", "&aType 'cancel' to cancel!");
+    public final String CHAT_CANCELLED = get("chat.cancelled", "&cCancelled!");
+
+    private final String COMMANDS_TYPES_CAMERA = get("commands.types.camera","camera");
+    private final String COMMANDS_TYPES_GROUP = get("commands.types.group","group");
+    private final String COMMANDS_TYPES_COMPUTER = get("commands.types.computer","computer");
+
+    public final String COMMANDS_PROVIDE_NAME = get("commands.provide-name","&cPlease specify a name!");
+    private final String COMMANDS_PROVIDE_TYPE_NAME = get("commands.provide-type-name","&cPlease specify a %type% name!");
+    public String getCommandsProvideCameraName() {
+        return COMMANDS_PROVIDE_TYPE_NAME.replace("%type%",COMMANDS_TYPES_CAMERA);
+    }
+    public String getCommandsProvideGroupName() {
+        return COMMANDS_PROVIDE_TYPE_NAME.replace("%type%",COMMANDS_TYPES_GROUP);
+    }
+
+    public final String COMMANDS_LIST_PREVIOUS = get("commands.list.previous", "&ePrevious Page");
+    public final String COMMANDS_LIST_NEXT = get("commands.list.next", "&eNext Page");
+    public final String COMMANDS_LIST_INFO = get("commands.list.info", "&eClick to view info");
+    public final String COMMANDS_LIST_CAMERAS = get("commands.list.cameras", "Cameras");
+    public final String COMMANDS_LIST_GROUPS = get("commands.list.groups", "Groups");
+    public final String COMMANDS_LIST_COMPUTERS = get("commands.list.computers", "Computers");
+    public final String COMMANDS_NEW_OWNER = get("commands.new-owner", "&cPlease specify a new owner!");
+    public final String COMMANDS_RENAME = get("commands.rename","&cPlease specify a new name!");
+
+    private final String COMMANDS_EDIT_CAMS_ADDED = get("commands.edit-cameras-&-groups.added","&aThis %camera-type% was added to this %type%!");
+    private final String COMMANDS_EDIT_CAMS_ALREADY_ADDED = get("commands.edit-cameras-&-groups.already-added","&cThis %camera-type% has already been added to this %type%!");
+    private final String COMMANDS_EDIT_CAMS_REMOVED = get("commands.edit-cameras-&-groups.removed","&aThis %camera-type% was removed from this %type%!");
+    private final String COMMANDS_EDIT_CAMS_NOT_FOUND = get("commands.edit-cameras-&-groups.not-found","&cThis %type% does not contain a %camera-type% with that name!");
+    public String getEditCameras(boolean add, boolean success, boolean camera, boolean computer) {
+        String string = add ? success ? COMMANDS_EDIT_CAMS_ADDED : COMMANDS_EDIT_CAMS_ALREADY_ADDED
+                : success ? COMMANDS_EDIT_CAMS_REMOVED : COMMANDS_EDIT_CAMS_NOT_FOUND;
+        return string.replace("%camera-type%",camera ? COMMANDS_TYPES_CAMERA : COMMANDS_TYPES_GROUP)
+                .replace("%type%",computer ? COMMANDS_TYPES_COMPUTER : COMMANDS_TYPES_GROUP);
+    }
+
+    private final String CAMERA_CREATED = get("cameras.created","&aCamera %camera% created!");
+    public String getCameraCreated(String name) {
+        return CAMERA_CREATED.replace("%camera%",name);
+    }
+    private final String CAMERA_DELETED = get("cameras.deleted","&cCamera %camera% deleted!");
+    public String getCameraDeleted(String name) {
+        return CAMERA_DELETED.replace("%camera%",name);
+    }
     public final String CAMERA_ALREADY_EXISTS = get("cameras.already-exists","&cThis camera already exists!");
     public final String CAMERA_NOT_FOUND = get("cameras.not-found","&cThis camera doesn't exist.");
-    private final String CAMERA_NAME = get("cameras.name","&eCamera: %camera%");
-    public String getCameraName(String name) {
-        return CAMERA_NAME.replace("%camera%",name);
-    }
     private final String CAMERA_OWNER_CHANGED = get("cameras.owner-changed","&6Camera owner is set to &a%player%&6!");
     public String getCameraOwnerChanged(String player) {
         return CAMERA_OWNER_CHANGED.replace("%player%",player);
@@ -51,17 +92,20 @@ public class LanguageFile extends YamlConfigurationFile {
         return CAMERA_VIEW_COUNT.replace("%count%", String.valueOf(count)).replace("%camera%",name);
     }
     public final String CAMERA_DELETED_BECAUSE_BUGGED = get("cameras.deleted-because-bugged","&cSorry but this camera was bugged, so we removed it!");
-    public final String CAMERA_ITEM_NAME = get("cameras.item-name", "&9Camera");
     public final String CAMERA_TOO_FAR = get("cameras.too-far","&cThis camera is too far away from you!");
+    public final String CAMERA_ITEM_NAME = get("cameras.item-name", "&9Camera");
+    public final String CAMERA_ITEM_PLACE = get("camera.item-place","&2Place down this item to create a camera!");
 
-    public final String GROUP_CREATE = get("groups.create","&aGroup created!");
-    public final String GROUP_DELETE = get("groups.delete","&aGroup deleted!");
+    private final String GROUP_CREATED = get("groups.created","&aGroup %group% created!");
+    public String getGroupCreated(String name) {
+        return GROUP_CREATED.replace("%group%",name);
+    }
+    private final String GROUP_DELETED = get("groups.deleted","&aGroup %group% deleted!");
+    public String getGroupDeleted(String name) {
+        return GROUP_DELETED.replace("%group%",name);
+    }
     public final String GROUP_ALREADY_EXISTS = get("groups.already-exists","&cThis group already exists!");
     public final String GROUP_NOT_FOUND = get("groups.not-found","&cThis group doesn't exist!");
-    private final String GROUP_NAME = get("groups.name","&eGroup: %group%");
-    public String getGroupName(String name) {
-        return GROUP_NAME.replace("%group%",name);
-    }
     private final String GROUP_OWNER_CHANGED = get("groups.owner-changed","&6Group owner is set to &a%player%&6!");
     public String getGroupOwnerChanged(String player) {
         return GROUP_OWNER_CHANGED.replace("%player%",player);
@@ -71,18 +115,23 @@ public class LanguageFile extends YamlConfigurationFile {
     public String getGroupRenamed(String name) {
         return GROUP_RENAMED.replace("%group%",name);
     }
-    public final String GROUP_CAMERA_ADDED = get("groups.camera.added","&aCamera added to the group!");
-    public final String GROUP_CAMERA_ALREADY_ADDED = get("groups.camera.already-added","&cThis camera has already been added to this group!");
-    public final String GROUP_CAMERA_REMOVED = get("groups.camera.removed","&aCamera removed from this group!");
-    public final String GROUP_CAMERA_NOT_FOUND = get("groups.camera.not-found","&cThis group does not contain a camera with that name!");
 
-    public final String COMPUTER_CREATE = get("computers.create", "&aComputer created!");
-    public final String COMPUTER_DELETE = get("computers.delete", "&cComputer deleted!");
-    public final String COMPUTER_NOT_FOUND = get("computers.not-found", "&cThis computer doesn't exist!");
-    private final String COMPUTER_NAME = get("computers.name", "&eComputer: %computer%");
-    public String getComputerName(String name) {
-        return COMPUTER_NAME.replace("%computer%",name);
+    public final String GROUP_ICON_PROVIDE = get("groups.provide","&cPlease specify an icon!");
+    private final String GROUP_ICON_INVALID = get("groups.invalid","&cThis icon is invalid! Valid Icons: %icons%");
+    public String getGroupIconInvalid(String icons) {
+        return GROUP_ICON_INVALID.replace("%icons%",icons);
     }
+    public final String GROUP_ICON_CHANGED = get("groups.changed","&aGroup Icon changed!");
+
+    public final String COMPUTER_CREATED = get("computers.created", "&aComputer %computer% created!");
+    public String getComputerCreated(String name) {
+        return COMPUTER_CREATED.replace("%computer%",name);
+    }
+    public final String COMPUTER_DELETED = get("computers.deleted", "&cComputer %computer% deleted!");
+    public String getComputerDeleted(String name) {
+        return COMPUTER_DELETED.replace("%computer%",name);
+    }
+    public final String COMPUTER_NOT_FOUND = get("computers.not-found", "&cThis computer doesn't exist!");
     private final String COMPUTER_OWNER_CHANGED = get("computers.owner-changed", "&6Computer owner is set to &a%player%&6!");
     public String getComputerOwnerChanged(String player) {
         return COMPUTER_OWNER_CHANGED.replace("%player%",player);
@@ -91,11 +140,8 @@ public class LanguageFile extends YamlConfigurationFile {
     public final String COMPUTER_CHANGE_NO_PERMS = get("computers.change-no-perms", "&cYou can only edit your own computers!");
     public final String COMPUTER_NOT_ALLOWED = get("computers.not-allowed", "&cYou aren't allowed to interact with this computer!");
     public final String COMPUTER_ITEM_NAME = get("computers.item-name", "&9Computer");
-    public final String COMPUTER_ITEM_NAME_ADMIN = get("computers.item-name-creative", "&dAdmin Computer");
-    public final String COMPUTER_CAMERA_ADDED = get("computers.camera.added","&aCamera added to the computer!");
-    public final String COMPUTER_CAMERA_ALREADY_ADDED = get("computers.camera.already-added","&cThis camera has already been added to this computer!");
-    public final String COMPUTER_CAMERA_REMOVED = get("computers.camera.removed","&aCamera removed from this computer!");
-    public final String COMPUTER_CAMERA_NOT_FOUND = get("computers.camera.not-found","&cThis computer does not contain a camera with that name!");
+    public final String COMPUTER_ITEM_NAME_ADMIN = get("computers.item-name-admin", "&dAdmin Computer");
+    public final String COMPUTER_ITEM_PLACE = get("computer.item-place","&2Place down this item to create a computer!");
 
     private final String GUI_CAMERA = get("gui.camera.title", "&eCamera %camera%");
     public String getGuiCamera(String name) {
@@ -186,9 +232,5 @@ public class LanguageFile extends YamlConfigurationFile {
     public final String CAMERA_VIEW_OPTIONS_ZOOM_UNAVAILABLE = get("camera-view.options.zoom-unavailable", "&6Change your FOV!");
     public final String CAMERA_VIEW_OPTIONS_BACK = get("camera-view.options.back", "&8Back");
     public final String CAMERA_VIEW_OPTIONS_SPOT = get("camera-view.options.spot", "&6Spotting");
-
-    public final String CHAT_PROVIDE_NAME = get("chat-provide-name", "&aProvide a name you would like your camera to have!");
-    public final String CHAT_PROVIDE_PLAYER = get("chat-provide-player", "&aProvide a player to add!");
-    public final String CHAT_TYPE_CANCEL = get("chat-type-cancel", "&aType 'cancel' to cancel!");
 
 }

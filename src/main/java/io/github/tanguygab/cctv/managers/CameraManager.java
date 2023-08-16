@@ -95,19 +95,15 @@ public class CameraManager extends Manager<Camera> {
     }
 
     @Override
-    public void delete(String name, Player player) {
+    public void delete(String name) {
         Camera cam = get(name);
-        if (cam == null) {
-            player.sendMessage(lang.CAMERA_NOT_FOUND);
-            return;
-        }
+
         cam.getArmorStand().remove();
         if (cam.getCreeper() != null) cam.getCreeper().remove();
-        player.sendMessage(lang.CAMERA_DELETE,lang.getCameraName(cam.getName()));
+
         cctv.getViewers().values().stream().filter(viewer -> viewer.getCamera() == cam).forEach(p -> disconnectFromCamera(Bukkit.getPlayer(p.getUuid())));
         cctv.getComputers().values().forEach(computer->computer.removeCamera(cam));
-        delete(cam.getName());
-        Utils.giveOrDrop(player,cctv.getCustomHeads().get(cam.getSkin()));
+        super.delete(cam.getName());
     }
 
     private Camera create(String name, String owner, Location loc, boolean enabled, boolean shown, String skin, boolean isLoaded) {
@@ -152,7 +148,7 @@ public class CameraManager extends Manager<Camera> {
             return;
         }
         saveToConfig(create(name,player.getUniqueId().toString(),loc,true,true,skin,true));
-        player.sendMessage(lang.CAMERA_CREATE,lang.getCameraName(name));
+        player.sendMessage(lang.getCameraCreated(name));
     }
 
 

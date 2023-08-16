@@ -18,15 +18,15 @@ public abstract class CCTVMenu {
 
     protected static final DecimalFormat posFormat = new DecimalFormat("#.##");
 
-    protected final Player p;
+    protected final Player player;
     public Inventory inv;
     protected CCTV cctv = CCTV.getInstance();
     protected LanguageFile lang = cctv.getLang();
     public boolean renaming = false;
     private CCTVMenu previousMenu;
 
-    protected CCTVMenu(Player p) {
-        this.p = p;
+    protected CCTVMenu(Player player) {
+        this.player = player;
     }
 
     public abstract void open();
@@ -38,12 +38,12 @@ public abstract class CCTVMenu {
             renaming = false;
             return;
         }
-        Listener.openedMenus.remove(p);
+        Listener.openedMenus.remove(player);
     }
 
     public void back() {
         if (previousMenu != null) open(previousMenu);
-        else p.closeInventory();
+        else player.closeInventory();
     }
 
     public void fillSlots(int... slots) {
@@ -52,7 +52,7 @@ public abstract class CCTVMenu {
     }
 
     public void open(CCTVMenu menu) {
-        cctv.openMenu(p,menu);
+        cctv.openMenu(player,menu);
         if (previousMenu != menu) menu.previousMenu = this;
     }
 

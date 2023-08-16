@@ -2,12 +2,13 @@ package io.github.tanguygab.cctv.commands;
 
 import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.config.LanguageFile;
+import io.github.tanguygab.cctv.utils.Utils;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -24,18 +25,24 @@ public abstract class Command<T> {
         this.type = type;
     }
 
-    protected boolean noPerm(Player p, String perm) {
-        return !p.hasPermission("cctv." + type + "." + perm);
-    }
-
-
     protected abstract T get(String name);
     protected abstract String getOwner(T object);
+    protected abstract void setOwner(T object, String uuid);
     protected abstract String getNotFound();
+    public abstract void onCommand(CommandSender sender, String[] args);
+    public abstract List<String> onTabComplete(CommandSender sender, String[] args);
 
+    protected Player getPlayer(CommandSender sender) {
+        if (sender instanceof Player player) return player;
+        sender.sendMessage("You have to be a player to do this!");
+        return null;
+    }
+    protected String getFirstArg(String[] args) {
+        return args.length > 1 ? args[0].toLowerCase() : "";
+    }
     protected T checkExist(Player player, String[] args) {
         if (args.length < 3) {
-            player.sendMessage(ChatColor.RED + "Please specify a "+type+" name!");
+            player.sendMessage(lang.COMMANDS_PROVIDE_NAME);
             return null;
         }
         T obj = get(args[2]);
@@ -46,6 +53,41 @@ public abstract class Command<T> {
             return null;
         }
         return obj;
+    }
+    protected boolean noPerm(Player p, String perm) {
+        return !p.hasPermission("cctv." + type + "." + perm);
+    }
+
+    protected String setOwnerCmd(Player player, String[] args, String alreadyOwner) {
+        T t = checkExist(player,args);
+        if (t == null) return null;
+
+        if (args.length < 4) {
+            player.sendMessage(lang.COMMANDS_NEW_OWNER);
+            return null;
+        }
+        OfflinePlayer newOwner = Utils.getOfflinePlayer(args[3]);
+        if (newOwner == null) {
+            player.sendMessage(lang.PLAYER_NOT_FOUND);
+            return null;
+        }
+        String uuid = newOwner.getUniqueId().toString();
+        if (getOwner(t).equals(uuid)) {
+            player.sendMessage(alreadyOwner);
+            return null;
+        }
+        setOwner(t,uuid);
+        return newOwner.getName();
+    }
+    protected T renameCmd(Player player, String[] args) {
+        T t = checkExist(player,args);
+        if (t == null) return null;
+
+        if (args.length < 4) {
+            player.sendMessage(lang.COMMANDS_RENAME);
+            return null;
+        }
+        return t;
     }
 
     protected TextComponent comp(String text, ChatColor color) {
@@ -85,14 +127,10 @@ public abstract class Command<T> {
         player.spigot().sendMessage(comp);
     }
 
-    private int getPage(String[] args) {
-        if (args.length < 3) return 1;
-        try {return Integer.parseInt(args[2]);}
-        catch (Exception ignored) {return 1;}
-    }
-
-    protected void list(Player p, String name, List<String> list, String hover, String[] args) {
-        int page = getPage(args);
+    protected void listCmd(Player p, String name, List<String> list, String[] args) {
+        int page;
+        try {page = args.length < 3 ? 1 : Integer.parseInt(args[2]);}
+        catch (Exception ignored) {page = 1;}
 
         Map<Integer,List<String>> pages = new HashMap<>();
         if (list.size() < 10) pages.put(0,list);
@@ -110,7 +148,7 @@ public abstract class Command<T> {
         pages.get(page-1).forEach(el->{
             TextComponent subComp = comp(" - "+el+"\n",ChatColor.YELLOW);
             subComp.setBold(false);
-            subComp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,new Text(new BaseComponent[]{comp(hover,ChatColor.YELLOW)})));
+            subComp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,new Text(lang.COMMANDS_LIST_INFO)));
             subComp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,"/cctv "+type+" info "+el));
             comp.addExtra(subComp);
         });
@@ -121,13 +159,13 @@ public abstract class Command<T> {
 
         TextComponent previous = comp("«",page <= 1 ? ChatColor.DARK_GRAY : ChatColor.GRAY);
         if (page > 1) {
-            previous.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(ChatColor.YELLOW+"Previous Page")));
+            previous.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(lang.COMMANDS_LIST_PREVIOUS)));
             previous.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cctv " + type + " list " + (page-1)));
         }
         comp.addExtra(previous);
         TextComponent next = comp("»",page == pages.size() ? ChatColor.DARK_GRAY : ChatColor.GRAY);
         if (page < pages.size()) {
-            next.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(ChatColor.YELLOW+"Next Page")));
+            next.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(lang.COMMANDS_LIST_NEXT)));
             next.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cctv " + type + " list " + (page+1)));
         }
         comp.addExtra(next);
@@ -135,7 +173,4 @@ public abstract class Command<T> {
 
         p.spigot().sendMessage(comp);
     }
-
-    public abstract void onCommand(CommandSender sender, String[] args);
-    public abstract List<String> onTabComplete(CommandSender sender, String[] args);
 }

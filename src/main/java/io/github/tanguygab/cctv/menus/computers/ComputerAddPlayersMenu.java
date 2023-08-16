@@ -45,15 +45,15 @@ public class ComputerAddPlayersMenu extends ListMenu {
 
     @Override
     protected void onClick(int slot) {
-        Listener.computerAddPlayer.put(p,computer);
-        p.closeInventory();
-        p.sendMessage(lang.CHAT_PROVIDE_PLAYER,lang.CHAT_TYPE_CANCEL);
+        Listener.computerAddPlayer.put(player,computer);
+        player.closeInventory();
+        player.sendMessage(lang.CHAT_PROVIDE_PLAYER,lang.CHAT_TYPE_CANCEL);
     }
 
     @Override
     protected void onClick(String uuid, ClickType click) {
         computer.addPlayer(uuid);
         open();
-        p.sendMessage(lang.PLAYER_ADDED);
+        player.sendMessage(lang.PLAYER_ADDED);
     }
 }

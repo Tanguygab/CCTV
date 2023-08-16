@@ -28,7 +28,7 @@ public class ComputerAddCamerasMenu extends ListMenu {
 
     @Override
     protected void onOpen() {
-        list(cctv.getCameras().get(p).stream()
+        list(cctv.getCameras().get(player).stream()
                 .filter(cam->!computer.getCameras().contains(cctv.getCameras().get(cam)))
                 .toList(),camera->{
             Camera cam = cctv.getCameras().get(camera);
@@ -50,6 +50,6 @@ public class ComputerAddCamerasMenu extends ListMenu {
         Camera camera = cctv.getCameras().get(name);
         computer.addCamera(camera);
         open();
-        p.sendMessage(lang.COMPUTER_CAMERA_ADDED);
+        player.sendMessage(lang.getEditCameras(true,true,true,true));
     }
 }

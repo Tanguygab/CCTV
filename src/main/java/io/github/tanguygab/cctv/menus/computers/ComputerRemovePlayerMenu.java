@@ -43,7 +43,7 @@ public class ComputerRemovePlayerMenu extends ListMenu {
     protected void onClick(String uuid, ClickType click) {
         computer.removePlayer(uuid);
         open();
-        p.sendMessage(lang.PLAYER_REMOVED);
+        player.sendMessage(lang.PLAYER_REMOVED);
     }
 
 }

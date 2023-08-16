@@ -33,11 +33,11 @@ public class ComputerMainMenu extends ListMenu {
     }
 
     private boolean showCoords() {
-        return !cctv.hasToggledComputerCoords(p);
+        return !cctv.hasToggledComputerCoords(player);
     }
 
     private boolean canEdit() {
-        return computer.getOwner().equals(p.getUniqueId().toString()) || p.hasPermission("cctv.computer.other");
+        return computer.getOwner().equals(player.getUniqueId().toString()) || player.hasPermission("cctv.computer.other");
     }
 
     @Override
@@ -59,12 +59,12 @@ public class ComputerMainMenu extends ListMenu {
         if (name.startsWith("group.")) {
             CameraGroup group = cctv.getGroups().get(name.substring(6));
             if (group == null) {
-                p.sendMessage(lang.GROUP_NOT_FOUND);
+                player.sendMessage(lang.GROUP_NOT_FOUND);
                 return;
             }
             handleClick(click, group, () -> {
-                if (!group.getOwner().equals(p.getUniqueId().toString()) && !p.hasPermission("cctv.group.other"))
-                    p.sendMessage(lang.NO_PERMISSIONS);
+                if (!group.getOwner().equals(player.getUniqueId().toString()) && !player.hasPermission("cctv.group.other"))
+                    player.sendMessage(lang.NO_PERMISSIONS);
                 //else open(new GroupMenu(p,group));
             });
             return;
@@ -72,26 +72,26 @@ public class ComputerMainMenu extends ListMenu {
 
         Camera camera = cctv.getCameras().get(name);
         if (camera == null) {
-            p.sendMessage(lang.CAMERA_NOT_FOUND);
+            player.sendMessage(lang.CAMERA_NOT_FOUND);
             return;
         }
         handleClick(click,camera,()->{
-            if (!camera.getOwner().equals(p.getUniqueId().toString()) && !p.hasPermission("cctv.camera.other"))
-                p.sendMessage(lang.NO_PERMISSIONS);
-            else open(new CameraMenu(p,camera));
+            if (!camera.getOwner().equals(player.getUniqueId().toString()) && !player.hasPermission("cctv.camera.other"))
+                player.sendMessage(lang.NO_PERMISSIONS);
+            else open(new CameraMenu(player,camera));
         });
     }
 
     @Override
     protected void onClick(int slot) {
         switch (slot) {
-            case 45 -> p.closeInventory();
+            case 45 -> player.closeInventory();
             case 0 -> {
-                if (canEdit()) open(new ComputerOptionsMenu(p,computer));
-                else p.sendMessage(lang.COMPUTER_CHANGE_NO_PERMS);
+                if (canEdit()) open(new ComputerOptionsMenu(player,computer));
+                else player.sendMessage(lang.COMPUTER_CHANGE_NO_PERMS);
             }
             case 9 -> {
-                cctv.toggleComputerCoords(p);
+                cctv.toggleComputerCoords(player);
                 open();
             }
         }
@@ -123,8 +123,8 @@ public class ComputerMainMenu extends ListMenu {
         switch (click) {
             case RIGHT -> rightClick.run();
             case LEFT -> {
-                cctv.getCameras().viewCamera(p, computable instanceof Camera camera ? camera : null, computable, computer);
-                p.closeInventory();
+                cctv.getCameras().viewCamera(player, computable instanceof Camera camera ? camera : null, computable, computer);
+                player.closeInventory();
             }
             case SHIFT_LEFT, SHIFT_RIGHT -> {
                 int bound = click == ClickType.SHIFT_LEFT ? 0 : computer.getCameras().size()-1;
@@ -139,7 +139,7 @@ public class ComputerMainMenu extends ListMenu {
             case DROP -> {
                 if (!canEdit()) return;
                 computer.removeCamera(computable);
-                p.sendMessage(lang.COMPUTER_CAMERA_REMOVED); // need group/camera check
+                player.sendMessage(lang.getEditCameras(false,true,computable instanceof Camera,true));
                 open();
             }
         }

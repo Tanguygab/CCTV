@@ -29,7 +29,7 @@ public class ComputerOptionsMenu extends CCTVMenu {
         inv.setItem(3, getItem(Heads.CAMERA.get(),lang.GUI_COMPUTER_OPTIONS_ADD_CAMERAS));
         setPublicItem();
 
-        p.openInventory(inv);
+        player.openInventory(inv);
     }
 
     private void setPublicItem() {
@@ -50,12 +50,12 @@ public class ComputerOptionsMenu extends CCTVMenu {
     @Override
     public void onClick(ItemStack item, int slot, ClickType click) {
         switch (slot) {
-            case 0 -> open(new ComputerMainMenu(p,computer));
-            case 3 -> open(new ComputerAddCamerasMenu(p,computer));
+            case 0 -> open(new ComputerMainMenu(player,computer));
+            case 3 -> open(new ComputerAddCamerasMenu(player,computer));
             case 4 -> {
                 switch (click) {
-                    case LEFT -> open(new ComputerAddPlayersMenu(p,computer));
-                    case RIGHT -> open(new ComputerRemovePlayerMenu(p,computer));
+                    case LEFT -> open(new ComputerAddPlayersMenu(player,computer));
+                    case RIGHT -> open(new ComputerRemovePlayerMenu(player,computer));
                     case SHIFT_LEFT -> {
                         computer.setPublik(!computer.isPublik());
                         setPublicItem();

@@ -5,6 +5,7 @@ import io.github.tanguygab.cctv.listeners.Listener;
 import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.menus.CCTVMenu;
 import io.github.tanguygab.cctv.utils.Heads;
+import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -37,7 +38,7 @@ public class CameraMenu extends CCTVMenu {
 
         inv.setItem(40, getItem(Heads.EXIT,lang.GUI_CAMERA_EXIT));
         inv.setItem(44, getItem(Material.BARRIER,lang.GUI_CAMERA_DELETE));
-        p.openInventory(inv);
+        player.openInventory(inv);
     }
 
     private void updateVisibilityItem() {
@@ -55,33 +56,35 @@ public class CameraMenu extends CCTVMenu {
     public void onClick(ItemStack item, int slot, ClickType click) {
         CameraManager cm = cctv.getCameras();
         switch (slot) {
-            case 15 -> open(new CameraSkinMenu(p,camera));
+            case 15 -> open(new CameraSkinMenu(player,camera));
             case 23 -> {
                 camera.setShown(!camera.isShown());
                 updateVisibilityItem();
             }
             case 24 -> {
-                p.closeInventory();
-                cm.viewCamera(p,camera,null,null);
+                player.closeInventory();
+                cm.viewCamera(player,camera,null,null);
             }
             case 25 -> {
                 camera.setEnabled(!camera.isEnabled());
                 updateEnabledItem();
             }
             case 33 -> {
-                Listener.cameraRename.put(p,camera);
-                p.closeInventory();
-                p.sendMessage(lang.CHAT_PROVIDE_NAME,lang.CHAT_TYPE_CANCEL);
+                Listener.cameraRename.put(player,camera);
+                player.closeInventory();
+                player.sendMessage(lang.CHAT_PROVIDE_NAME,lang.CHAT_TYPE_CANCEL);
             }
-            case 11 -> cm.rotate(p,camera, -9,false);
-            case 19 -> cm.rotate(p,camera, 18,true);
-            case 21 -> cm.rotate(p,camera, -18,true);
-            case 29 -> cm.rotate(p,camera, 9,false);
+            case 11 -> cm.rotate(player,camera, -9,false);
+            case 19 -> cm.rotate(player,camera, 18,true);
+            case 21 -> cm.rotate(player,camera, -18,true);
+            case 29 -> cm.rotate(player,camera, 9,false);
 
             case 40 -> back();
             case 44 -> {
-                p.closeInventory();
-                cm.delete(camera.getName(), p);
+                player.closeInventory();
+                cm.delete(camera.getName());
+                Utils.giveOrDrop(player,cctv.getCustomHeads().get(camera.getSkin()));
+                player.sendMessage(lang.getCameraDeleted(camera.getName()));
             }
         }
     }
