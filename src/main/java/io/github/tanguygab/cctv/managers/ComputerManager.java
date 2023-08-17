@@ -76,8 +76,9 @@ public class ComputerManager extends Manager<Computer> {
         set(name,"x",loc.getX());
         set(name,"y",loc.getY());
         set(name,"z",loc.getZ());
-        set(name,"cameras",computer.getCameras().stream().map(c->(c instanceof CameraGroup ? "group.":"")+c.getName()).toList());
-        set(name,"allowed-players",computer.getAllowedPlayers());
+        List<String> cameras = computer.getCameras().stream().map(c->(c instanceof CameraGroup ? "group.":"")+c.getName()).toList();
+        set(name,"cameras",cameras.isEmpty() ? null : cameras);
+        set(name,"allowed-players",computer.getAllowedPlayers().isEmpty() ? null : computer.getAllowedPlayers());
         set(name,"public",computer.isPublik());
         set(name,"admin",computer.isAdmin());
     }

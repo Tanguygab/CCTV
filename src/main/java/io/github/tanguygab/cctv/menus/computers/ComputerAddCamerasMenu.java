@@ -1,5 +1,6 @@
 package io.github.tanguygab.cctv.menus.computers;
 
+import io.github.tanguygab.cctv.entities.Camera;
 import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.menus.ListMenu;
@@ -19,7 +20,6 @@ public class ComputerAddCamerasMenu extends ListMenu {
     protected ComputerAddCamerasMenu(Player p, Computer computer) {
         super(p);
         this.computer = computer;
-        itemKey = cm.cameraKey;
     }
 
     @Override
@@ -33,7 +33,8 @@ public class ComputerAddCamerasMenu extends ListMenu {
                 .map(cm::get)
                 .filter(camera->!computer.getCameras().contains(camera))
                 .toList(),camera->{
-            ItemStack item = getItem(cctv.getCustomHeads().get(camera.getSkin()),camera.getName());
+            ItemStack item = getItem(cctv.getCustomHeads().get(camera.getSkin()),
+                    cctv.getCustomHeads().getChatColor(camera.getSkin())+camera.getName());
             Location loc = camera.getLocation();
             ItemMeta meta = item.getItemMeta();
             assert meta != null;
@@ -41,6 +42,7 @@ public class ComputerAddCamerasMenu extends ListMenu {
                     +lang.GUI_COMPUTER_CAMERA_ITEM_Y+posFormat.format(loc.getY())
                     +lang.GUI_COMPUTER_CAMERA_ITEM_Z+posFormat.format(loc.getZ())
             ));
+            setMeta(meta,camera.getName());
             item.setItemMeta(meta);
             inv.addItem(item);
         });
@@ -48,7 +50,8 @@ public class ComputerAddCamerasMenu extends ListMenu {
 
     @Override
     protected void onClick(String name, ClickType click) {
-        computer.addCamera(cm.get(name));
+        Camera camera = cm.get(name);
+        if (camera != null) computer.addCamera(camera);
         open();
         player.sendMessage(lang.getEditCameras(true,true,true,true));
     }

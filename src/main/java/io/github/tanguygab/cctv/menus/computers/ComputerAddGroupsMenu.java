@@ -1,5 +1,6 @@
 package io.github.tanguygab.cctv.menus.computers;
 
+import io.github.tanguygab.cctv.entities.CameraGroup;
 import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.managers.CameraGroupManager;
 import io.github.tanguygab.cctv.menus.ListMenu;
@@ -40,7 +41,8 @@ public class ComputerAddGroupsMenu extends ListMenu {
 
     @Override
     protected void onClick(String name, ClickType click) {
-        computer.addCamera(cgm.get(name));
+        CameraGroup group = cgm.get(name);
+        if (group != null) computer.addCamera(cgm.get(name));
         open();
         player.sendMessage(lang.getEditCameras(true,true,false,true));
     }

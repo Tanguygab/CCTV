@@ -59,7 +59,7 @@ public abstract class CCTVMenu {
     public static ItemStack getItem(ItemStack item, String name) {
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return item;
-        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&',name));
+        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&',"&r"+name));
         item.setItemMeta(meta);
         return item;
     }

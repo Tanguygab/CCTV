@@ -65,7 +65,7 @@ public class ComputerMainMenu extends ListMenu {
                 if (!group.getOwner().equals(player.getUniqueId().toString()) && !player.hasPermission("cctv.group.other"))
                     player.sendMessage(lang.NO_PERMISSIONS);
                 player.closeInventory();
-                player.performCommand("/cctv group "+group.getName()+" info");
+                player.performCommand("/cctv group info "+group.getName());
             });
             return;
         }
@@ -99,7 +99,7 @@ public class ComputerMainMenu extends ListMenu {
 
     private void loadItem(Computable computable) {
         ItemStack item = computable instanceof Camera camera
-                ? getItem(cctv.getCustomHeads().get(camera.getSkin()),computable.getName())
+                ? getItem(cctv.getCustomHeads().get(camera.getSkin()),cctv.getCustomHeads().getChatColor(camera.getSkin())+computable.getName())
                 : getItem(((CameraGroup)computable).getIcon(),computable.getName());
 
         ItemMeta meta = item.getItemMeta();

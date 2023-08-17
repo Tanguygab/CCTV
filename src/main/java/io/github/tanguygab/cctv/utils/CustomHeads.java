@@ -15,31 +15,31 @@ public class CustomHeads {
     private final Map<String,BarColor> barColors = new HashMap<>();
     private final CCTV cctv = CCTV.getInstance();
 
+    private final Map<String,BarColor> colors = new HashMap<>() {{
+        put("&c",BarColor.RED);
+        put("&4",BarColor.RED);
+        put("&e",BarColor.YELLOW);
+        put("&6",BarColor.YELLOW);
+        put("&a",BarColor.GREEN);
+        put("&2",BarColor.GREEN);
+        put("&b",BarColor.BLUE);
+        put("&1",BarColor.BLUE);
+        put("&3",BarColor.BLUE);
+        put("&9",BarColor.BLUE);
+        put("&d",BarColor.PINK);
+        put("&5",BarColor.PURPLE);
+        put("&f",BarColor.WHITE);
+        put("&7",BarColor.WHITE);
+        put("&8",BarColor.WHITE);
+        put("&0",BarColor.PURPLE);
+    }};
+
     public CustomHeads() {
         defaultHead = Heads.CAMERA.get();
         ItemMeta defaultMeta = defaultHead.getItemMeta();
         assert defaultMeta != null;
         defaultMeta.getPersistentDataContainer().set(cctv.getCameras().cameraKey, PersistentDataType.STRING,"_DEFAULT_");
         defaultHead.setItemMeta(defaultMeta);
-
-        Map<String,BarColor> colors = new HashMap<>() {{
-            put("&c",BarColor.RED);
-            put("&4",BarColor.RED);
-            put("&e",BarColor.YELLOW);
-            put("&6",BarColor.YELLOW);
-            put("&a",BarColor.GREEN);
-            put("&2",BarColor.GREEN);
-            put("&b",BarColor.BLUE);
-            put("&1",BarColor.BLUE);
-            put("&3",BarColor.BLUE);
-            put("&9",BarColor.BLUE);
-            put("&d",BarColor.PINK);
-            put("&5",BarColor.PURPLE);
-            put("&f",BarColor.WHITE);
-            put("&7",BarColor.WHITE);
-            put("&8",BarColor.WHITE);
-            put("&0",BarColor.PURPLE);
-        }};
 
         Map<String,String> textures = cctv.getConfiguration().getConfigurationSection("camera.skins");
         textures.forEach((name,base64)-> {
@@ -65,5 +65,11 @@ public class CustomHeads {
 
     public BarColor getBarColor(String skin) {
         return barColors.getOrDefault(skin,BarColor.PURPLE);
+    }
+    public String getChatColor(String skin) {
+        for (String color : colors.keySet())
+            if (skin.contains(color))
+                return color;
+        return "&f";
     }
 }
