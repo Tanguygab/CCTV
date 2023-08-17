@@ -80,6 +80,7 @@ public class CCTV extends JavaPlugin {
 
         viewers.load();
         cameras.load();
+        groups.load();
         computers.load();
 
         loadRecipes();
@@ -112,6 +113,8 @@ public class CCTV extends JavaPlugin {
         HandlerList.unregisterAll(this);
 
         if (expansion != null) expansion.unregister();
+        computers.unload();
+        groups.unload();
         cameras.unload();
         viewers.file.set("toggled-computer-coords", toggledCoords);
         viewers.unload();
