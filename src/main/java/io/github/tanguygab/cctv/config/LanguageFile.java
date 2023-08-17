@@ -145,7 +145,7 @@ public class LanguageFile extends YamlConfigurationFile {
 
     private final String GUI_CAMERA = get("gui.camera.title", "&eCamera %camera%");
     public String getGuiCamera(String name) {
-        return GUI_CAMERA.replace("%cameraname%",name);
+        return GUI_CAMERA.replace("%camera%",name);
     }
     public final String GUI_CAMERA_CHANGE_SKIN = get("gui.camera.change-skin", "&aChange Camera Skin");
     public final String GUI_CAMERA_DELETE = get("gui.camera.delete", "&4Delete");
