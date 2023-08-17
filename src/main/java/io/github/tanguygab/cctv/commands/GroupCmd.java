@@ -132,12 +132,12 @@ public class GroupCmd extends Command<CameraGroup> {
             player.sendMessage(isCam ? lang.getCommandsProvideCameraName() : lang.getCommandsProvideGroupName());
             return;
         }
-        if (isCam ? cm.exists(name) : !cgm.exists(name)) {
+        if (isCam ? !cm.exists(name) : !cgm.exists(name)) {
             player.sendMessage(isCam ? lang.CAMERA_NOT_FOUND : getNotFound());
             return;
         }
         Computable c = isCam ? cm.get(name) : cgm.get(name);
-        if (group.getCameras().contains(c)) {
+        if (add == group.getCameras().contains(c)) {
             player.sendMessage(lang.getEditCameras(add,false,isCam,false));
             return;
         }
