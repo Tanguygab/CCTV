@@ -71,8 +71,8 @@ public class GroupCmd extends Command<CameraGroup> {
                     p.sendMessage(lang.GROUP_ICON_PROVIDE);
                     return;
                 }
-                Material material = Material.getMaterial(args[2]);
-                if (material != null && !cgm.getAllowedIcons().contains(material.toString())) {
+                Material material = Material.getMaterial(args[3]);
+                if (material == null || !cgm.getAllowedIcons().contains(material.toString())) {
                     p.sendMessage(lang.getGroupIconInvalid(String.join(", ",cgm.getAllowedIcons())));
                     return;
                 }
@@ -168,7 +168,7 @@ public class GroupCmd extends Command<CameraGroup> {
     @Override
     public List<String> onTabComplete(CommandSender sender, String[] args) {
         return switch (args.length) {
-            case 2 -> List.of("create","list","seticon","setowner","rename","info","addgroup","removegroup","addcamera","removecamera");
+            case 2 -> List.of("create","delete","list","seticon","setowner","rename","info","addgroup","removegroup","addcamera","removecamera");
             case 3 -> switch (args[1].toLowerCase()) {
                 case "create","list" -> null;
                 default -> cgm.get((Player) sender);
