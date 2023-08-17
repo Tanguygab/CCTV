@@ -36,7 +36,7 @@ public class CameraSkinMenu extends ListMenu {
 
     @Override
     protected void onClick(String name, ClickType click) {
-        camera.setSkin(lang.GUI_CAMERA_SKIN_DEFAULT);
+        camera.setSkin(name);
         updateCameraItem();
     }
 
