@@ -38,7 +38,7 @@ public abstract class Command<T> {
         return null;
     }
     protected String getFirstArg(String[] args) {
-        return args.length > 1 ? args[0].toLowerCase() : "";
+        return args.length > 1 ? args[1].toLowerCase() : "";
     }
     protected T checkExist(Player player, String[] args) {
         if (args.length < 3) {
