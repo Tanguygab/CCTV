@@ -170,8 +170,6 @@ public class LanguageFile extends YamlConfigurationFile {
     }
     public final String GUI_COMPUTER_OPTIONS_TITLE = get("gui.computer.options-title", "&eOptions");
     public final String GUI_COMPUTER_TOGGLE_COORDS = get("gui.computer.toggle-coords","Toggle Camera Coordinates");
-    public final String GUI_COMPUTER_GROUP_ITEM = get("gui.computer.group-item","&eGroup: &6");
-    public final String GUI_COMPUTER_CAMERA_ITEM_NAME = get("gui.computer.camera-item.name","&eCamera: &6");
     public final String GUI_COMPUTER_CAMERA_ITEM_X = get("gui.computer.camera-item.x"," &eX: &7");
     public final String GUI_COMPUTER_CAMERA_ITEM_Y = get("gui.computer.camera-item.y", " &eY: &7");
     public final String GUI_COMPUTER_CAMERA_ITEM_Z = get("gui.computer.camera-item.z"," &eZ: &7");

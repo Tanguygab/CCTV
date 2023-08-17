@@ -33,7 +33,7 @@ public class ComputerAddCamerasMenu extends ListMenu {
                 .map(cm::get)
                 .filter(camera->!computer.getCameras().contains(camera))
                 .toList(),camera->{
-            ItemStack item = getItem(cctv.getCustomHeads().get(camera.getSkin()), lang.GUI_COMPUTER_CAMERA_ITEM_NAME + camera.getName());
+            ItemStack item = getItem(cctv.getCustomHeads().get(camera.getSkin()),camera.getName());
             Location loc = camera.getLocation();
             ItemMeta meta = item.getItemMeta();
             assert meta != null;

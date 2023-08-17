@@ -99,8 +99,8 @@ public class ComputerMainMenu extends ListMenu {
 
     private void loadItem(Computable computable) {
         ItemStack item = computable instanceof Camera camera
-                ? getItem(cctv.getCustomHeads().get(camera.getSkin()), lang.GUI_COMPUTER_CAMERA_ITEM_NAME+camera.getName())
-                : getItem(((CameraGroup)computable).getIcon(),lang.GUI_COMPUTER_GROUP_ITEM+computable.getName());
+                ? getItem(cctv.getCustomHeads().get(camera.getSkin()),computable.getName())
+                : getItem(((CameraGroup)computable).getIcon(),computable.getName());
 
         ItemMeta meta = item.getItemMeta();
         assert meta != null;

@@ -29,7 +29,7 @@ public class ComputerAddGroupsMenu extends ListMenu {
                 .map(cgm::get)
                 .filter(group->!computer.getCameras().contains(group))
                 .toList(),group->{
-            ItemStack item = getItem(group.getIcon(), lang.GUI_COMPUTER_CAMERA_ITEM_NAME + group.getName());
+            ItemStack item = getItem(group.getIcon(),group.getName());
             ItemMeta meta = item.getItemMeta();
             assert meta != null;
             setMeta(meta,group.getName());

@@ -98,9 +98,7 @@ gui:
     add-camera: "&aAdd Camera (page: %page%)"
     add-group: "&aAdd Group (page: %page%)"
     toggle-coords: "Toggle Camera Coordinates"
-    group-item: "&eGroup: &6"
     camera-item:
-      name: "&eCamera: &6"
       x: " &6X: &7"
       Y: " &6Y: &7"
       Z: " &6Z: &7"
