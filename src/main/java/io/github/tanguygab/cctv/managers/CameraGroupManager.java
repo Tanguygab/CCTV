@@ -22,6 +22,7 @@ public class CameraGroupManager extends Manager<CameraGroup> {
             Material material = Material.getMaterial(icon);
             if (material != null) allowedIcons.add(material);
         });
+        if (allowedIcons.isEmpty()) allowedIcons.add(Material.CHEST);
 
         file.getValues().keySet().forEach(this::loadFromConfig);
         // loading cameras after all groups are loaded because they can also contain groups
@@ -53,7 +54,8 @@ public class CameraGroupManager extends Manager<CameraGroup> {
         String name = group.getName();
         set(name,"owner",group.getOwner());
         set(name,"icon",group.getIcon().toString());
-        set(name,"cameras",group.getCameras().stream().map(c->(c instanceof CameraGroup ? "group.":"")+c.getName()).toList());
+        List<String> cameras = group.getCameras().stream().map(c->(c instanceof CameraGroup ? "group.":"")+c.getName()).toList();
+        set(name,"cameras",cameras.isEmpty() ? null : cameras);
     }
 
     private void create(String name, String owner, Material icon) {
