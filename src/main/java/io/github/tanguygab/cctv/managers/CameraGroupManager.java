@@ -26,7 +26,7 @@ public class CameraGroupManager extends Manager<CameraGroup> {
 
         file.getValues().keySet().forEach(this::loadFromConfig);
         // loading cameras after all groups are loaded because they can also contain groups
-        values().forEach(group->file.getStringList("cameras").forEach(camera->{
+        values().forEach(group->file.getStringList(group.getName()+".cameras").forEach(camera->{
             Computable c = camera.startsWith("group.") ? get(camera.substring(6)) : cctv.getCameras().get(camera);
             if (c != null) group.addCamera(c);
         }));
