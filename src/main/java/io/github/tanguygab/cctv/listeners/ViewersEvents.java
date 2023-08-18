@@ -4,7 +4,6 @@ import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.config.LanguageFile;
 import io.github.tanguygab.cctv.managers.CameraManager;
 import io.github.tanguygab.cctv.managers.ViewerManager;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,18 +15,22 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class ViewersEvents implements Listener {
 
+    private final CCTV cctv;
     private final LanguageFile lang;
     private final CameraManager cm;
     private final ViewerManager vm;
 
-    public ViewersEvents() {
-        lang = CCTV.getInstance().getLang();
-        cm = CCTV.getInstance().getCameras();
-        vm = CCTV.getInstance().getViewers();
+    public ViewersEvents(CCTV cctv) {
+        this.cctv = cctv;
+        lang = cctv.getLang();
+        cm = cctv.getCameras();
+        vm = cctv.getViewers();
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -42,13 +45,13 @@ public class ViewersEvents implements Listener {
         if (!vm.exists(player)) return;
 
         player.sendTitle(" ", lang.CAMERA_DISCONNECTING, 0, vm.TIME_TO_DISCONNECT*20, 0);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(CCTV.getInstance(), () -> cm.disconnectFromCamera(player),  vm.TIME_TO_DISCONNECT * 20L);
+        cctv.getServer().getScheduler().scheduleSyncDelayedTask(cctv, () -> cm.disconnectFromCamera(player),  vm.TIME_TO_DISCONNECT * 20L);
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent e) {
         Player p = e.getPlayer();
-        if (vm.exists(p)) vm.viewersQuit.put(p.getUniqueId(), CCTV.getInstance().getNms().oldLoc.get(p));
+        if (vm.exists(p)) vm.viewersQuit.put(p.getUniqueId(), cctv.getNms().oldLoc.get(p));
         cm.disconnectFromCamera(p);
     }
 
@@ -109,12 +112,16 @@ public class ViewersEvents implements Listener {
         }
     }
 
+    private final List<Player> clickers = new ArrayList<>(); 
     @EventHandler
     public void onInteract(PlayerInteractEvent e) {
-        Player p = e.getPlayer();
-        if (!CCTV.getInstance().getViewers().exists(p)) return;
+        Player player = e.getPlayer();
+        if (!cctv.getViewers().exists(player)) return;
         e.setCancelled(true);
-        if (e.getHand() != EquipmentSlot.OFF_HAND)
-            CCTV.getInstance().getViewers().onCameraItems(p, e.getItem());
+        if (e.getHand() != EquipmentSlot.OFF_HAND && !clickers.contains(player)) {
+            cctv.getViewers().onCameraItems(player, e.getItem());
+            clickers.add(player);
+            cctv.getServer().getScheduler().runTaskLater(cctv,()->clickers.remove(player),3);
+        }
     }
 }
