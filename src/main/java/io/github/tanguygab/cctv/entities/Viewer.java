@@ -21,30 +21,30 @@ public class Viewer {
     @Setter private Computer computer;
     private boolean nightVision;
 
-    public Viewer(Player player, Camera camera, Computable group, Computer computer) {
+    public Viewer(Player player, Computable camera, Computer computer) {
         this.uuid = player.getUniqueId();
         this.player = player;
         inventory = player.getInventory().getContents().clone();
-        setCamera(camera);
+        setCamera(camera,false);
         this.computer = computer;
     }
 
-    public void setCamera(Camera camera) {
-
-        if (CCTV.getInstance().getViewers().BOSSBAR) {
-            if (this.camera != null) this.camera.getBossbar().removePlayer(player);
-            if (camera != null) camera.getBossbar().addPlayer(player);
+    public void setCamera(Computable cam, boolean previous) {
+        if (CCTV.getInstance().getViewers().BOSSBAR && cam != group) {
+            if (group != null) group.getBossbar().removePlayer(player);
+            if (cam != null) cam.getBossbar().addPlayer(player);
         }
-        if (camera == null) {
+        if (cam == null) {
             CCTV.getInstance().getNms().setCameraPacket(player,player);
             player.getInventory().setContents(inventory);
             return;
         }
 
+        camera = cam.get(this,previous);
         CCTV.getInstance().getNms().setCameraPacket(player, camera.getArmorStand());
         boolean nv = nightVision;
         if (nv) setNightVision(false);
-        this.camera = camera;
+        group = cam;
         if (nv) setNightVision(true);
     }
 

@@ -65,7 +65,7 @@ public class ComputerMainMenu extends ListMenu {
                 if (!group.getOwner().equals(player.getUniqueId().toString()) && !player.hasPermission("cctv.group.other"))
                     player.sendMessage(lang.NO_PERMISSIONS);
                 player.closeInventory();
-                player.performCommand("/cctv group info "+group.getName());
+                player.performCommand("cctv group info "+group.getName());
             });
             return;
         }
@@ -121,11 +121,11 @@ public class ComputerMainMenu extends ListMenu {
 
     private void handleClick(ClickType click, Computable computable, Runnable rightClick) {
         switch (click) {
-            case RIGHT -> rightClick.run();
             case LEFT -> {
-                cctv.getCameras().viewCamera(player, computable instanceof Camera camera ? camera : null, computable, computer);
+                cctv.getCameras().viewCamera(player, computable, computer);
                 player.closeInventory();
             }
+            case RIGHT -> rightClick.run();
             case SHIFT_LEFT, SHIFT_RIGHT -> {
                 int bound = click == ClickType.SHIFT_LEFT ? 0 : computer.getCameras().size()-1;
                 int inc = click == ClickType.SHIFT_LEFT ? -1 : 1;

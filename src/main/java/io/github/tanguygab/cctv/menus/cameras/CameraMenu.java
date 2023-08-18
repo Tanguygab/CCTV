@@ -63,7 +63,7 @@ public class CameraMenu extends CCTVMenu {
             }
             case 24 -> {
                 player.closeInventory();
-                cm.viewCamera(player,camera,null,null);
+                cm.viewCamera(player,camera,null);
             }
             case 25 -> {
                 camera.setEnabled(!camera.isEnabled());

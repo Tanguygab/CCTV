@@ -97,9 +97,12 @@ public class CameraCmd extends Command<Camera> {
                 Camera camera = renameCmd(p,args);
                 if (camera == null) return;
                 String newName = args[3];
-                if (camera.rename(newName))
+                if (camera.rename(newName)) {
                     p.sendMessage(lang.getCameraRenamed(newName));
-                else p.sendMessage(lang.CAMERA_ALREADY_EXISTS);
+                    camera.getBossbar().setTitle(camera.getName());
+                    return;
+                }
+                p.sendMessage(lang.CAMERA_ALREADY_EXISTS);
             }
             case "setowner" -> {
                 String owner = setOwnerCmd(p,args,lang.CAMERA_PLAYER_ALREADY_OWNER);

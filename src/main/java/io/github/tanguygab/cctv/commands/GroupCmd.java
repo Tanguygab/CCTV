@@ -87,9 +87,12 @@ public class GroupCmd extends Command<CameraGroup> {
                 CameraGroup group = renameCmd(p,args);
                 if (group == null) return;
                 String newName = args[3];
-                if (group.rename(newName))
+                if (group.rename(newName)) {
                     p.sendMessage(lang.getGroupRenamed(newName));
-                else p.sendMessage(lang.GROUP_ALREADY_EXISTS);
+                    group.getBossbar().setTitle(group.getName());
+                    return;
+                }
+                p.sendMessage(lang.GROUP_ALREADY_EXISTS);
             }
             case "info" -> {
                 CameraGroup group = checkExist(p,args);

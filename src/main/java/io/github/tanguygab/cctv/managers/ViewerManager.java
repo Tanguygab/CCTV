@@ -1,7 +1,6 @@
 package io.github.tanguygab.cctv.managers;
 
 import io.github.tanguygab.cctv.config.ConfigurationFile;
-import io.github.tanguygab.cctv.entities.Camera;
 import io.github.tanguygab.cctv.entities.Computable;
 import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.entities.Viewer;
@@ -80,7 +79,7 @@ public class ViewerManager extends Manager<Viewer> {
     @SuppressWarnings("UnstableApiUsage")
     public void delete(Player p) {
         Viewer viewer = get(p);
-        viewer.setCamera(null);
+        viewer.setCamera(null,false);
         if (!cm.EXPERIMENTAL_VIEW)
             for (Player online : Bukkit.getOnlinePlayers())
                 online.showPlayer(cctv,p);
@@ -99,8 +98,8 @@ public class ViewerManager extends Manager<Viewer> {
         return exists(p.getUniqueId().toString());
     }
 
-    public void createPlayer(Player p, Camera cam, Computable group, Computer computer) {
-        Viewer viewer = new Viewer(p,cam,group,computer);
+    public void createPlayer(Player p, Computable camera, Computer computer) {
+        Viewer viewer = new Viewer(p,camera,computer);
         put(viewer.getUuid().toString(),viewer);
 
         p.setCanPickupItems(false);
@@ -152,23 +151,22 @@ public class ViewerManager extends Manager<Viewer> {
         }
 
         List<Computable> cams = new ArrayList<>(computer.getCameras());
-        //cams.removeIf(camera->cm.EXPERIMENTAL_VIEW && Utils.distance(player.getLocation(),camera.getArmorStand().getLocation()) >= 60);
-
         if (cams.size() <= 1) {
             player.sendMessage(lang.NO_CAMERAS);
             return;
         }
-
         if (previous) Collections.reverse(cams);
 
-        Computable currentCam = viewer.getCamera();
-        Computable computable = currentCam.next(viewer)
-                ? currentCam.get(viewer)
-                : cams.indexOf(currentCam) == cams.size()-1
-                    ? cams.get(0)
-                    : cams.get(cams.indexOf(currentCam)+1);
+        Computable current = viewer.getGroup();
+        Computable next = getNextCamera(viewer,current,previous,cams);
+        viewer.setCamera(next,previous);
+    }
 
-        //viewer.setCamera(computable);
+    public Computable getNextCamera(Viewer viewer, Computable current, boolean previous, List<Computable> cameras) {
+        return !current.next(viewer,previous) ? current
+                : cameras.indexOf(current) == cameras.size()-1
+                ? cameras.get(0)
+                : cameras.get(cameras.indexOf(current)+1);
     }
 
 }

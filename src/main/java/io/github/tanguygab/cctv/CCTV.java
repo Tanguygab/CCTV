@@ -86,7 +86,7 @@ public class CCTV extends JavaPlugin {
         loadRecipes();
         if (plm.isPluginEnabled("PlaceholderAPI")) (expansion = new CCTVExpansion(this)).register();
         plm.registerEvents(new Listener(),this);
-        plm.registerEvents(new ViewersEvents(),this);
+        plm.registerEvents(new ViewersEvents(this),this);
         plm.registerEvents(new ComputersEvents(),this);
 
         getLogger().info(".-----====--------+]-   -----+[====]+-----   -[+--------====-----.");

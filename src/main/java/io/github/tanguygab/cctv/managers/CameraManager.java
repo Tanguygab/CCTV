@@ -166,20 +166,23 @@ public class CameraManager extends Manager<Camera> {
         return cameras;
     }
 
-    public void viewCamera(Player p, Camera cam, Computable group, Computer computer) {
-        if (cam == null) {
+
+
+    public void viewCamera(Player p, Computable cam, Computer computer) {
+        Camera camera = cam.get(null);
+        if (camera == null) {
             p.sendMessage(lang.CAMERA_NOT_FOUND);
             return;
         }
         if (connecting.contains(p)) return;
-        if (!cam.isEnabled()) {
+        if (!camera.isEnabled()) {
             if (!p.hasPermission("cctv.camera.view.override") && !p.hasPermission("cctv.admin")) {
                 p.sendTitle(lang.CAMERA_OFFLINE, "",0, 15, 0);
                 return;
             }
             p.sendMessage(lang.CAMERA_OFFLINE_OVERRIDE);
         }
-        if (EXPERIMENTAL_VIEW && Utils.distance(p.getLocation(),cam.getArmorStand().getLocation()) >= 60) {
+        if (EXPERIMENTAL_VIEW && Utils.distance(p.getLocation(),camera.getArmorStand().getLocation()) >= 60) {
             p.sendMessage(lang.CAMERA_TOO_FAR);
             return;
         }
@@ -188,7 +191,7 @@ public class CameraManager extends Manager<Camera> {
         p.sendTitle(" ", lang.CAMERA_CONNECTING, 0, vm.TIME_TO_CONNECT*20, 0);
         connecting.add(p);
         Bukkit.getScheduler().scheduleSyncDelayedTask(cctv,  () -> {
-            vm.createPlayer(p, cam, group, computer);
+            vm.createPlayer(p, cam, computer);
             connecting.remove(p);
         }, vm.TIME_TO_CONNECT * 20L);
     }

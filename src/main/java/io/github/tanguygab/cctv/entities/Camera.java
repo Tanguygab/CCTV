@@ -39,7 +39,7 @@ public class Camera implements Computable {
         this.enabled = enabled;
         this.shown = shown;
         this.bossbar = CCTV.getInstance().getViewers().BOSSBAR ? Bukkit.getServer().createBossBar(name, BarColor.YELLOW, BarStyle.SOLID) : null;
-        this.skin = skin;
+        setSkin(skin);
     }
 
     @Override
@@ -47,7 +47,7 @@ public class Camera implements Computable {
         return computable == this;
     }
     @Override
-    public Camera get(Viewer viewer) {
+    public Camera get(Viewer viewer, boolean previous) {
         return this;
     }
 
