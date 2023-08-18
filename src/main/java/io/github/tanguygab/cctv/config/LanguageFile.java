@@ -94,7 +94,7 @@ public class LanguageFile extends YamlConfigurationFile {
     public final String CAMERA_DELETED_BECAUSE_BUGGED = get("cameras.deleted-because-bugged","&cSorry but this camera was bugged, so we removed it!");
     public final String CAMERA_TOO_FAR = get("cameras.too-far","&cThis camera is too far away from you!");
     public final String CAMERA_ITEM_NAME = get("cameras.item-name", "&9Camera");
-    public final String CAMERA_ITEM_PLACE = get("camera.item-place","&2Place down this item to create a camera!");
+    public final String CAMERA_ITEM_PLACE = get("cameras.item-place","&2Place down this item to create a camera!");
 
     private final String GROUP_CREATED = get("groups.created","&aGroup %group% created!");
     public String getGroupCreated(String name) {
@@ -141,7 +141,7 @@ public class LanguageFile extends YamlConfigurationFile {
     public final String COMPUTER_NOT_ALLOWED = get("computers.not-allowed", "&cYou aren't allowed to interact with this computer!");
     public final String COMPUTER_ITEM_NAME = get("computers.item-name", "&9Computer");
     public final String COMPUTER_ITEM_NAME_ADMIN = get("computers.item-name-admin", "&dAdmin Computer");
-    public final String COMPUTER_ITEM_PLACE = get("computer.item-place","&2Place down this item to create a computer!");
+    public final String COMPUTER_ITEM_PLACE = get("computers.item-place","&2Place down this item to create a computer!");
 
     private final String GUI_CAMERA = get("gui.camera.title", "&eCamera %camera%");
     public String getGuiCamera(String name) {
