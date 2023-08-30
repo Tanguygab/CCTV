@@ -1,6 +1,7 @@
 package io.github.tanguygab.cctv.managers;
 
 import io.github.tanguygab.cctv.config.ConfigurationFile;
+import io.github.tanguygab.cctv.entities.Camera;
 import io.github.tanguygab.cctv.entities.Computable;
 import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.entities.Viewer;
@@ -155,18 +156,30 @@ public class ViewerManager extends Manager<Viewer> {
             player.sendMessage(lang.NO_CAMERAS);
             return;
         }
-        if (previous) Collections.reverse(cams);
 
-        Computable current = viewer.getGroup();
-        Computable next = getNextCamera(viewer,current,previous,cams);
-        viewer.setCamera(next,previous);
+        Computable group = viewer.getGroup();
+        Camera camera = viewer.getCamera();
+        int tries = 0;
+        do {
+            tries++;
+            group = getNextCamera(camera,group,previous,cams);
+            camera = group.get(camera);
+        } while (!group.available(camera,previous) && tries < 10);
+
+        if (group.get(camera,previous) == null) return;
+        viewer.setCamera(group,previous);
     }
 
-    public Computable getNextCamera(Viewer viewer, Computable current, boolean previous, List<Computable> cameras) {
-        return !current.next(viewer,previous) ? current
-                : cameras.indexOf(current) == cameras.size()-1
-                ? cameras.get(0)
-                : cameras.get(cameras.indexOf(current)+1);
+    public Computable getNextCamera(Camera camera, Computable current, boolean previous, List<Computable> cameras) {
+        if (!current.next(camera,previous)) return current;
+        int index = cameras.indexOf(current);
+        if (previous) {
+            if (index == 0) index = cameras.size();
+            return cameras.get(--index);
+        }
+        if (index == (cameras.size()-1)) index = -1;
+        return cameras.get(++index);
+
     }
 
 }

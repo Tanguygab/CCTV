@@ -43,11 +43,15 @@ public class Camera implements Computable {
     }
 
     @Override
+    public boolean available(Camera camera, boolean previous) {
+        return enabled; //&& CCTV.getInstance().getCameras().EXPERIMENTAL_VIEW && Utils.distance(viewer.getPlayer().getLocation(),armorStand.getLocation()) < 60;
+    }
+    @Override
     public boolean contains(Computable computable) {
         return computable == this;
     }
     @Override
-    public Camera get(Viewer viewer, boolean previous) {
+    public Camera get(Camera camera, boolean previous) {
         return this;
     }
 

@@ -5,6 +5,8 @@ import io.github.tanguygab.cctv.entities.Computable;
 import io.github.tanguygab.cctv.entities.Computer;
 import io.github.tanguygab.cctv.utils.Heads;
 import io.github.tanguygab.cctv.utils.Utils;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.*;
@@ -197,13 +199,9 @@ public class CameraManager extends Manager<Camera> {
     }
 
     public void rotate(Player p, Camera camera, int degrees, boolean horizontal) {
-        if (!p.hasPermission("cctv.view.move")) {
-            p.sendMessage(lang.NO_PERMISSIONS);
-            return;
-        }
         boolean rotate =  horizontal ? camera.rotateHorizontally(degrees) : camera.rotateVertically(degrees);
         if (!rotate) {
-            p.sendMessage(lang.MAX_ROTATION);
+            p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(lang.MAX_ROTATION));
             return;
         }
         if (!EXPERIMENTAL_VIEW && cctv.getViewers().exists(p)) p.teleport(camera.getArmorStand().getLocation());

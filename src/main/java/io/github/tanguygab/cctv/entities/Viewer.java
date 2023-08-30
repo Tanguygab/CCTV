@@ -40,7 +40,7 @@ public class Viewer {
             return;
         }
 
-        camera = cam.get(this,previous);
+        camera = cam.get(camera,previous);
         CCTV.getInstance().getNms().setCameraPacket(player, camera.getArmorStand());
         boolean nv = nightVision;
         if (nv) setNightVision(false);

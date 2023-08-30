@@ -5,14 +5,15 @@ import org.bukkit.boss.BossBar;
 public interface Computable {
 
     String getName();
-    default boolean next(Viewer viewer, boolean previous) {
+    default boolean next(Camera camera, boolean previous) {
         return true;
     }
+    boolean available(Camera camera, boolean previous);
     boolean contains(Computable computable);
 
-    default Camera get(Viewer viewer) {
-        return get(viewer,true);
+    default Camera get(Camera camera) {
+        return get(camera,true);
     }
-    Camera get(Viewer viewer, boolean previous);
+    Camera get(Camera camera, boolean previous);
     BossBar getBossbar();
 }

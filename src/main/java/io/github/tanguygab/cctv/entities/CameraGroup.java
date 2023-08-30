@@ -36,22 +36,34 @@ public class CameraGroup implements Computable {
     }
 
     @Override
-    public boolean next(Viewer viewer, boolean previous) {
-        return previous ? cameras.indexOf(viewer.getCamera()) == 0 : cameras.indexOf(viewer.getCamera()) == cameras.size()-1;
+    public boolean next(Camera camera, boolean previous) {
+        if (cameras.isEmpty()) return true;
+        return previous ? cameras.indexOf(camera) == 0 : cameras.indexOf(camera) == cameras.size()-1;
     }
+
+    @Override
+    public boolean available(Camera camera, boolean previous) {
+        if (cameras.isEmpty()) return false;
+        Camera cam = get(camera,previous);
+        return cam != null && cam.available(camera,previous);
+    }
+
     @Override
     public boolean contains(Computable computable) {
         return cameras.contains(computable) || cameras.stream().anyMatch(c->c.contains(computable));
     }
 
     @Override
-    public Camera get(Viewer viewer, boolean previous) {
-        if (viewer == null) return cameras.isEmpty() ? null : cameras.get(0).get(null,previous);
+    public Camera get(Camera camera, boolean previous) {
+        if (cameras.isEmpty()) return null;
+        if (camera == null) cameras.get(0).get(null,previous);
 
-        int index = cameras.indexOf(viewer.getCamera());
-        if (index == -1 && previous) return cameras.get(cameras.size()-1).get(viewer,true);
+        int index = cameras.indexOf(camera);
+        index = index+(previous ? -1 : 1);
+        if (index < 0 & previous) return cameras.get(cameras.size()-1).get(camera, true);
+        if (index >= cameras.size()) return cameras.get(0).get(camera,true);
 
-        return cameras.get(index+(previous ? -1 : 1)).get(viewer);
+        return cameras.get(index).get(camera);
     }
 
     public boolean rename(String newName) {
