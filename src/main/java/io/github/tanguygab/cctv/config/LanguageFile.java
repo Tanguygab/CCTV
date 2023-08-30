@@ -39,9 +39,9 @@ public class LanguageFile extends YamlConfigurationFile {
     public String getCommandsProvideCameraName() {
         return COMMANDS_PROVIDE_TYPE_NAME.replace("%type%",COMMANDS_TYPES_CAMERA);
     }
-    public String getCommandsProvideGroupName() {
+    /*public String getCommandsProvideGroupName() {
         return COMMANDS_PROVIDE_TYPE_NAME.replace("%type%",COMMANDS_TYPES_GROUP);
-    }
+    }*/
 
     public final String COMMANDS_LIST_PREVIOUS = get("commands.list.previous", "&ePrevious Page");
     public final String COMMANDS_LIST_NEXT = get("commands.list.next", "&eNext Page");

@@ -124,32 +124,37 @@ public class GroupCmd extends Command<CameraGroup> {
                     "setowner <group> <player>:Set the group's owner",
                     "rename <group> <name>:Rename the group",
                     "info <group>:Get the group's info",
-                    "addgroup <group> <group>:Add a group to your group",
-                    "removegroup <group> <group>:Remove a group from your group",
+                    //"addgroup <group> <group>:Add a group to your group",
+                    //"removegroup <group> <group>:Remove a group from your group",
                     "addcamera <group> <camera>:Add a camera to your group",
                     "removecamera <group> <camera>:Remove a camera from your group");
         }
     }
     private void editGroup(Player player, CameraGroup group, boolean isCam, boolean add, String name) {
+        if (!isCam) {
+            player.sendMessage(lang.UNSUPPORTED);
+            return;
+        }
+
         if (name == null) {
-            player.sendMessage(isCam ? lang.getCommandsProvideCameraName() : lang.getCommandsProvideGroupName());
+            player.sendMessage(lang.getCommandsProvideCameraName());//isCam ? lang.getCommandsProvideCameraName() : lang.getCommandsProvideGroupName());
             return;
         }
-        if (isCam ? !cm.exists(name) : !cgm.exists(name)) {
-            player.sendMessage(isCam ? lang.CAMERA_NOT_FOUND : getNotFound());
+        if (!cm.exists(name)) {//isCam ? !cm.exists(name) : !cgm.exists(name)) {
+            player.sendMessage(lang.CAMERA_NOT_FOUND);//isCam ? lang.CAMERA_NOT_FOUND : getNotFound());
             return;
         }
-        Computable c = isCam ? cm.get(name) : cgm.get(name);
+        Computable c = cm.get(name);//isCam ? cm.get(name) : cgm.get(name);
         if (add == group.getCameras().contains(c)) {
-            player.sendMessage(lang.getEditCameras(add,false,isCam,false));
+            player.sendMessage(lang.getEditCameras(add,false,true/*isCam*/,false));
             return;
         }
         if (add) group.addCamera(c);
         else group.removeCamera(c);
-        player.sendMessage(lang.getEditCameras(add,true,isCam,false));
+        player.sendMessage(lang.getEditCameras(add,true,true/*isCam*/,false));
     }
 
-    private List<String> getGroups(CommandSender sender, String group, boolean toRemove) {
+    /*private List<String> getGroups(CommandSender sender, String group, boolean toRemove) {
         if (!cgm.exists(group)) return List.of();
         List<String> added = cgm.get(group).getCameras().stream().filter(c->c instanceof CameraGroup).map(Computable::getName).toList();
         if (toRemove) return added;
@@ -157,7 +162,7 @@ public class GroupCmd extends Command<CameraGroup> {
         List<String> list = cgm.get((Player) sender);
         list.removeAll(added);
         return list;
-    }
+    }*/
     private List<String> getCameras(CommandSender sender, String group, boolean toRemove) {
         if (!cgm.exists(group)) return List.of();
         List<String> added = cgm.get(group).getCameras().stream().filter(c->c instanceof Camera).map(Computable::getName).toList();
@@ -171,7 +176,7 @@ public class GroupCmd extends Command<CameraGroup> {
     @Override
     public List<String> onTabComplete(CommandSender sender, String[] args) {
         return switch (args.length) {
-            case 2 -> List.of("create","delete","list","seticon","setowner","rename","info","addgroup","removegroup","addcamera","removecamera");
+            case 2 -> List.of("create","delete","list","seticon","setowner","rename","info",/*"addgroup","removegroup",*/"addcamera","removecamera");
             case 3 -> switch (args[1].toLowerCase()) {
                 case "create","list" -> null;
                 default -> cgm.get((Player) sender);
@@ -180,7 +185,7 @@ public class GroupCmd extends Command<CameraGroup> {
                 case "seticon" -> cgm.getAllowedIcons();
                 case "setowner" -> Arrays.stream(Bukkit.getOfflinePlayers()).map(OfflinePlayer::getName).toList();
                 case "addcamera","removecamera" -> getCameras(sender,args[2],args[1].equalsIgnoreCase("removecamera"));
-                case "addgroup","removegroup" -> getGroups(sender,args[2],args[1].equalsIgnoreCase("removegroup"));
+                //case "addgroup","removegroup" -> getGroups(sender,args[2],args[1].equalsIgnoreCase("removegroup"));
                 default -> null;
             };
             default -> null;
