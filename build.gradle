@@ -6,8 +6,11 @@ plugins {
 group = 'io.github.tanguygab'
 version = '9.0.0-SNAPSHOT'
 
-sourceCompatibility = 17
-targetCompatibility = 17
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
 
 compileJava.options.encoding = 'UTF-8'
 
