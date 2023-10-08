@@ -65,7 +65,7 @@ public class CameraCmd extends Command<Camera> {
                     p.sendMessage(lang.COMMANDS_PROVIDE_NAME);
                     return;
                 }
-                String skin = null;
+                String skin = "_DEFAULT_";
                 if (args.length > 3) {
                     String[] skinArg = Arrays.copyOfRange(args,3,args.length);
                     skin = String.join(" ",skinArg);

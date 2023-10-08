@@ -67,6 +67,7 @@ public class CustomHeads {
         return barColors.getOrDefault(skin,BarColor.PURPLE);
     }
     public String getChatColor(String skin) {
+        if (skin == null) return "&f";
         for (String color : colors.keySet())
             if (skin.contains(color))
                 return color;
