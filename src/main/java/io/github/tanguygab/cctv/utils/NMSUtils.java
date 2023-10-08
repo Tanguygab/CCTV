@@ -43,16 +43,20 @@ public class NMSUtils {
             packetPlayOutEntityMetadata = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata")
                     .getConstructor(int.class, List.class);
 
-            setGlow = entityPlayer.getMethod("i", boolean.class);
-            getId = entityPlayer.getMethod("af");
-
-            getDataWatcher = entityPlayer.getMethod("aj");
+            setGlow = tryThen(entityPlayer,"j","i",boolean.class);
+            getId = tryThen(entityPlayer,"ah","af",boolean.class);
+            getDataWatcher = tryThen(entityPlayer,"al","aj");
             getDataWatcherObjects = Class.forName("net.minecraft.network.syncher.DataWatcher").getDeclaredMethod("c");
 
             nmsSupported = true;
         } catch (Exception e) {
             nmsSupported = false;
         }
+    }
+
+    private Method tryThen(Class<?> clazz, String first, String second, Class<?>... args) throws NoSuchMethodException {
+        try {return clazz.getMethod(first,args);}
+        catch (Exception e) {return clazz.getMethod(second,args);}
     }
 
     public boolean isNMSSupported() {

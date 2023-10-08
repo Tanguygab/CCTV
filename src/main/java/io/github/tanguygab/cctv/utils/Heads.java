@@ -49,7 +49,7 @@ public enum Heads {
     public static ItemStack createSkull(String base64, String name) {
         ItemStack head = CCTVMenu.getItem(Material.PLAYER_HEAD,name);
         SkullMeta meta = (SkullMeta)head.getItemMeta();
-        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+        GameProfile profile = new GameProfile(UUID.randomUUID(), "");
         profile.getProperties().put("textures", new Property("textures", base64));
 
         Method setProfileMethod = null;
