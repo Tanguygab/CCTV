@@ -61,6 +61,8 @@ public class GroupCmd extends Command<CameraGroup> {
                 CameraGroup group = checkExist(p,args);
                 if (group == null) return;
                 p.sendMessage(lang.getGroupDeleted(group.getName()));
+                cgm.values().forEach(g -> g.removeCamera(group));
+                cctv.getComputers().values().forEach(computer -> computer.removeCamera(group));
                 cgm.delete(group.getName());
             }
             case "list" -> listCmd(p,lang.COMMANDS_LIST_GROUPS,cgm.get(p),args);
