@@ -152,7 +152,7 @@ public class ViewerManager extends Manager<Viewer> {
         }
 
         List<Computable> cams = new ArrayList<>(computer.getCameras());
-        if (cams.size() <= 1) {
+        if (cams.isEmpty() || cams.size() == 1 && cams.get(0) instanceof Camera) {
             player.sendMessage(lang.NO_CAMERAS);
             return;
         }
