@@ -25,6 +25,7 @@ public class Utils {
 
     public static Location loadLocation(String id, ConfigurationFile config) {
         World world = Bukkit.getServer().getWorld(config.getString(id+".world"));
+        if (world == null) return null;
         double x = config.getDouble(id+".x",0);
         double y = config.getDouble(id+".y",0);
         double z = config.getDouble(id+".z",0);

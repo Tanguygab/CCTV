@@ -141,6 +141,7 @@ public class ComputerManager extends Manager<Computer> {
     }
 
     public Computer create(String name, String owner, Location loc, List<String> cameras, List<String> allowedPlayers, boolean publik, boolean admin) {
+        if (loc == null) return null;
         List<Computable> cameras0 = new ArrayList<>();
         cameras.forEach(str->{
             Computable computable = str.startsWith("group.") ? cctv.getGroups().get(str.substring(6)) : cctv.getCameras().get(str);

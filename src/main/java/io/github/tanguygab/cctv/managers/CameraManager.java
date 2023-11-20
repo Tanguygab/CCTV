@@ -66,6 +66,7 @@ public class CameraManager extends Manager<Camera> {
         boolean shown = file.getBoolean(name+".shown",true);
 
         Location loc = Utils.loadLocation(name,file);
+        if (loc == null) return;
 
         for (Entity entity : loc.getChunk().getEntities()) {
             if ((entity instanceof ArmorStand || entity instanceof Creeper) && entity.getCustomName() != null && entity.getCustomName().equals("CAM-" + name))
