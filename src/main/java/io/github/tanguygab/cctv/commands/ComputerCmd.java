@@ -111,7 +111,6 @@ public class ComputerCmd extends Command<Computer> {
                 case "get","list" -> null;
                 default -> sender instanceof Player p ? cpm.get(p) : cpm.values().stream().map(Computer::getName).toList();
             };
-            case 4 -> args[1].equalsIgnoreCase("setowner") ? Arrays.stream(Bukkit.getOfflinePlayers()).map(OfflinePlayer::getName).toList() : null;
             default -> null;
         };
     }

@@ -144,7 +144,6 @@ public class CameraCmd extends Command<Camera> {
                 default -> sender instanceof Player p ? cm.get(p) : cm.values().stream().map(Camera::getName).toList();
             };
             case 4 -> switch (args[1].toLowerCase()) {
-                case "setowner" -> Arrays.stream(Bukkit.getOfflinePlayers()).map(OfflinePlayer::getName).toList();
                 case "get","create" -> cctv.getCustomHeads().getHeads();
                 default -> null;
             };

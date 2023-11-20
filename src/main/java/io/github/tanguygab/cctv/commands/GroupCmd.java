@@ -185,7 +185,6 @@ public class GroupCmd extends Command<CameraGroup> {
             };
             case 4 -> switch (args[1].toLowerCase()) {
                 case "seticon" -> cgm.getAllowedIcons();
-                case "setowner" -> Arrays.stream(Bukkit.getOfflinePlayers()).map(OfflinePlayer::getName).toList();
                 case "addcamera","removecamera" -> getCameras(sender,args[2],args[1].equalsIgnoreCase("removecamera"));
                 //case "addgroup","removegroup" -> getGroups(sender,args[2],args[1].equalsIgnoreCase("removegroup"));
                 default -> null;
