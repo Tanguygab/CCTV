@@ -33,8 +33,9 @@ public class ComputerAddPlayersMenu extends ListMenu {
         list(Arrays.stream(Bukkit.getServer().getOfflinePlayers())
                 .filter(off->!computer.getAllowedPlayers().contains(off.getUniqueId().toString()))
                 .toList(),off->{
+            if (off.getName() == null) return;
             ItemStack item = getItem(Material.PLAYER_HEAD, off.getName());
-            SkullMeta meta = (SkullMeta)item.getItemMeta();
+            SkullMeta meta = (SkullMeta) item.getItemMeta();
             assert meta != null;
             meta.setOwningPlayer(off);
             setMeta(meta,off.getUniqueId().toString());
