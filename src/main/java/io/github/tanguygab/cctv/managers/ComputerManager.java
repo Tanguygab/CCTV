@@ -162,7 +162,7 @@ public class ComputerManager extends Manager<Computer> {
         if (data.has(computerPlayersKey,PersistentDataType.STRING))
             allowedPlayers.addAll(Arrays.asList(Objects.requireNonNull(data.get(computerPlayersKey, PersistentDataType.STRING)).split(",")));
         boolean admin = "admin".equals(data.get(computerKey,PersistentDataType.STRING));
-        boolean publik = Boolean.TRUE.equals(data.get(computerPublicKey, PersistentDataType.BOOLEAN));
+        boolean publik = data.getOrDefault(computerPublicKey, PersistentDataType.INTEGER,0) == 1;
 
         if (!p.hasPermission("cctv.admin.computer")) admin = false;
         String name = getRandomID();
@@ -184,7 +184,7 @@ public class ComputerManager extends Manager<Computer> {
             String allowedPlayers = String.join(",", computer.getAllowedPlayers());
             data.set(computerPlayersKey, PersistentDataType.STRING, allowedPlayers);
         }
-        data.set(computerPublicKey,PersistentDataType.BOOLEAN,computer.isPublik());
+        data.set(computerPublicKey,PersistentDataType.INTEGER,computer.isPublik() ? 1 : 0);
         data.set(computerKey,PersistentDataType.STRING,computer.isAdmin() ? "admin" : "normal");
         item.setItemMeta(meta);
         return item;
