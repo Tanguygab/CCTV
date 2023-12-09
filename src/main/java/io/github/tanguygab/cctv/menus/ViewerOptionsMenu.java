@@ -1,5 +1,6 @@
 package io.github.tanguygab.cctv.menus;
 
+import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.entities.Viewer;
 import io.github.tanguygab.cctv.managers.ViewerManager;
 import io.github.tanguygab.cctv.utils.Heads;
@@ -70,6 +71,10 @@ public class ViewerOptionsMenu extends CCTVMenu {
     }
 
     private void spotting(Player p) {
+        if (!cctv.getNms().isNMSSupported()) {
+            p.sendMessage(CCTV.getInstance().getLang().UNSUPPORTED);
+            return;
+        }
         p.closeInventory();
         List<Player> spotted = new ArrayList<>();
         Bukkit.getServer().getOnlinePlayers().forEach(viewed->{

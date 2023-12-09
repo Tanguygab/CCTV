@@ -44,7 +44,7 @@ public class NMSUtils {
                     .getConstructor(int.class, List.class);
 
             setGlow = tryThen(entityPlayer,"j","i",boolean.class);
-            getId = tryThen(entityPlayer,"ah","af",boolean.class);
+            getId = tryThen(entityPlayer,"ah","af");
             getDataWatcher = tryThen(entityPlayer,"al","aj");
             getDataWatcherObjects = Class.forName("net.minecraft.network.syncher.DataWatcher").getDeclaredMethod("c");
 
@@ -70,10 +70,6 @@ public class NMSUtils {
     }
 
     public void glow(Player viewer, Player viewed, boolean glow) {
-        if (!nmsSupported) {
-            viewer.sendMessage(CCTV.getInstance().getLang().UNSUPPORTED);
-            return;
-        }
         try {
             Object viewedNMS = getHandle.invoke(viewed);
             setGlow.invoke(viewedNMS,glow);
