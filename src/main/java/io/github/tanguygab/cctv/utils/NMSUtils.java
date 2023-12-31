@@ -1,6 +1,7 @@
 package io.github.tanguygab.cctv.utils;
 
 import io.github.tanguygab.cctv.CCTV;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -17,7 +18,7 @@ import java.util.Map;
 
 public class NMSUtils {
 
-    private boolean nmsSupported;
+    @Getter private boolean nmsSupported;
     private Method getHandle;
     private Field playerConnection;
     private Method sendPacket;
@@ -57,10 +58,6 @@ public class NMSUtils {
     private Method tryThen(Class<?> clazz, String first, String second, Class<?>... args) throws NoSuchMethodException {
         try {return clazz.getMethod(first,args);}
         catch (Exception e) {return clazz.getMethod(second,args);}
-    }
-
-    public boolean isNMSSupported() {
-        return nmsSupported;
     }
 
     private void sendPacket(Player player, Object packet) {

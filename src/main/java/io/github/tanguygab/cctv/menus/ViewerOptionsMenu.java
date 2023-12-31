@@ -71,7 +71,7 @@ public class ViewerOptionsMenu extends CCTVMenu {
     }
 
     private void spotting(Player p) {
-        if (!cctv.getNms().isNMSSupported()) {
+        if (!cctv.getNms().isNmsSupported()) {
             p.sendMessage(CCTV.getInstance().getLang().UNSUPPORTED);
             return;
         }

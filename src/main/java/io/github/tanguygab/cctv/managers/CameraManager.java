@@ -32,7 +32,7 @@ public class CameraManager extends Manager<Camera> {
     public void load() {
         EXPERIMENTAL_VIEW = cctv.getConfiguration().getBoolean("camera.experimental_view",false);
 
-        if (EXPERIMENTAL_VIEW && !cctv.getNms().isNMSSupported()) {
+        if (EXPERIMENTAL_VIEW && !cctv.getNms().isNmsSupported()) {
             EXPERIMENTAL_VIEW = false;
             cctv.getLogger().severe("Experimental View is enabled but your server doesn't support it! Switching back to normal view.");
         }
@@ -221,8 +221,8 @@ public class CameraManager extends Manager<Camera> {
         double x,y,z;
         float yaw;
         switch (face) {
-            case UP -> {x=0.5D;z=0.5D;y=0.47D;yaw=loc.getYaw()+180.0F;}
-            case DOWN -> {x=0.5D;z=0.5D;y=2.03D;yaw=loc.getYaw()+180.0F;}
+            case UP -> {x=0.5D;z=0.5D;y=0.47D;yaw=p.getLocation().getYaw()+180.0F;}
+            case DOWN -> {x=0.5D;z=0.5D;y=2.03D;yaw=p.getLocation().getYaw()+180.0F;}
             case EAST -> {x=1.29D;z=0.5D;y=1.24D;yaw=270.0F;}
             case WEST -> {x=-0.29D;z=0.5D;y=1.24D;yaw=90.0F;}
             case NORTH -> {x=0.5D;z=-0.29D;y=1.24D;yaw=180.0F;}
