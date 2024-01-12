@@ -131,7 +131,7 @@ public class CCTV extends JavaPlugin {
             put("L","DAYLIGHT_DETECTOR");
             put("C","COMPARATOR");
         }};
-        loadRecipe(cameras.cameraKey, Heads.CAMERA.get(),"camera",List.of("RPP","PDG","LCP"),camItems);
+        loadRecipe(cameras.cameraKey, customHeads.get(null),"camera",List.of("RPP","PDG","LCP"),camItems);
 
         Map<String,String> computerItems = new HashMap<>() {{
             put("I","REDSTONE");
