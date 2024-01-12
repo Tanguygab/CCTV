@@ -44,9 +44,9 @@ public class NMSUtils {
             packetPlayOutEntityMetadata = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata")
                     .getConstructor(int.class, List.class);
 
-            setGlow = tryThen(entityPlayer,"j","i",boolean.class);
-            getId = tryThen(entityPlayer,"ah","af");
-            getDataWatcher = tryThen(entityPlayer,"al","aj");
+            setGlow = tryThen(entityPlayer,List.of("i","j"),boolean.class);
+            getId = tryThen(entityPlayer,List.of("aj","ah","af"));
+            getDataWatcher = tryThen(entityPlayer,List.of("an","al","aj"));
             getDataWatcherObjects = Class.forName("net.minecraft.network.syncher.DataWatcher").getDeclaredMethod("c");
 
             nmsSupported = true;
@@ -55,9 +55,11 @@ public class NMSUtils {
         }
     }
 
-    private Method tryThen(Class<?> clazz, String first, String second, Class<?>... args) throws NoSuchMethodException {
-        try {return clazz.getMethod(first,args);}
-        catch (Exception e) {return clazz.getMethod(second,args);}
+    private Method tryThen(Class<?> clazz, List<String> methods, Class<?>... args) throws NoSuchMethodException {
+        for (String method : methods)
+            try {return clazz.getMethod(method,args);}
+            catch (Exception ignored) {}
+        throw new NoSuchMethodException(methods.toString());
     }
 
     private void sendPacket(Player player, Object packet) {
@@ -70,9 +72,10 @@ public class NMSUtils {
         try {
             Object viewedNMS = getHandle.invoke(viewed);
             setGlow.invoke(viewedNMS,glow);
-            viewer.sendMessage(viewer.getName()+" "+viewed.getName());
-            sendPacket(viewer,packetPlayOutEntityMetadata.newInstance(getId.invoke(viewedNMS),
-                    getDataWatcherObjects.invoke(getDataWatcher.invoke(viewedNMS))));
+            sendPacket(viewer,packetPlayOutEntityMetadata.newInstance(
+                    getId.invoke(viewedNMS),
+                    getDataWatcherObjects.invoke(getDataWatcher.invoke(viewedNMS))
+            ));
         } catch (Exception e) {e.printStackTrace();}
     }
 
