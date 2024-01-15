@@ -89,7 +89,7 @@ public class ViewerManager extends Manager<Viewer> {
         p.removePotionEffect(PotionEffectType.NIGHT_VISION);
         p.setCanPickupItems(true);
         p.showEntity(cctv, viewer.getCamera().getArmorStand());
-        delete(viewer.getUuid().toString());
+        remove(viewer.getUuid().toString());
     }
     public Viewer get(Player p) {
         return get(p.getUniqueId().toString());

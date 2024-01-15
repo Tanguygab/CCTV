@@ -63,7 +63,7 @@ public class GroupCmd extends Command<CameraGroup> {
                 p.sendMessage(lang.getGroupDeleted(group.getName()));
                 cgm.values().forEach(g -> g.removeCamera(group));
                 cctv.getComputers().values().forEach(computer -> computer.removeCamera(group));
-                cgm.delete(group.getName());
+                cgm.remove(group.getName());
             }
             case "list" -> listCmd(p,lang.COMMANDS_LIST_GROUPS,cgm.get(p),args);
             case "seticon" -> {

@@ -97,7 +97,6 @@ public class CameraManager extends Manager<Camera> {
         return meta.getPersistentDataContainer().has(cameraKey, PersistentDataType.STRING);
     }
 
-    @Override
     public void delete(String name) {
         Camera camera = get(name);
 
@@ -107,7 +106,7 @@ public class CameraManager extends Manager<Camera> {
         cctv.getViewers().values().stream().filter(viewer -> viewer.getCamera() == camera).forEach(p -> disconnectFromCamera(Bukkit.getPlayer(p.getUuid())));
         cctv.getGroups().values().forEach(group -> group.removeCamera(camera));
         cctv.getComputers().values().forEach(computer -> computer.removeCamera(camera));
-        super.delete(camera.getName());
+        remove(camera.getName());
     }
 
     private Camera create(String name, String owner, Location loc, boolean enabled, boolean shown, String skin, boolean isLoaded) {

@@ -78,7 +78,7 @@ public class Listener implements org.bukkit.event.Listener {
         }
         e.getBlock().setType(Material.AIR);
 
-        cpm.delete(computer.getName());
+        cpm.remove(computer.getName());
         Utils.giveOrDrop(player,cpm.breakComputer(computer));
         player.sendMessage(lang.getComputerDeleted(computer.getName()));
     }

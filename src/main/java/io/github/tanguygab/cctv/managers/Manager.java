@@ -46,10 +46,11 @@ public abstract class Manager<T> {
     }
     public boolean rename(String name, String newName) {
         if (exists(newName)) return false;
-        map.put(newName,map.remove(name));
+        map.put(newName,get(name));
+        remove(name);
         return true;
     }
-    public void delete(String key) {
+    public void remove(String key) {
         map.remove(key);
         if (!(this instanceof ViewerManager)) file.set(key,null);
     }
