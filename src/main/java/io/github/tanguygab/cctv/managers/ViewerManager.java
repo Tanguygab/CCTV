@@ -24,6 +24,7 @@ public class ViewerManager extends Manager<Viewer> {
 
     public boolean CAN_CHAT;
     public boolean ZOOM_ITEM;
+    public boolean SPOTTING;
     public boolean BOSSBAR;
 
     public int TIME_TO_CONNECT;
@@ -43,6 +44,7 @@ public class ViewerManager extends Manager<Viewer> {
         ConfigurationFile config = cctv.getConfiguration();
         CAN_CHAT = config.getBoolean("viewers.can_chat",true);
         ZOOM_ITEM = cctv.getConfiguration().getBoolean("camera.zoom_item",true);
+        SPOTTING = cctv.getConfiguration().getBoolean("camera.spotting",true);
         TIME_TO_CONNECT = config.getInt("viewers.timed-actions.connect",3);
         TIME_TO_DISCONNECT = config.getInt("viewers.timed-actions.disconnect",3);
         TIME_FOR_SPOT = config.getInt("viewers.timed-actions.spot",5);

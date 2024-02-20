@@ -29,7 +29,7 @@ public class ViewerOptionsMenu extends CCTVMenu {
     public void open() {
         inv.setItem(0, vm.get(player).isNightVision() ? Heads.NIGHT_VISION_ON.get() : Heads.NIGHT_VISION_OFF.get());
 
-        inv.setItem(1, getItem(Heads.SPOTTING,lang.CAMERA_VIEW_OPTIONS_SPOT));
+        if (vm.SPOTTING) inv.setItem(1, getItem(Heads.SPOTTING,lang.CAMERA_VIEW_OPTIONS_SPOT));
 
         if (vm.ZOOM_ITEM) {
             if (!cctv.getCameras().EXPERIMENTAL_VIEW) {
@@ -71,6 +71,7 @@ public class ViewerOptionsMenu extends CCTVMenu {
     }
 
     private void spotting(Player p) {
+        if (!vm.SPOTTING) return;
         if (!cctv.getNms().isNmsSupported()) {
             p.sendMessage(CCTV.getInstance().getLang().UNSUPPORTED);
             return;
