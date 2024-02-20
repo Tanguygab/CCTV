@@ -5,7 +5,6 @@ import io.github.tanguygab.cctv.managers.CameraManager;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Creeper;
@@ -122,6 +121,26 @@ public class CameraCmd extends Command<Camera> {
                 }
                 p.sendMessage(i+" entities removed.");
             }
+            case "view" -> {
+                if (noPerm(p,"view")) {
+                    p.sendMessage(lang.NO_PERMISSIONS);
+                    return;
+                }
+                Camera camera = checkExist(p,args);
+                if (camera == null) return;
+                if (args.length > 3 && p.hasPermission("cctv.camera.view.other")) {
+                    Player target = Bukkit.getServer().getPlayer(args[3]);
+                    if (target == null) {
+                        p.sendMessage(lang.PLAYER_NOT_FOUND);
+                        return;
+                    }
+                    cm.viewCamera(target,camera,null);
+                    p.sendMessage(target.getName()+" now viewing "+camera.getName());
+                    return;
+                }
+                cm.viewCamera(p,camera,null);
+                p.sendMessage("You are now viewing "+camera.getName());
+            }
             default -> helpPage(p,"Camera commands",
                     "get:Get the camera item",
                     "create <name>:Create a new camera",
@@ -131,7 +150,8 @@ public class CameraCmd extends Command<Camera> {
                     "teleport <camera>:Teleport to the camera",
                     "movehere <camera>:Move the camera to your location",
                     "rename <camera> <name>:Rename the camera",
-                    "setowner <camera> <player>:Set the camera's owner");
+                    "setowner <camera> <player>:Set the camera's owner",
+                    "view <camera> [player]:View a camera or make a player view it");
         }
     }
 
