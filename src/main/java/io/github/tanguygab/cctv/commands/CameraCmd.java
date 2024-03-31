@@ -108,7 +108,7 @@ public class CameraCmd extends Command<Camera> {
                 if (owner != null) p.sendMessage(lang.getCameraOwnerChanged(owner));
             }
             case "killall" -> {
-                if (p.hasPermission("cctv.admin")) {
+                if (!p.hasPermission("cctv.admin")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
