@@ -1,10 +1,7 @@
 package io.github.tanguygab.cctv.managers;
 
 import io.github.tanguygab.cctv.config.ConfigurationFile;
-import io.github.tanguygab.cctv.entities.Camera;
-import io.github.tanguygab.cctv.entities.Computable;
-import io.github.tanguygab.cctv.entities.Computer;
-import io.github.tanguygab.cctv.entities.Viewer;
+import io.github.tanguygab.cctv.entities.*;
 import io.github.tanguygab.cctv.menus.CCTVMenu;
 import io.github.tanguygab.cctv.menus.ViewerOptionsMenu;
 import io.github.tanguygab.cctv.utils.Heads;
@@ -118,7 +115,7 @@ public class ViewerManager extends Manager<Viewer> {
         inv.setItem(0, CCTVMenu.getItem(Heads.OPTIONS,lang.CAMERA_VIEW_OPTION));
         inv.setItem(3, Heads.ROTATE_LEFT.get());
         inv.setItem(computer != null && computer.getCameras().size() > 1 ? 4 : 5, Heads.ROTATE_RIGHT.get());
-        if (computer != null && computer.getCameras().size() > 1) {
+        if (computer != null && (computer.getCameras().size() > 1 || computer.getCameras().get(0) instanceof CameraGroup)) {
             inv.setItem(6, Heads.CAM_PREVIOUS.get());
             inv.setItem(7, Heads.CAM_NEXT.get());
         }
