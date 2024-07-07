@@ -7,6 +7,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -18,6 +19,7 @@ import java.util.Map;
 
 public class NMSUtils {
 
+    public static final PotionEffectType SLOWNESS = getSlowness();
     @Getter private boolean nmsSupported;
     private Method getHandle;
     private Field playerConnection;
@@ -30,9 +32,9 @@ public class NMSUtils {
     private Constructor<?> packetPlayOutEntityMetadata;
 
     public NMSUtils() {
-        String version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+        String[] version = Bukkit.getServer().getClass().getPackage().getName().split("\\.");
         try {
-            Class<?> craftEntity = Class.forName("org.bukkit.craftbukkit."+version+".entity.CraftEntity");
+            Class<?> craftEntity = Class.forName("org.bukkit.craftbukkit."+(version.length > 3 ? version[3] + "." : "")+"entity.CraftEntity");
             getHandle = craftEntity.getDeclaredMethod("getHandle");
             Class<?> entityPlayer = Class.forName("net.minecraft.server.level.EntityPlayer");
             try {playerConnection = entityPlayer.getDeclaredField("c");}
@@ -44,15 +46,20 @@ public class NMSUtils {
             packetPlayOutEntityMetadata = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata")
                     .getConstructor(int.class, List.class);
 
-            setGlow = tryThen(entityPlayer,List.of("i","j"),boolean.class);
-            getId = tryThen(entityPlayer,List.of("aj","ah","af"));
-            getDataWatcher = tryThen(entityPlayer,List.of("an","al","aj"));
+            setGlow = tryThen(entityPlayer,version.length > 3 ? List.of("i","j") : List.of("j"),boolean.class);
+            getId = tryThen(entityPlayer,List.of("an","aj","ah","af"));
+            getDataWatcher = tryThen(entityPlayer,List.of("ar","an","al","aj"));
             getDataWatcherObjects = Class.forName("net.minecraft.network.syncher.DataWatcher").getDeclaredMethod("c");
 
             nmsSupported = true;
         } catch (Exception e) {
             nmsSupported = false;
         }
+    }
+
+    private static PotionEffectType getSlowness() {
+        PotionEffectType effect = PotionEffectType.getByName("slowness");
+        return effect != null ? effect : PotionEffectType.SLOWNESS;
     }
 
     private Method tryThen(Class<?> clazz, List<String> methods, Class<?>... args) throws NoSuchMethodException {
@@ -82,7 +89,6 @@ public class NMSUtils {
     public final Map<Player, Location> oldLoc = new HashMap<>();
     private final Map<Player, Entity> oldEntity = new HashMap<>();
 
-    @SuppressWarnings("UnstableApiUsage")
     public void setCameraPacket(Player p, Entity entity) {
         if (CCTV.getInstance().getCameras().EXPERIMENTAL_VIEW) {
             try {

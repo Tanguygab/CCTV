@@ -4,7 +4,6 @@ import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.config.ConfigurationFile;
 import io.github.tanguygab.cctv.config.LanguageFile;
 import io.github.tanguygab.cctv.config.YamlConfigurationFile;
-import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.util.*;

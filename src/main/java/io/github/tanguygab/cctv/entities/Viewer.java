@@ -48,7 +48,6 @@ public class Viewer {
         if (nv) setNightVision(true);
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     public void setNightVision(boolean nightVision) {
         this.nightVision = nightVision;
         if (!CCTV.getInstance().getCameras().EXPERIMENTAL_VIEW) {

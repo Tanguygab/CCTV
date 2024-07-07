@@ -8,6 +8,7 @@ import io.github.tanguygab.cctv.entities.Viewer;
 import io.github.tanguygab.cctv.menus.CCTVMenu;
 import io.github.tanguygab.cctv.menus.ViewerOptionsMenu;
 import io.github.tanguygab.cctv.utils.Heads;
+import io.github.tanguygab.cctv.utils.NMSUtils;
 import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -79,7 +80,6 @@ public class ViewerManager extends Manager<Viewer> {
     @Override
     protected void saveToConfig(Viewer value) {}
 
-    @SuppressWarnings("UnstableApiUsage")
     public void delete(Player p) {
         Viewer viewer = get(p);
         viewer.setCamera(null,false);
@@ -87,7 +87,7 @@ public class ViewerManager extends Manager<Viewer> {
             for (Player online : Bukkit.getOnlinePlayers())
                 online.showPlayer(cctv,p);
 
-        p.removePotionEffect(PotionEffectType.SLOW);
+        p.removePotionEffect(NMSUtils.SLOWNESS);
         p.removePotionEffect(PotionEffectType.NIGHT_VISION);
         p.setCanPickupItems(true);
         p.showEntity(cctv, viewer.getCamera().getArmorStand());
@@ -118,8 +118,10 @@ public class ViewerManager extends Manager<Viewer> {
         inv.setItem(0, CCTVMenu.getItem(Heads.OPTIONS,lang.CAMERA_VIEW_OPTION));
         inv.setItem(3, Heads.ROTATE_LEFT.get());
         inv.setItem(computer != null && computer.getCameras().size() > 1 ? 4 : 5, Heads.ROTATE_RIGHT.get());
-        inv.setItem(6, Heads.CAM_PREVIOUS.get());
-        inv.setItem(7, Heads.CAM_NEXT.get());
+        if (computer != null && computer.getCameras().size() > 1) {
+            inv.setItem(6, Heads.CAM_PREVIOUS.get());
+            inv.setItem(7, Heads.CAM_NEXT.get());
+        }
         inv.setItem(8, CCTVMenu.getItem(Heads.EXIT,lang.CAMERA_VIEW_EXIT));
     }
 
