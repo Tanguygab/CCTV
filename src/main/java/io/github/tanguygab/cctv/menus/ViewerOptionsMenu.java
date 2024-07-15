@@ -9,7 +9,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
@@ -50,7 +49,6 @@ public class ViewerOptionsMenu extends CCTVMenu {
     public void onClick(ItemStack item, int slot, ClickType click) {
         switch (slot) {
             case 0 -> {
-                Inventory inv = player.getOpenInventory().getTopInventory();
                 Viewer v = vm.get(player);
                 v.setNightVision(!v.isNightVision());
                 inv.setItem(0, v.isNightVision() ? Heads.NIGHT_VISION_ON.get() : Heads.NIGHT_VISION_OFF.get());
@@ -90,7 +88,6 @@ public class ViewerOptionsMenu extends CCTVMenu {
         return true;
     }
     private void zoom(Player p, int zoomLevel) {
-        Inventory inv = p.getOpenInventory().getTopInventory();
         if (zoomLevel == 0) {
             p.removePotionEffect(NMSUtils.SLOWNESS);
             inv.setItem(2, Heads.ZOOM.get());
