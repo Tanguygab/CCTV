@@ -46,8 +46,6 @@ dependencies {
     compileOnly 'me.clip:placeholderapi:2.11.3'
     compileOnly 'org.projectlombok:lombok:1.18.34'
     annotationProcessor 'org.projectlombok:lombok:1.18.34'
-
-    compileOnly files('../../dependencies/nms/nms-1.21.jar')
 }
 
 processResources {
