@@ -5,6 +5,7 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
@@ -30,6 +31,7 @@ public class NMSUtils {
     private Method getDataWatcherObjects;
     private Constructor<?> packetPlayOutCamera;
     private Constructor<?> packetPlayOutEntityMetadata;
+    private boolean oldMetadataPacket = false;
 
     public NMSUtils() {
         String[] version = Bukkit.getServer().getClass().getPackage().getName().split("\\.");
@@ -37,19 +39,32 @@ public class NMSUtils {
             Class<?> craftEntity = Class.forName("org.bukkit.craftbukkit."+(version.length > 3 ? version[3] + "." : "")+"entity.CraftEntity");
             getHandle = craftEntity.getDeclaredMethod("getHandle");
             Class<?> entityPlayer = Class.forName("net.minecraft.server.level.EntityPlayer");
-            try {playerConnection = entityPlayer.getDeclaredField("c");}
+            Class<?> playerConnectionClass = Class.forName("net.minecraft.server.network.PlayerConnection");
+            try {
+                playerConnection = entityPlayer.getDeclaredField("b");
+                if (playerConnection.getType() != playerConnectionClass)
+                    playerConnection = entityPlayer.getDeclaredField("c");
+            }
             catch (Exception e) {playerConnection = entityPlayer.getDeclaredField("b");}
-            sendPacket = Class.forName("net.minecraft.server.network.PlayerConnection").getDeclaredMethod("a",
+            sendPacket = playerConnectionClass.getDeclaredMethod("a",
                     Class.forName("net.minecraft.network.protocol.Packet"));
             packetPlayOutCamera = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutCamera")
                     .getConstructor(Class.forName("net.minecraft.world.entity.Entity"));
-            packetPlayOutEntityMetadata = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata")
-                    .getConstructor(int.class, List.class);
 
-            setGlow = tryThen(entityPlayer,version.length > 3 ? List.of("i","j") : List.of("j"),boolean.class);
-            getId = tryThen(entityPlayer,List.of("an","aj","ah","af"));
-            getDataWatcher = tryThen(entityPlayer,List.of("ar","an","al","aj"));
-            getDataWatcherObjects = Class.forName("net.minecraft.network.syncher.DataWatcher").getDeclaredMethod("c");
+            Class<?> dataWatcher = Class.forName("net.minecraft.network.syncher.DataWatcher");
+            try {
+                packetPlayOutEntityMetadata = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata")
+                        .getConstructor(int.class, List.class);
+            } catch (Exception e) {
+                packetPlayOutEntityMetadata = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata")
+                        .getConstructor(int.class, dataWatcher, boolean.class);
+                oldMetadataPacket = true;
+            }
+
+            setGlow = tryThen(entityPlayer, void.class, List.of("setGlowingTag","i","j"),boolean.class);
+            getId = tryThen(entityPlayer, int.class, List.of("getId","an","al","aj","ah","af","ae"));
+            getDataWatcher = tryThen(entityPlayer,dataWatcher,List.of("getEntityData","ar","ap","an","al","aj","ai"));
+            if (!oldMetadataPacket) getDataWatcherObjects = dataWatcher.getDeclaredMethod("c");
 
             nmsSupported = true;
         } catch (Exception e) {
@@ -58,13 +73,16 @@ public class NMSUtils {
     }
 
     private static PotionEffectType getSlowness() {
-        PotionEffectType effect = PotionEffectType.getByName("slowness");
+        PotionEffectType effect = PotionEffectType.getByKey(NamespacedKey.minecraft("slowness"));
         return effect != null ? effect : PotionEffectType.SLOWNESS;
     }
 
-    private Method tryThen(Class<?> clazz, List<String> methods, Class<?>... args) throws NoSuchMethodException {
+    private Method tryThen(Class<?> clazz, Class<?> returnedClass, List<String> methods, Class<?>... args) throws NoSuchMethodException {
         for (String method : methods)
-            try {return clazz.getMethod(method,args);}
+            try {
+                Method m = clazz.getMethod(method,args);
+                if (m.getReturnType() == returnedClass) return m;
+            }
             catch (Exception ignored) {}
         throw new NoSuchMethodException(methods.toString());
     }
@@ -79,10 +97,17 @@ public class NMSUtils {
         try {
             Object viewedNMS = getHandle.invoke(viewed);
             setGlow.invoke(viewedNMS,glow);
-            sendPacket(viewer,packetPlayOutEntityMetadata.newInstance(
-                    getId.invoke(viewedNMS),
-                    getDataWatcherObjects.invoke(getDataWatcher.invoke(viewedNMS))
-            ));
+            sendPacket(viewer,
+                    oldMetadataPacket
+                            ? packetPlayOutEntityMetadata.newInstance(
+                                    getId.invoke(viewedNMS),
+                                    getDataWatcher.invoke(viewedNMS),
+                                    true
+                            ) : packetPlayOutEntityMetadata.newInstance(
+                                    getId.invoke(viewedNMS),
+                                    getDataWatcherObjects.invoke(getDataWatcher.invoke(viewedNMS))
+                            )
+            );
         } catch (Exception e) {e.printStackTrace();}
     }
 
