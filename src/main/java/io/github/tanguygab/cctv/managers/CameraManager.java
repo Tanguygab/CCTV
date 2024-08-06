@@ -164,7 +164,7 @@ public class CameraManager extends Manager<Camera> {
     public List<String> get(Player p) {
         List<String> cameras = new ArrayList<>();
         for (Camera camera : values())
-            if (camera.getOwner().equals(p.getUniqueId().toString()) || p.hasPermission("cctv.camera.other"))
+            if (p == null || camera.getOwner().equals(p.getUniqueId().toString()) || p.hasPermission("cctv.camera.other"))
                 cameras.add(camera.getName());
         return cameras;
     }

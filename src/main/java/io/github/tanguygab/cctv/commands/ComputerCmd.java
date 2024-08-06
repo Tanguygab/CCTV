@@ -41,11 +41,12 @@ public class ComputerCmd extends Command<Computer> {
     }
 
     public void onCommand(CommandSender sender, String[] args) {
-        Player p = getPlayer(sender);
-        if (p == null) return;
 
         switch (getFirstArg(args)) {
             case "get" -> {
+                Player p = getPlayer(sender);
+                if (p == null) return;
+
                 if (noPerm(p, "get")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
@@ -59,28 +60,33 @@ public class ComputerCmd extends Command<Computer> {
                 ).clone());
                 p.sendMessage(lang.COMPUTER_ITEM_PLACE);
             }
-            case "list" -> listCmd(p,lang.COMMANDS_LIST_COMPUTERS,cpm.get(p),args);
+            case "list" -> listCmd(sender,lang.COMMANDS_LIST_COMPUTERS,cpm.get((Player) null),args);
             case "open" -> {
-                if (noPerm(p,"open")) {
-                    p.sendMessage(lang.NO_PERMISSIONS);
+                if (noPerm(sender,"open")) {
+                    sender.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
-                Computer computer = checkExist(p,args);
+                Computer computer = checkExist(sender,args);
                 if (computer == null) return;
-                if (args.length > 3 && p.hasPermission("cctv.computer.open.other")) {
+                if (args.length > 3 && sender.hasPermission("cctv.computer.open.other")) {
                     Player target = Bukkit.getServer().getPlayer(args[3]);
                     if (target == null) {
-                        p.sendMessage(lang.PLAYER_NOT_FOUND);
+                        sender.sendMessage(lang.PLAYER_NOT_FOUND);
                         return;
                     }
                     cpm.open(target,computer);
-                    p.sendMessage("Opening "+computer.getName()+" for "+target.getName());
+                    sender.sendMessage("Opening "+computer.getName()+" for "+target.getName());
                     return;
                 }
+                Player p = getPlayer(sender);
+                if (p == null) return;
                 cpm.open(p,computer);
                 p.sendMessage("Opening "+computer.getName());
             }
             case "teleport" -> {
+                Player p = getPlayer(sender);
+                if (p == null) return;
+
                 if (noPerm(p, "teleport")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
@@ -92,11 +98,14 @@ public class ComputerCmd extends Command<Computer> {
                 p.teleport(loc);
             }
             case "setowner" -> {
+                Player p = getPlayer(sender);
+                if (p == null) return;
+
                 String owner = setOwnerCmd(p,args,lang.COMPUTER_PLAYER_ALREADY_OWNER);
                 if (owner != null) p.sendMessage(lang.getComputerOwnerChanged(owner));
             }
             case "info" -> {
-                Computer computer = checkExist(p,args);
+                Computer computer = checkExist(sender,args);
                 if (computer == null) return;
                 OfflinePlayer off = Bukkit.getServer().getOfflinePlayer(UUID.fromString(computer.getOwner()));
                 String owner = off.getName() == null ? "Unknown" : off.getName();
@@ -111,9 +120,9 @@ public class ComputerCmd extends Command<Computer> {
                     camComp.setBold(cam instanceof CameraGroup);
                     comp.addExtra(camComp);
                 }
-                p.spigot().sendMessage(comp);
+                sender.spigot().sendMessage(comp);
             }
-            default -> helpPage(p,"Computer commands",
+            default -> helpPage(sender,"Computer commands",
                     "get:Get the computer item",
                     "list:Get the list of all computers",
                     "open <computer> [player]:Open the computer's menu",

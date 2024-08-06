@@ -5,6 +5,7 @@ import io.github.tanguygab.cctv.managers.CameraManager;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Creeper;
@@ -38,11 +39,12 @@ public class CameraCmd extends Command<Camera> {
     }
 
     public void onCommand(CommandSender sender, String[] args) {
-        Player p = getPlayer(sender);
-        if (p == null) return;
 
         switch (getFirstArg(args)) {
             case "get" -> {
+                Player p = getPlayer(sender);
+                if (p == null) return;
+
                 if (noPerm(p, "get")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
@@ -56,6 +58,9 @@ public class CameraCmd extends Command<Camera> {
                 p.sendMessage(lang.CAMERA_ITEM_PLACE);
             }
             case "create" -> {
+                Player p = getPlayer(sender);
+                if (p == null) return;
+
                 if (noPerm(p, "create")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
@@ -71,14 +76,21 @@ public class CameraCmd extends Command<Camera> {
                 }
                 cm.create(args[2],p.getLocation(),p,skin);
             }
-            case "list" -> listCmd(p,lang.COMMANDS_LIST_CAMERAS,cm.get(p),args);
+            case "list" -> listCmd(sender,lang.COMMANDS_LIST_CAMERAS,cm.get((Player) sender),args);
             case "connected" -> {
-                Camera camera = checkExist(p,args);
+                Camera camera = checkExist(sender,args);
                 if (camera != null)
-                    p.sendMessage(lang.getCameraViewCount(Math.toIntExact(cctv.getViewers().values().stream().filter(viewer->viewer.getCamera()==camera).count()),camera.getName()));
+                    sender.sendMessage(lang.getCameraViewCount(Math.toIntExact(cctv.getViewers().values().stream().filter(viewer->viewer.getCamera()==camera).count()),camera.getName()));
             }
-            case "disconnect" -> cm.disconnectFromCamera(p);
+            case "disconnect" -> {
+                Player p = getPlayer(sender);
+                if (p == null) return;
+                cm.disconnectFromCamera(p);
+            }
             case "teleport" -> {
+                Player p = getPlayer(sender);
+                if (p == null) return;
+
                 if (noPerm(p, "teleport")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
@@ -87,61 +99,77 @@ public class CameraCmd extends Command<Camera> {
                 if (camera != null) p.teleport(camera.getArmorStand());
             }
             case "movehere" -> {
+                Player p = getPlayer(sender);
+                if (p == null) return;
+
                 Camera camera = checkExist(p,args);
                 if (camera == null) return;
                 camera.setLocation(p.getLocation());
                 p.sendMessage(lang.CAMERA_MOVED);
             }
             case "rename" -> {
-                Camera camera = renameCmd(p,args);
+                Camera camera = renameCmd(sender,args);
                 if (camera == null) return;
                 String newName = args[3];
                 if (camera.rename(newName)) {
-                    p.sendMessage(lang.getCameraRenamed(newName));
+                    sender.sendMessage(lang.getCameraRenamed(newName));
                     camera.getBossbar().setTitle(camera.getName());
                     return;
                 }
-                p.sendMessage(lang.CAMERA_ALREADY_EXISTS);
+                sender.sendMessage(lang.CAMERA_ALREADY_EXISTS);
             }
             case "setowner" -> {
-                String owner = setOwnerCmd(p,args,lang.CAMERA_PLAYER_ALREADY_OWNER);
-                if (owner != null) p.sendMessage(lang.getCameraOwnerChanged(owner));
+                String owner = setOwnerCmd(sender,args,lang.CAMERA_PLAYER_ALREADY_OWNER);
+                if (owner != null) sender.sendMessage(lang.getCameraOwnerChanged(owner));
             }
             case "killall" -> {
-                if (!p.hasPermission("cctv.admin")) {
-                    p.sendMessage(lang.NO_PERMISSIONS);
+                if (!sender.hasPermission("cctv.admin")) {
+                    sender.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
                 int i = 0;
-                for (Entity entity : p.getWorld().getEntities()) {
-                    if ((entity instanceof ArmorStand || entity instanceof Creeper) && entity.getCustomName() != null && entity.getCustomName().startsWith("CAM-")) {
-                        entity.remove();
-                        i++;
+                if (sender instanceof Player player) {
+                    for (Entity entity : player.getWorld().getEntities()) {
+                        if ((entity instanceof ArmorStand || entity instanceof Creeper) && entity.getCustomName() != null && entity.getCustomName().startsWith("CAM-")) {
+                            entity.remove();
+                            i++;
+                        }
+                    }
+                } else {
+                    for (World world : Bukkit.getServer().getWorlds()) {
+                        for (Entity entity : world.getEntities()) {
+                            if ((entity instanceof ArmorStand || entity instanceof Creeper) && entity.getCustomName() != null && entity.getCustomName().startsWith("CAM-")) {
+                                entity.remove();
+                                i++;
+                            }
+                        }
                     }
                 }
-                p.sendMessage(i+" entities removed.");
+                sender.sendMessage(i+" entities removed.");
             }
             case "view" -> {
-                if (noPerm(p,"view")) {
-                    p.sendMessage(lang.NO_PERMISSIONS);
+                if (noPerm(sender,"view")) {
+                    sender.sendMessage(lang.NO_PERMISSIONS);
                     return;
                 }
-                Camera camera = checkExist(p,args);
+                Camera camera = checkExist(sender,args);
                 if (camera == null) return;
-                if (args.length > 3 && p.hasPermission("cctv.camera.view.other")) {
+                if (args.length > 3 && sender.hasPermission("cctv.camera.view.other")) {
                     Player target = Bukkit.getServer().getPlayer(args[3]);
                     if (target == null) {
-                        p.sendMessage(lang.PLAYER_NOT_FOUND);
+                        sender.sendMessage(lang.PLAYER_NOT_FOUND);
                         return;
                     }
                     cm.viewCamera(target,camera,null);
-                    p.sendMessage(target.getName()+" now viewing "+camera.getName());
+                    sender.sendMessage(target.getName()+" now viewing "+camera.getName());
                     return;
                 }
+                Player p = getPlayer(sender);
+                if (p == null) return;
                 cm.viewCamera(p,camera,null);
                 p.sendMessage("You are now viewing "+camera.getName());
             }
-            default -> helpPage(p,"Camera commands",
+            default -> helpPage(sender,"Camera commands",
                     "get:Get the camera item",
                     "create <name>:Create a new camera",
                     "list:Get the list of all cameras",

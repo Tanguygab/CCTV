@@ -40,25 +40,27 @@ public abstract class Command<T> {
     protected String getFirstArg(String[] args) {
         return args.length > 1 ? args[1].toLowerCase() : "";
     }
-    protected T checkExist(Player player, String[] args) {
+    protected T checkExist(CommandSender player, String[] args) {
         if (args.length < 3) {
             player.sendMessage(lang.COMMANDS_PROVIDE_NAME);
             return null;
         }
         T obj = get(args[2]);
+        if (!(player instanceof Player p)) return obj;
+
         String owner = obj == null ? "" : getOwner(obj);
 
-        if (obj == null || (!owner.equals(player.getUniqueId().toString()) && noPerm(player, ".other"))) {
+        if (obj == null || (!owner.equals(p.getUniqueId().toString()) && noPerm(player, ".other"))) {
             player.sendMessage(getNotFound());
             return null;
         }
         return obj;
     }
-    protected boolean noPerm(Player p, String perm) {
+    protected boolean noPerm(CommandSender p, String perm) {
         return !p.hasPermission("cctv." + type + "." + perm);
     }
 
-    protected String setOwnerCmd(Player player, String[] args, String alreadyOwner) {
+    protected String setOwnerCmd(CommandSender player, String[] args, String alreadyOwner) {
         T t = checkExist(player,args);
         if (t == null) return null;
 
@@ -79,7 +81,7 @@ public abstract class Command<T> {
         setOwner(t,uuid);
         return newOwner.getName();
     }
-    protected T renameCmd(Player player, String[] args) {
+    protected T renameCmd(CommandSender player, String[] args) {
         T t = checkExist(player,args);
         if (t == null) return null;
 
@@ -105,7 +107,7 @@ public abstract class Command<T> {
         comp.setBold(false);
         return comp;
     }
-    protected void helpPage(Player player, String info, String... commands) {
+    protected void helpPage(CommandSender player, String info, String... commands) {
         TextComponent comp = new TextComponent();
         comp.setColor(ChatColor.GOLD);
         TextComponent strikeThrough = new TextComponent("\n                                        ");
@@ -127,7 +129,7 @@ public abstract class Command<T> {
         player.spigot().sendMessage(comp);
     }
 
-    protected void listCmd(Player p, String name, List<String> list, String[] args) {
+    protected void listCmd(CommandSender p, String name, List<String> list, String[] args) {
         int page;
         try {page = args.length < 3 ? 1 : Integer.parseInt(args[2]);}
         catch (Exception ignored) {page = 1;}

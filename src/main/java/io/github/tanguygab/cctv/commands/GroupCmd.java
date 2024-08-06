@@ -44,11 +44,12 @@ public class GroupCmd extends Command<CameraGroup> {
 
     @Override
     public void onCommand(CommandSender sender, String[] args) {
-        Player p = getPlayer(sender);
-        if (p == null) return;
         String arg = getFirstArg(args);
         switch (arg) {
             case "create" -> {
+                Player p = getPlayer(sender);
+                if (p == null) return;
+
                 if (noPerm(p, "create")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
                     return;
@@ -57,46 +58,46 @@ public class GroupCmd extends Command<CameraGroup> {
                 else p.sendMessage(lang.COMMANDS_PROVIDE_NAME);
             }
             case "delete" -> {
-                CameraGroup group = checkExist(p,args);
+                CameraGroup group = checkExist(sender,args);
                 if (group == null) return;
-                p.sendMessage(lang.getGroupDeleted(group.getName()));
+                sender.sendMessage(lang.getGroupDeleted(group.getName()));
                 cgm.values().forEach(g -> g.removeCamera(group));
                 cctv.getComputers().values().forEach(computer -> computer.removeCamera(group));
                 cgm.remove(group.getName());
             }
-            case "list" -> listCmd(p,lang.COMMANDS_LIST_GROUPS,cgm.get(p),args);
+            case "list" -> listCmd(sender,lang.COMMANDS_LIST_GROUPS,cgm.get((Player) sender),args);
             case "seticon" -> {
-                CameraGroup group = checkExist(p,args);
+                CameraGroup group = checkExist(sender,args);
                 if (group == null) return;
                 if (args.length < 3) {
-                    p.sendMessage(lang.GROUP_ICON_PROVIDE);
+                    sender.sendMessage(lang.GROUP_ICON_PROVIDE);
                     return;
                 }
                 Material material = Material.getMaterial(args[3]);
                 if (material == null || !cgm.getAllowedIcons().contains(material.toString())) {
-                    p.sendMessage(lang.getGroupIconInvalid(String.join(", ",cgm.getAllowedIcons())));
+                    sender.sendMessage(lang.getGroupIconInvalid(String.join(", ",cgm.getAllowedIcons())));
                     return;
                 }
                 group.setIcon(material);
-                p.sendMessage(lang.GROUP_ICON_CHANGED);
+                sender.sendMessage(lang.GROUP_ICON_CHANGED);
             }
             case "setowner" -> {
-                String owner = setOwnerCmd(p,args,lang.GROUP_PLAYER_ALREADY_OWNER);
-                if (owner != null) p.sendMessage(lang.getGroupOwnerChanged(owner));
+                String owner = setOwnerCmd(sender,args,lang.GROUP_PLAYER_ALREADY_OWNER);
+                if (owner != null) sender.sendMessage(lang.getGroupOwnerChanged(owner));
             }
             case "rename" -> {
-                CameraGroup group = renameCmd(p,args);
+                CameraGroup group = renameCmd(sender,args);
                 if (group == null) return;
                 String newName = args[3];
                 if (group.rename(newName)) {
-                    p.sendMessage(lang.getGroupRenamed(newName));
+                    sender.sendMessage(lang.getGroupRenamed(newName));
                     group.getBossbar().setTitle(group.getName());
                     return;
                 }
-                p.sendMessage(lang.GROUP_ALREADY_EXISTS);
+                sender.sendMessage(lang.GROUP_ALREADY_EXISTS);
             }
             case "info" -> {
-                CameraGroup group = checkExist(p,args);
+                CameraGroup group = checkExist(sender,args);
                 if (group == null) return;
                 OfflinePlayer off = Bukkit.getServer().getOfflinePlayer(UUID.fromString(group.getOwner()));
                 String owner = off.getName() == null ? "Unknown" : off.getName();
@@ -111,13 +112,13 @@ public class GroupCmd extends Command<CameraGroup> {
                     camComp.setBold(cam instanceof CameraGroup);
                     comp.addExtra(camComp);
                 }
-                p.spigot().sendMessage(comp);
+                sender.spigot().sendMessage(comp);
             }
             case "addcamera","addgroup","removecamera","removegroup" -> {
-                CameraGroup group = checkExist(p,args);
-                if (group != null) editGroup(p,group,arg.endsWith("camera"),arg.startsWith("add"), args.length > 3 ? args[3] : null);
+                CameraGroup group = checkExist(sender,args);
+                if (group != null) editGroup(sender,group,arg.endsWith("camera"),arg.startsWith("add"), args.length > 3 ? args[3] : null);
             }
-            default -> helpPage(p,"Group commands",
+            default -> helpPage(sender,"Group commands",
                     "create <name>:Create a new group",
                     "delete <group>:Delete a group",
                     "list:Get the list of all groups",
@@ -131,7 +132,7 @@ public class GroupCmd extends Command<CameraGroup> {
                     "removecamera <group> <camera>:Remove a camera from your group");
         }
     }
-    private void editGroup(Player player, CameraGroup group, boolean isCam, boolean add, String name) {
+    private void editGroup(CommandSender player, CameraGroup group, boolean isCam, boolean add, String name) {
         if (!isCam) {
             player.sendMessage(lang.UNSUPPORTED);
             return;

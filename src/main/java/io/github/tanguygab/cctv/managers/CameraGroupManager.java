@@ -78,7 +78,7 @@ public class CameraGroupManager extends Manager<CameraGroup> {
     public List<String> get(Player p) {
         List<String> groups = new ArrayList<>();
         for (CameraGroup group : values())
-            if (group.getOwner().equals(p.getUniqueId().toString()) || p.hasPermission("cctv.group.other"))
+            if (p == null || group.getOwner().equals(p.getUniqueId().toString()) || p.hasPermission("cctv.group.other"))
                 groups.add(group.getName());
         return groups;
     }

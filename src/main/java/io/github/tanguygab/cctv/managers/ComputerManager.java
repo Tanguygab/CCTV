@@ -139,7 +139,7 @@ public class ComputerManager extends Manager<Computer> {
     public List<String> get(Player p) {
         List<String> list = new ArrayList<>();
         for (Computer computer : values())
-            if (computer.getOwner().equals(p.getUniqueId().toString()))
+            if (p == null || computer.getOwner().equals(p.getUniqueId().toString()))
                 list.add(computer.getName());
         return list;
     }
