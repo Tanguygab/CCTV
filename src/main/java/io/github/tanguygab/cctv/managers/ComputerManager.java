@@ -100,7 +100,11 @@ public class ComputerManager extends Manager<Computer> {
 
             cctv.getServer().getPluginManager().registerEvents(new ItemsAdderEvents(this,mat.substring(11),admin),cctv);
             CustomStack stack = CustomStack.getInstance(mat.substring(11));
-            if (stack != null && stack.isBlock()) {
+            if (stack != null) {
+                if (!stack.isBlock()) {
+                    cctv.getLogger().info("ItemsAdder item "+stack.getNamespace()+" is not a block! Defaulting to Nether Brick Stairs...");
+                    return null;
+                }
                 cctv.getLogger().info("ItemsAdder item "+stack.getNamespace()+" loaded!");
                 return stack.getItemStack();
             }
