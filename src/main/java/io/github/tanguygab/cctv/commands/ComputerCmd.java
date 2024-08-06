@@ -60,6 +60,26 @@ public class ComputerCmd extends Command<Computer> {
                 p.sendMessage(lang.COMPUTER_ITEM_PLACE);
             }
             case "list" -> listCmd(p,lang.COMMANDS_LIST_COMPUTERS,cpm.get(p),args);
+            case "open" -> {
+                if (noPerm(p,"open")) {
+                    p.sendMessage(lang.NO_PERMISSIONS);
+                    return;
+                }
+                Computer computer = checkExist(p,args);
+                if (computer == null) return;
+                if (args.length > 3 && p.hasPermission("cctv.computer.open.other")) {
+                    Player target = Bukkit.getServer().getPlayer(args[3]);
+                    if (target == null) {
+                        p.sendMessage(lang.PLAYER_NOT_FOUND);
+                        return;
+                    }
+                    cpm.open(target,computer);
+                    p.sendMessage("Opening "+computer.getName()+" for "+target.getName());
+                    return;
+                }
+                cpm.open(p,computer);
+                p.sendMessage("Opening "+computer.getName());
+            }
             case "teleport" -> {
                 if (noPerm(p, "teleport")) {
                     p.sendMessage(lang.NO_PERMISSIONS);
@@ -93,30 +113,10 @@ public class ComputerCmd extends Command<Computer> {
                 }
                 p.spigot().sendMessage(comp);
             }
-            case "view" -> {
-                if (noPerm(p,"open")) {
-                    p.sendMessage(lang.NO_PERMISSIONS);
-                    return;
-                }
-                Computer computer = checkExist(p,args);
-                if (computer == null) return;
-                if (args.length > 3 && p.hasPermission("cctv.computer.open.other")) {
-                    Player target = Bukkit.getServer().getPlayer(args[3]);
-                    if (target == null) {
-                        p.sendMessage(lang.PLAYER_NOT_FOUND);
-                        return;
-                    }
-                    cpm.open(target,computer);
-                    p.sendMessage("Opening "+computer.getName()+" for "+target.getName());
-                    return;
-                }
-                cpm.open(p,computer);
-                p.sendMessage("Opening "+computer.getName());
-            }
             default -> helpPage(p,"Computer commands",
                     "get:Get the computer item",
                     "list:Get the list of all computers",
-                    "open <computer> [computer]:Open the computer's menu",
+                    "open <computer> [player]:Open the computer's menu",
                     "teleport <computer>:Teleport to the computer",
                     "setowner <computer> <player>:Set the computer's owner",
                     "info <group>:Get the computer's info");
