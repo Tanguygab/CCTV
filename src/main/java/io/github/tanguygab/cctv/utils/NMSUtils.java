@@ -130,7 +130,6 @@ public class NMSUtils {
                 p.showEntity(CCTV.getInstance(), oldEntity.get(p));
             oldEntity.put(p,entity);
             loc = entity.getLocation();
-            p.hideEntity(CCTV.getInstance(),entity);
         } else {
             oldLoc.remove(p);
             oldEntity.remove(p);
@@ -140,6 +139,7 @@ public class NMSUtils {
             p.teleport(loc);
             p.setAllowFlight(true);
             p.setFlying(true);
+            p.hideEntity(CCTV.getInstance(),entity);
         } else {
             if (p.getGameMode() != GameMode.CREATIVE && p.getGameMode() != GameMode.SPECTATOR) {
                 p.setAllowFlight(false);
