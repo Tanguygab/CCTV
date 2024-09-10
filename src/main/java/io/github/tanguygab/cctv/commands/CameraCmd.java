@@ -5,6 +5,7 @@ import io.github.tanguygab.cctv.managers.CameraManager;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.ArmorStand;
@@ -83,9 +84,22 @@ public class CameraCmd extends Command<Camera> {
                     sender.sendMessage(lang.getCameraViewCount(Math.toIntExact(cctv.getViewers().values().stream().filter(viewer->viewer.getCamera()==camera).count()),camera.getName()));
             }
             case "disconnect" -> {
-                Player p = getPlayer(sender);
-                if (p == null) return;
-                cm.disconnectFromCamera(p);
+                if (noPerm(sender,"disconnect")) {
+                    sender.sendMessage(lang.NO_PERMISSIONS);
+                    return;
+                }
+                if (args.length > 2 && sender.hasPermission("cctv.camera.disconnect.other")) {
+                    Player target = Bukkit.getServer().getPlayer(args[2]);
+                    if (target == null) {
+                        sender.sendMessage(lang.PLAYER_NOT_FOUND);
+                        return;
+                    }
+                    cm.disconnectFromCamera(target);
+                    return;
+                }
+                Player player = getPlayer(sender);
+                if (player == null) return;
+                cm.disconnectFromCamera(player);
             }
             case "teleport" -> {
                 Player p = getPlayer(sender);
@@ -106,6 +120,40 @@ public class CameraCmd extends Command<Camera> {
                 if (camera == null) return;
                 camera.setLocation(p.getLocation());
                 p.sendMessage(lang.CAMERA_MOVED);
+            }
+            case "moveto" -> {
+                Camera camera = checkExist(sender,args);
+                if (camera == null) return;
+
+                if (noPerm(sender, "moveto")) {
+                    sender.sendMessage(lang.NO_PERMISSIONS);
+                    return;
+                }
+
+                if (args.length < 6) {
+                    sender.sendMessage("§cYou have to provide x, y and z coordinates!");
+                    return;
+                }
+
+                try {
+                    double x = Double.parseDouble(args[3]);
+                    double y = Double.parseDouble(args[4]);
+                    double z = Double.parseDouble(args[5]);
+
+                    World world = null;
+                    if (args.length > 6) world = Bukkit.getServer().getWorld(args[6]);
+                    else if (sender instanceof Player p) world = p.getWorld();
+
+                    if (world == null) {
+                        sender.sendMessage("§cYou have to provide a world!");
+                        return;
+                    }
+
+                    camera.setLocation(new Location(world, x, y, z));
+                    sender.sendMessage(lang.CAMERA_MOVED);
+                } catch (NumberFormatException e) {
+                    sender.sendMessage("§cInvalid coordinates!");
+                }
             }
             case "rename" -> {
                 Camera camera = renameCmd(sender,args);
@@ -174,9 +222,10 @@ public class CameraCmd extends Command<Camera> {
                     "create <name>:Create a new camera",
                     "list:Get the list of all cameras",
                     "connected <camera>:All players connected to this camera",
-                    "disconnect:Disconnect from your current camera",
+                    "disconnect [player]:Disconnect from your current camera",
                     "teleport <camera>:Teleport to the camera",
                     "movehere <camera>:Move the camera to your location",
+                    "moveto <camera> <x> <y> <z> <world>:Move the camera to a location",
                     "rename <camera> <name>:Rename the camera",
                     "setowner <camera> <player>:Set the camera's owner",
                     "view <camera> [player]:View a camera or make a player view it");
