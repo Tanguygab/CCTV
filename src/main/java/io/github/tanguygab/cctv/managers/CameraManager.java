@@ -191,6 +191,11 @@ public class CameraManager extends Manager<Camera> {
         }
 
         ViewerManager vm = cctv.getViewers();
+        if (vm.exists(p)) {
+            vm.get(p).setCamera(cam,false);
+            return;
+        }
+
         p.sendTitle(" ", lang.CAMERA_CONNECTING, 0, vm.TIME_TO_CONNECT*20, 0);
         connecting.add(p);
         Bukkit.getScheduler().scheduleSyncDelayedTask(cctv,  () -> {
