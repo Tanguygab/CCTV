@@ -139,9 +139,11 @@ public class CameraCmd extends Command<Camera> {
                     double x = Double.parseDouble(args[3]);
                     double y = Double.parseDouble(args[4]);
                     double z = Double.parseDouble(args[5]);
+                    float yaw = Float.parseFloat(args[6]);
+                    float pitch = Float.parseFloat(args[7]);
 
                     World world = null;
-                    if (args.length > 6) world = Bukkit.getServer().getWorld(args[6]);
+                    if (args.length > 8) world = Bukkit.getServer().getWorld(args[8]);
                     else if (sender instanceof Player p) world = p.getWorld();
 
                     if (world == null) {
@@ -149,7 +151,7 @@ public class CameraCmd extends Command<Camera> {
                         return;
                     }
 
-                    camera.setLocation(new Location(world, x, y, z));
+                    camera.setLocation(new Location(world, x, y, z, yaw, pitch));
                     sender.sendMessage(lang.CAMERA_MOVED);
                 } catch (NumberFormatException e) {
                     sender.sendMessage("§cInvalid coordinates!");
@@ -225,7 +227,7 @@ public class CameraCmd extends Command<Camera> {
                     "disconnect [player]:Disconnect from your current camera",
                     "teleport <camera>:Teleport to the camera",
                     "movehere <camera>:Move the camera to your location",
-                    "moveto <camera> <x> <y> <z> <world>:Move the camera to a location",
+                    "moveto <camera> <x> <y> <z> <yaw> <pitch> <world>:Move the camera to a location",
                     "rename <camera> <name>:Rename the camera",
                     "setowner <camera> <player>:Set the camera's owner",
                     "view <camera> [player]:View a camera or make a player view it");
