@@ -90,8 +90,7 @@ public class NMSUtils {
                     addPlayerAction = enumPlayerInfoAction.getEnumConstants()[0];
                 }
                 showInTablist = true;
-            } catch (Exception ignored) {
-                ignored.printStackTrace();
+            } catch (Exception e) {
                 showInTablist = false;
             }
 
