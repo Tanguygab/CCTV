@@ -177,16 +177,23 @@ public class Listener implements org.bukkit.event.Listener {
         run.accept(newName);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onJoin(PlayerJoinEvent event) {
-        Player p = event.getPlayer();
-        p.discoverRecipe(cm.cameraKey);
-        p.discoverRecipe(cpm.computerKey);
+        Player player = event.getPlayer();
+        player.discoverRecipe(cm.cameraKey);
+        player.discoverRecipe(cpm.computerKey);
         if (!cm.EXPERIMENTAL_VIEW)
-            for (Viewer viewer : vm.values()) p.hidePlayer(cctv,viewer.getPlayer());
-        if (!vm.viewersQuit.containsKey(p.getUniqueId())) return;
-        p.teleport(vm.viewersQuit.get(p.getUniqueId()));
-        vm.viewersQuit.remove(p.getUniqueId());
+            for (Viewer viewer : vm.values()) {
+                cctv.getServer().getScheduler().runTaskLater(cctv,()->{
+                    boolean canSee = player.canSee(viewer.getPlayer());
+                    player.hidePlayer(cctv,viewer.getPlayer());
+                    if (canSee && vm.SHOW_IN_TABLIST) cctv.getNms().showViewerInTablistFor(viewer.getPlayer(), player);
+                },20);
+            }
+
+        if (!vm.viewersQuit.containsKey(player.getUniqueId())) return;
+        player.teleport(vm.viewersQuit.get(player.getUniqueId()));
+        vm.viewersQuit.remove(player.getUniqueId());
     }
 
     @EventHandler

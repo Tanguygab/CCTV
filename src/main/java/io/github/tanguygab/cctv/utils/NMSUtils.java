@@ -12,10 +12,9 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 public class NMSUtils {
@@ -25,12 +24,19 @@ public class NMSUtils {
     private Method getHandle;
     private Field playerConnection;
     private Method sendPacket;
+    private Method sendPacket2;
     private Method setGlow;
     private Method getId;
     private Method getDataWatcher;
     private Method getDataWatcherObjects;
     private Constructor<?> packetPlayOutCamera;
     private Constructor<?> packetPlayOutEntityMetadata;
+
+    private Method createPlayerInitializing;
+    private Constructor<?> packetPlayOutPlayerInfo;
+    private Object addPlayerAction;
+    public boolean showInTablist;
+
     private boolean oldMetadataPacket = false;
 
     public NMSUtils() {
@@ -46,8 +52,10 @@ public class NMSUtils {
                     playerConnection = entityPlayer.getDeclaredField("c");
             }
             catch (Exception e) {playerConnection = entityPlayer.getDeclaredField("b");}
-            sendPacket = playerConnectionClass.getDeclaredMethod("a",
-                    Class.forName("net.minecraft.network.protocol.Packet"));
+
+            Class<?> packetClass = Class.forName("net.minecraft.network.protocol.Packet");
+            sendPacket = playerConnectionClass.getDeclaredMethod("a", packetClass);
+
             packetPlayOutCamera = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutCamera")
                     .getConstructor(Class.forName("net.minecraft.world.entity.Entity"));
 
@@ -65,6 +73,28 @@ public class NMSUtils {
             getId = tryThen(entityPlayer, int.class, List.of("getId","an","al","aj","ah","af","ae"));
             getDataWatcher = tryThen(entityPlayer,dataWatcher,List.of("getEntityData","ar","ap","an","al","aj","ai"));
             if (!oldMetadataPacket) getDataWatcherObjects = dataWatcher.getDeclaredMethod("c");
+
+            try {
+                try {
+                    sendPacket2 = playerConnectionClass.getMethod("b", packetClass);
+                } catch (Exception e) {
+                    sendPacket2 = sendPacket;
+                }
+                try {
+                    Class<?> clientBoundPlayerInfoUpdatePacket = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket");
+                    createPlayerInitializing = clientBoundPlayerInfoUpdatePacket.getDeclaredMethod("a", Collection.class);
+                } catch (Exception e) {
+                    Class<?> packetPlayOutPlayerInfoClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo");
+                    Class<?> enumPlayerInfoAction = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo$EnumPlayerInfoAction");
+                    packetPlayOutPlayerInfo = packetPlayOutPlayerInfoClass.getConstructor(enumPlayerInfoAction, Collection.class);
+                    addPlayerAction = enumPlayerInfoAction.getEnumConstants()[0];
+                }
+                showInTablist = true;
+            } catch (Exception ignored) {
+                ignored.printStackTrace();
+                showInTablist = false;
+            }
+
 
             nmsSupported = true;
         } catch (Exception e) {
@@ -87,9 +117,10 @@ public class NMSUtils {
         throw new NoSuchMethodException(methods.toString());
     }
 
-    private void sendPacket(Player player, Object packet) {
+    private void sendPacket(Player player, Object packet, boolean clientBound) {
         try {
-            sendPacket.invoke(playerConnection.get(getHandle.invoke(player)),packet);
+            Method method = clientBound ? sendPacket2 : sendPacket;
+            method.invoke(playerConnection.get(getHandle.invoke(player)),packet);
         } catch (Exception e) {e.printStackTrace();}
     }
 
@@ -106,8 +137,8 @@ public class NMSUtils {
                             ) : packetPlayOutEntityMetadata.newInstance(
                                     getId.invoke(viewedNMS),
                                     getDataWatcherObjects.invoke(getDataWatcher.invoke(viewedNMS))
-                            )
-            );
+                            ),
+            false);
         } catch (Exception e) {e.printStackTrace();}
     }
 
@@ -117,7 +148,7 @@ public class NMSUtils {
     public void setCameraPacket(Player p, Entity entity) {
         if (CCTV.getInstance().getCameras().EXPERIMENTAL_VIEW) {
             try {
-                sendPacket(p,packetPlayOutCamera.newInstance(getHandle.invoke(entity)));
+                sendPacket(p,packetPlayOutCamera.newInstance(getHandle.invoke(entity)),false);
             } catch (Exception e) {e.printStackTrace();}
             return;
         }
@@ -152,4 +183,19 @@ public class NMSUtils {
         p.setCollidable(!view);
     }
 
+    public void showViewerInTablistFor(Player viewer, Player player) {
+        try {
+            Collection<?> collection = List.of(getHandle.invoke(viewer));
+            Object packet;
+
+            try {
+                packet = createPlayerInitializing.invoke(null, collection);
+            } catch (Exception e) {
+                packet = packetPlayOutPlayerInfo.newInstance(addPlayerAction, collection);
+            }
+            sendPacket(player,packet,true);
+        } catch (IllegalAccessException | InvocationTargetException | InstantiationException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

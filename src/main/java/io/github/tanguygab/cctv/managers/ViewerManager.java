@@ -22,6 +22,7 @@ public class ViewerManager extends Manager<Viewer> {
 
     public boolean CAN_CHAT;
     public boolean ZOOM_ITEM;
+    public boolean SHOW_IN_TABLIST;
     public boolean SPOTTING;
     public boolean BOSSBAR;
 
@@ -41,8 +42,15 @@ public class ViewerManager extends Manager<Viewer> {
     public void load() {
         ConfigurationFile config = cctv.getConfiguration();
         CAN_CHAT = config.getBoolean("viewers.can_chat",true);
-        ZOOM_ITEM = cctv.getConfiguration().getBoolean("camera.zoom_item",true);
-        SPOTTING = cctv.getConfiguration().getBoolean("camera.spotting",true);
+        ZOOM_ITEM = cctv.getConfiguration().getBoolean("viewers.zoom_item",true);
+        SHOW_IN_TABLIST = cctv.getConfiguration().getBoolean("viewers.show-in-tablist",true);
+
+        if (SHOW_IN_TABLIST && !cctv.getNms().showInTablist) {
+            cctv.getLogger().warning("This server version doesn't support the show-in-tablist setting. Players will be hidden when viewing a camera");
+            SHOW_IN_TABLIST = false;
+        }
+
+        SPOTTING = cctv.getConfiguration().getBoolean("viewers.spotting",true);
         TIME_TO_CONNECT = config.getInt("viewers.timed-actions.connect",3);
         TIME_TO_DISCONNECT = config.getInt("viewers.timed-actions.disconnect",3);
         TIME_FOR_SPOT = config.getInt("viewers.timed-actions.spot",5);
@@ -105,8 +113,14 @@ public class ViewerManager extends Manager<Viewer> {
         p.setCanPickupItems(false);
         giveViewerItems(p,computer);
 
-        if (!cm.EXPERIMENTAL_VIEW)
-            for (Player online : Bukkit.getOnlinePlayers()) online.hidePlayer(cctv,p);
+        if (!cm.EXPERIMENTAL_VIEW) {
+            for (Player online : Bukkit.getOnlinePlayers()) {
+                if (p == online) continue;
+                boolean canSee = online.canSee(p);
+                online.hidePlayer(cctv, p);
+                if (canSee && SHOW_IN_TABLIST) cctv.getNms().showViewerInTablistFor(p, online);
+            }
+        }
     }
 
     private void giveViewerItems(Player p, Computer computer) {

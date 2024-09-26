@@ -21,6 +21,7 @@ computer:
 viewers:
   can_chat: true
   zoom_item: true
+  show-in-tablist: true
   timed-actions:
     connect: 3
     disconnect: 3
