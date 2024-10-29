@@ -53,10 +53,17 @@ public enum Heads {
         (gameProfile).getProperties().put("textures", new Property("textures", base64));
 
         Object profile = gameProfile;
+        Field profileField;
+        try {
+            profileField = meta.getClass().getDeclaredField("profile");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         try { // 1.21.1+
-            profile = Class.forName("net.minecraft.world.item.component.ResolvableProfile")
-                    .getConstructor(GameProfile.class)
-                    .newInstance(gameProfile);
+            Class<?> resolvableProfile = Class.forName("net.minecraft.world.item.component.ResolvableProfile");
+            if (profileField.getDeclaringClass().isInstance(resolvableProfile)) {
+                profile = resolvableProfile.getConstructor(GameProfile.class).newInstance(gameProfile);
+            }
         } catch (Exception ignored) {}
 
         Method setProfileMethod = null;
@@ -72,8 +79,6 @@ public enum Heads {
             // credit to https://github.com/iSach/UltraCosmetics/commit/89ef1b85fad28cfe8f6471c779c815456e52906f
             // thank you, I wouldn't have figured it out ;-;
             if (setProfileMethod == null) {
-
-                Field profileField = meta.getClass().getDeclaredField("profile");
                 profileField.setAccessible(true);
                 profileField.set(meta, profile);
             } else {
