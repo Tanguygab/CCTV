@@ -62,7 +62,7 @@ public class Listener implements org.bukkit.event.Listener {
         Computer computer = cpm.get(block);
         if (e.getHand() == EquipmentSlot.OFF_HAND || computer == null) return;
         e.setCancelled(true);
-        if (computer.canUse(p)) cpm.open(p, computer);
+        if (p.hasPermission("cctv.computer.interact") && computer.canUse(p)) cpm.open(p, computer);
         else p.sendMessage(CCTV.getInstance().getLang().COMPUTER_NOT_ALLOWED);
     }
 
@@ -125,7 +125,7 @@ public class Listener implements org.bukkit.event.Listener {
             return;
         }
 
-        if (!cm.get(p).contains(camera.getName())) return;
+        if (!p.hasPermission("cctv.camera.interact") || !cm.get(p).contains(camera.getName())) return;
         cctv.openMenu(p,new CameraMenu(p,camera));
     }
 

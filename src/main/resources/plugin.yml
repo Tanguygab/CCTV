@@ -4,7 +4,12 @@ main: io.github.tanguygab.cctv.CCTV
 api-version: 1.18
 authors: [Streampy, Timdecoole123, Tanguygab]
 description: A real CCTV plugin with working CCTV for a real usage.
-softdepend: [ItemsAdder, PlaceholderAPI, Multiverse-Core]
 commands:
   CCTV:
     description: Main command
+
+permissions:
+  cctv.computer.interact:
+    default: true
+  cctv.camera.interact:
+    default: true
