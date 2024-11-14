@@ -61,7 +61,7 @@ public enum Heads {
         }
         try { // 1.21.1+
             Class<?> resolvableProfile = Class.forName("net.minecraft.world.item.component.ResolvableProfile");
-            if (profileField.getDeclaringClass().isInstance(resolvableProfile)) {
+            if (resolvableProfile.equals(profileField.getType())) {
                 profile = resolvableProfile.getConstructor(GameProfile.class).newInstance(gameProfile);
             }
         } catch (Exception ignored) {}
