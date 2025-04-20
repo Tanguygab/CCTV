@@ -39,16 +39,17 @@ public class CCTV extends JavaPlugin {
     private NMSUtils nms;
     private CCTVExpansion expansion;
 
-    @Getter(AccessLevel.NONE) private CameraCmd cameraCmd;
-    @Getter(AccessLevel.NONE) private GroupCmd groupCmd;
-    @Getter(AccessLevel.NONE) private ComputerCmd computerCmd;
+    private CameraCmd cameraCmd;
+    private GroupCmd groupCmd;
+    private ComputerCmd computerCmd;
+    private ViewerCmd viewerCmd;
 
     private CameraManager cameras;
     private CameraGroupManager groups;
     private ComputerManager computers;
     private ViewerManager viewers;
 
-    @Getter(AccessLevel.NONE) private List<String> toggledCoords;
+    private List<String> toggledCoords;
 
     @Override
     public void onEnable() {
@@ -77,6 +78,7 @@ public class CCTV extends JavaPlugin {
         cameraCmd = new CameraCmd();
         groupCmd = new GroupCmd();
         computerCmd = new ComputerCmd();
+        viewerCmd = new ViewerCmd();
 
         viewers.load();
         cameras.load();
@@ -189,6 +191,7 @@ public class CCTV extends JavaPlugin {
             case "camera" -> cameraCmd.onCommand(sender,args);
             case "computer" -> computerCmd.onCommand(sender,args);
             case "group" -> groupCmd.onCommand(sender,args);
+            case "viewer" -> viewerCmd.onCommand(sender,args);
             case "reload" -> {
                 if (!sender.hasPermission("cctv.reload")) {
                     sender.sendMessage(lang.NO_PERMISSIONS);
@@ -222,6 +225,7 @@ public class CCTV extends JavaPlugin {
             case "camera" -> cameraCmd.onTabComplete(sender,args);
             case "group" -> groupCmd.onTabComplete(sender,args);
             case "computer" -> computerCmd.onTabComplete(sender,args);
+            case "viewer" -> viewerCmd.onTabComplete(sender,args);
             default -> List.of("camera","group","computer","reload");
         };
     }

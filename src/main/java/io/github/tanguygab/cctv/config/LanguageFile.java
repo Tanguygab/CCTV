@@ -157,6 +157,11 @@ public class LanguageFile extends YamlConfigurationFile {
     public final String GUI_CAMERA_HIDDEN = get("gui.camera.hidden", "&cCamera Hidden");
     public final String GUI_CAMERA_ENABLED = get("gui.camera.enabled", "&aCamera Enabled");
     public final String GUI_CAMERA_DISABLED = get("gui.camera.disabled", "&cCamera Disabled");
+    public final String GUI_CAMERA_ROTATE_UP = get("gui.camera.rotate-up", "&6Rotate Up");
+    public final String GUI_CAMERA_ROTATE_LEFT = get("gui.camera.rotate-left", "&6Rotate Left");
+    public final String GUI_CAMERA_ROTATE_RIGHT = get("gui.camera.rotate-right", "&6Rotate Right");
+    public final String GUI_CAMERA_ROTATE_DOWN = get("gui.camera.rotate-down", "&6Rotate Down");
+
     private final String GUI_CAMERA_SKIN_TITLE = get("gui.camera.skin.title", "&eCamera Skins (page: %page%)");
     public String getGuiCameraSkin(int page) {
         return GUI_CAMERA_SKIN_TITLE.replace("%page%",String.valueOf(page));
@@ -216,21 +221,17 @@ public class LanguageFile extends YamlConfigurationFile {
     public final String GUI_COMPUTER_OPTIONS_ACCESS_ITEM_REMOVE_PLAYERS = get("gui.computer.options.access-item.remove-players", "&eRight-Click to remove players");
 
 
-    public final String CAMERA_VIEW_OPTION = get("camera-view.option", "&eOptions");
-    public final String CAMERA_VIEW_ROTATE_UP = get("camera-view.rotate-up", "&6Rotate Up");
-    public final String CAMERA_VIEW_ROTATE_LEFT = get("camera-view.rotate-left", "&6Rotate Left");
-    public final String CAMERA_VIEW_ROTATE_RIGHT = get("camera-view.rotate-right", "&6Rotate Right");
-    public final String CAMERA_VIEW_ROTATE_DOWN = get("camera-view.rotate-down", "&6Rotate Down");
-    public final String CAMERA_VIEW_PREVIOUS = get("camera-view.previous", "&bPrevious Camera");
-    public final String CAMERA_VIEW_NEXT = get("camera-view.next", "&bNext Camera");
-    public final String CAMERA_VIEW_EXIT = get("camera-view.exit", "&4Exit");
-    private final String CAMERA_VIEW_ZOOM = get("camera-view.zoom", "&6Zoom: &a%level%x");
-    public String getCameraViewZoom(int zoom) {
-        return CAMERA_VIEW_ZOOM.replace("%level%", String.valueOf(zoom));
+    public String getCameraViewItem(String item) {
+        return get("camera-view.items." + item, "");
     }
+    
     public final String CAMERA_VIEW_OPTIONS_TITLE = get("camera-view.options.title", "&eSettings");
     public final String CAMERA_VIEW_OPTIONS_NIGHTVISION_OFF = get("camera-view.options.nightvision-off", "&6Night-Vision: &4Off");
     public final String CAMERA_VIEW_OPTIONS_NIGHTVISION_ON = get("camera-view.options.nightvision-on", "&6Night-Vision: &aOn");
+    private final String CAMERA_VIEW_OPTIONS_ZOOM = get("camera-view.options.zoom", "&6Zoom: &a%level%x");
+    public String getCameraViewZoom(int zoom) {
+        return CAMERA_VIEW_OPTIONS_ZOOM.replace("%level%", String.valueOf(zoom));
+    }
     public final String CAMERA_VIEW_OPTIONS_ZOOM_OFF = get("camera-view.options.zoom-off", "&6Zoom: &4Off");
     public final String CAMERA_VIEW_OPTIONS_ZOOM_UNAVAILABLE = get("camera-view.options.zoom-unavailable", "&6Change your FOV!");
     public final String CAMERA_VIEW_OPTIONS_BACK = get("camera-view.options.back", "&8Back");

@@ -15,13 +15,11 @@ import java.util.UUID;
 public enum Heads {
 
     CAMERA("MmFlM2EzYTRhMWFhNTBkODVkYmNkYWM4ZGE2M2Q3Y2JmZDQ1ZTUyMGRmZWMyZDUwYmVkZjhlOTBlOGIwZTRlYSJ9fX0=", CCTV.getInstance().getLang().CAMERA_ITEM_NAME),
-    CAM_PREVIOUS("OTM5NzExMjRiZTg5YWM3ZGM5YzkyOWZlOWI2ZWZhN2EwN2NlMzdjZTFkYTJkZjY5MWJmODY2MzQ2NzQ3N2M3In19fQ==", CCTV.getInstance().getLang().CAMERA_VIEW_PREVIOUS), // Arrow Left
-    CAM_NEXT("MjY3MWM0YzA0MzM3YzM4YTVjN2YzMWE1Yzc1MWY5OTFlOTZjMDNkZjczMGNkYmVlOTkzMjA2NTVjMTlkIn19fQ==", CCTV.getInstance().getLang().CAMERA_VIEW_NEXT), // Arrow Right
 
-    ROTATE_UP("NmNjYmY5ODgzZGQzNTlmZGYyMzg1YzkwYTQ1OWQ3Mzc3NjUzODJlYzQxMTdiMDQ4OTVhYzRkYzRiNjBmYyJ9fX0=",CCTV.getInstance().getLang().CAMERA_VIEW_ROTATE_UP),
-    ROTATE_LEFT("MzdhZWU5YTc1YmYwZGY3ODk3MTgzMDE1Y2NhMGIyYTdkNzU1YzYzMzg4ZmYwMTc1MmQ1ZjQ0MTlmYzY0NSJ9fX0=", CCTV.getInstance().getLang().CAMERA_VIEW_ROTATE_LEFT), // Move Left
-    ROTATE_RIGHT("NjgyYWQxYjljYjRkZDIxMjU5YzBkNzVhYTMxNWZmMzg5YzNjZWY3NTJiZTM5NDkzMzgxNjRiYWM4NGE5NmUifX19", CCTV.getInstance().getLang().CAMERA_VIEW_ROTATE_RIGHT), // Move Right
-    ROTATE_DOWN("NzI0MzE5MTFmNDE3OGI0ZDJiNDEzYWE3ZjVjNzhhZTQ0NDdmZTkyNDY5NDNjMzFkZjMxMTYzYzBlMDQzZTBkNiJ9fX0=",CCTV.getInstance().getLang().CAMERA_VIEW_ROTATE_DOWN),
+    ROTATE_UP("NmNjYmY5ODgzZGQzNTlmZGYyMzg1YzkwYTQ1OWQ3Mzc3NjUzODJlYzQxMTdiMDQ4OTVhYzRkYzRiNjBmYyJ9fX0=",CCTV.getInstance().getLang().GUI_CAMERA_ROTATE_UP),
+    ROTATE_LEFT("MzdhZWU5YTc1YmYwZGY3ODk3MTgzMDE1Y2NhMGIyYTdkNzU1YzYzMzg4ZmYwMTc1MmQ1ZjQ0MTlmYzY0NSJ9fX0=", CCTV.getInstance().getLang().GUI_CAMERA_ROTATE_LEFT), // Move Left
+    ROTATE_RIGHT("NjgyYWQxYjljYjRkZDIxMjU5YzBkNzVhYTMxNWZmMzg5YzNjZWY3NTJiZTM5NDkzMzgxNjRiYWM4NGE5NmUifX19", CCTV.getInstance().getLang().GUI_CAMERA_ROTATE_RIGHT), // Move Right
+    ROTATE_DOWN("NzI0MzE5MTFmNDE3OGI0ZDJiNDEzYWE3ZjVjNzhhZTQ0NDdmZTkyNDY5NDNjMzFkZjMxMTYzYzBlMDQzZTBkNiJ9fX0=",CCTV.getInstance().getLang().GUI_CAMERA_ROTATE_DOWN),
     ZOOM("NTI1MGIzY2NlNzY2MzVlZjRjN2E4OGIyYzU5N2JkMjc0OTg2OGQ3OGY1YWZhNTY2MTU3YzI2MTJhZTQxMjAifX19", CCTV.getInstance().getLang().CAMERA_VIEW_OPTIONS_ZOOM_OFF), // +
 
     COMPUTER_BACK("Y2RjOWU0ZGNmYTQyMjFhMWZhZGMxYjViMmIxMWQ4YmVlYjU3ODc5YWYxYzQyMzYyMTQyYmFlMWVkZDUifX19", CCTV.getInstance().getLang().GUI_COMPUTER_DEFAULT_ITEM_BACK), // Arrow Back
@@ -48,7 +46,8 @@ public enum Heads {
 
     public static ItemStack createSkull(String base64, String name) {
         ItemStack head = CCTVMenu.getItem(Material.PLAYER_HEAD,name);
-        SkullMeta meta = (SkullMeta)head.getItemMeta();
+        SkullMeta meta = (SkullMeta) head.getItemMeta();
+        assert meta != null;
         GameProfile gameProfile = new GameProfile(UUID.randomUUID(), "");
         (gameProfile).getProperties().put("textures", new Property("textures", base64));
 
@@ -68,7 +67,6 @@ public enum Heads {
 
         Method setProfileMethod = null;
         try {
-            assert meta != null;
             setProfileMethod = meta.getClass().getDeclaredMethod("setProfile");
         } catch (Exception ignored) {}
         try {

@@ -3,28 +3,32 @@ package io.github.tanguygab.cctv.managers;
 import io.github.tanguygab.cctv.config.ConfigurationFile;
 import io.github.tanguygab.cctv.entities.*;
 import io.github.tanguygab.cctv.menus.CCTVMenu;
-import io.github.tanguygab.cctv.menus.ViewerOptionsMenu;
 import io.github.tanguygab.cctv.utils.Heads;
 import io.github.tanguygab.cctv.utils.NMSUtils;
 import io.github.tanguygab.cctv.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
 
 public class ViewerManager extends Manager<Viewer> {
 
+    private final NamespacedKey VIEWER_ITEM = new NamespacedKey(cctv, "viewer-item");
+
     public boolean CAN_CHAT;
     public boolean ZOOM_ITEM;
     public boolean SHOW_IN_TABLIST;
     public boolean SPOTTING;
     public boolean BOSSBAR;
+    private final Map<String, ViewerItem> items = new HashMap<>();
 
     public int TIME_TO_CONNECT;
     public int TIME_TO_DISCONNECT;
@@ -42,15 +46,51 @@ public class ViewerManager extends Manager<Viewer> {
     public void load() {
         ConfigurationFile config = cctv.getConfiguration();
         CAN_CHAT = config.getBoolean("viewers.can_chat",true);
-        ZOOM_ITEM = cctv.getConfiguration().getBoolean("viewers.zoom_item",true);
-        SHOW_IN_TABLIST = cctv.getConfiguration().getBoolean("viewers.show-in-tablist",true);
+        ZOOM_ITEM = config.getBoolean("viewers.zoom_item",true);
+        SHOW_IN_TABLIST = config.getBoolean("viewers.show-in-tablist",true);
 
         if (SHOW_IN_TABLIST && !cctv.getNms().showInTablist) {
             cctv.getLogger().warning("This server version doesn't support the show-in-tablist setting. Players will be hidden when viewing a camera");
             SHOW_IN_TABLIST = false;
         }
 
-        SPOTTING = cctv.getConfiguration().getBoolean("viewers.spotting",true);
+        Map<String, Map<String, Object>> items = config.getConfigurationSection("viewers.items");
+        items.forEach((name, item) -> {
+            int slot = (int) item.getOrDefault("slot", -1);
+            if (slot < 0) {
+                cctv.getLogger().warning("Invalid slot \"" + slot + "\" at viewers.items." + name + ".slot");
+                return;
+            }
+
+            String displayName = cctv.getLang().getCameraViewItem(name);
+            String material = (String) item.get("material");
+
+            ItemStack itemStack;
+            if (material.startsWith("head-")) {
+                itemStack = Heads.createSkull(material.substring(5), displayName);
+            } else {
+                Material mat = Material.getMaterial(material);
+                if (mat == null) {
+                    cctv.getLogger().warning("Invalid material \"" + material + "\" at viewers.items." + name + ".material");
+                    return;
+                }
+                itemStack = CCTVMenu.getItem(mat, displayName);
+            }
+
+            ItemMeta meta = itemStack.getItemMeta();
+            if (meta != null) {
+                meta.getPersistentDataContainer().set(VIEWER_ITEM, PersistentDataType.STRING, name);
+                itemStack.setItemMeta(meta);
+            }
+
+
+            boolean onlyShowWhenGroup = (boolean) item.getOrDefault("only-show-when-group", false);
+            @SuppressWarnings("unchecked") List<String> commands = (List<String>) item.getOrDefault("commands", List.of());
+
+            this.items.put(name, new ViewerItem(slot, itemStack, onlyShowWhenGroup, commands));
+        });
+
+        SPOTTING = config.getBoolean("viewers.spotting",true);
         TIME_TO_CONNECT = config.getInt("viewers.timed-actions.connect",3);
         TIME_TO_DISCONNECT = config.getInt("viewers.timed-actions.disconnect",3);
         TIME_FOR_SPOT = config.getInt("viewers.timed-actions.spot",5);
@@ -75,6 +115,7 @@ public class ViewerManager extends Manager<Viewer> {
             locMap.put("yaw",loc.getYaw());
             file.set("logged-out-viewers."+uuid,locMap);
         });
+        items.clear();
     }
 
     @Override
@@ -123,35 +164,22 @@ public class ViewerManager extends Manager<Viewer> {
         }
     }
 
-    private void giveViewerItems(Player p, Computer computer) {
-        PlayerInventory inv = p.getInventory();
-        inv.clear();
-        inv.setItem(0, CCTVMenu.getItem(Heads.OPTIONS,lang.CAMERA_VIEW_OPTION));
-        inv.setItem(3, Heads.ROTATE_LEFT.get());
-        inv.setItem(computer != null && computer.getCameras().size() > 1 ? 4 : 5, Heads.ROTATE_RIGHT.get());
-        if (computer != null && (computer.getCameras().size() > 1 || computer.getCameras().get(0) instanceof CameraGroup)) {
-            inv.setItem(6, Heads.CAM_PREVIOUS.get());
-            inv.setItem(7, Heads.CAM_NEXT.get());
-        }
-        inv.setItem(8, CCTVMenu.getItem(Heads.EXIT,lang.CAMERA_VIEW_EXIT));
+    private void giveViewerItems(Player player, Computer computer) {
+        player.getInventory().clear();
+
+        boolean isGroup = computer != null && (computer.getCameras().size() > 1 || computer.getCameras().get(0) instanceof CameraGroup);
+        items.forEach((name, item) -> item.giveItem(player, isGroup));
     }
 
-    public void onCameraItems(Player p, ItemStack item) {
-        if (item == null || item.getType() == Material.AIR) return;
-        ItemMeta meta = item.getItemMeta();
-        if (meta == null || !meta.hasDisplayName()) return;
+    public void onCameraItems(Player player, ItemStack item) {
+        if (item == null || item.getType() == Material.AIR || item.getItemMeta() == null) return;
+        PersistentDataContainer data = item.getItemMeta().getPersistentDataContainer();
+        if (!data.has(VIEWER_ITEM, PersistentDataType.STRING)) return;
 
-        String itemName = item.getItemMeta().getDisplayName();
-        if (itemName.equals(lang.CAMERA_VIEW_EXIT)) {
-            p.sendTitle(" ", cctv.getLang().CAMERA_DISCONNECTING, 0, TIME_TO_DISCONNECT*20, 0);
-            Bukkit.getScheduler().scheduleSyncDelayedTask(cctv, () -> cm.disconnectFromCamera(p),  TIME_TO_DISCONNECT * 20L);
-            return;
-        }
-        if (itemName.equals(lang.CAMERA_VIEW_OPTION)) cctv.openMenu(p,new ViewerOptionsMenu(p));
-        if (itemName.equals(lang.CAMERA_VIEW_ROTATE_LEFT)) cm.rotate(p,get(p).getCamera(), -18,true);
-        if (itemName.equals(lang.CAMERA_VIEW_ROTATE_RIGHT)) cm.rotate(p,get(p).getCamera(), 18,true);
-        if (itemName.equals(lang.CAMERA_VIEW_PREVIOUS)) switchCamera(p,true);
-        if (itemName.equals(lang.CAMERA_VIEW_NEXT)) switchCamera(p,false);
+        String itemName = data.get(VIEWER_ITEM, PersistentDataType.STRING);
+        if (!items.containsKey(itemName)) return;
+
+        items.get(itemName).runCommands(player);
     }
 
     public void switchCamera(Player player, boolean previous) {
