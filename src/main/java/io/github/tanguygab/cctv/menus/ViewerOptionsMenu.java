@@ -11,6 +11,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,7 @@ public class ViewerOptionsMenu extends CCTVMenu {
 
         if (vm.ZOOM_ITEM) {
             if (!cctv.getCameras().EXPERIMENTAL_VIEW) {
-                PotionEffect effect = player.getPotionEffect(NMSUtils.SLOWNESS);
+                PotionEffect effect = player.getPotionEffect(PotionEffectType.SLOWNESS);
                 inv.setItem(2, getItem(Heads.ZOOM,
                         effect != null
                                 ? lang.getCameraViewZoom(effect.getAmplifier() + 1)
@@ -56,7 +57,7 @@ public class ViewerOptionsMenu extends CCTVMenu {
             case 1 -> spotting(player);
             case 2 -> {
                 if (!vm.ZOOM_ITEM || cctv.getCameras().EXPERIMENTAL_VIEW) return;
-                PotionEffect effect = player.getPotionEffect(NMSUtils.SLOWNESS);
+                PotionEffect effect = player.getPotionEffect(PotionEffectType.SLOWNESS);
                 if (effect == null) {
                     zoom(player, 1);
                     return;
@@ -70,10 +71,6 @@ public class ViewerOptionsMenu extends CCTVMenu {
 
     private void spotting(Player p) {
         if (!vm.SPOTTING) return;
-        if (!cctv.getNms().isNmsSupported()) {
-            p.sendMessage(CCTV.getInstance().getLang().UNSUPPORTED);
-            return;
-        }
         p.closeInventory();
         List<Player> spotted = new ArrayList<>();
         Bukkit.getServer().getOnlinePlayers().forEach(viewed->{
@@ -89,11 +86,11 @@ public class ViewerOptionsMenu extends CCTVMenu {
     }
     private void zoom(Player p, int zoomLevel) {
         if (zoomLevel == 0) {
-            p.removePotionEffect(NMSUtils.SLOWNESS);
+            p.removePotionEffect(PotionEffectType.SLOWNESS);
             inv.setItem(2, Heads.ZOOM.get());
             return;
         }
-        p.addPotionEffect(new PotionEffect(NMSUtils.SLOWNESS, -1, zoomLevel - 1, false, false));
+        p.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, -1, zoomLevel - 1, false, false));
         inv.setItem(2, getItem(Heads.ZOOM,lang.getCameraViewZoom(zoomLevel)));
     }
 }

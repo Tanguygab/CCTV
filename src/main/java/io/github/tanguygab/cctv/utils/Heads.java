@@ -1,15 +1,18 @@
 package io.github.tanguygab.cctv.utils;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import io.github.tanguygab.cctv.CCTV;
 import io.github.tanguygab.cctv.menus.CCTVMenu;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.profile.PlayerProfile;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.util.Base64;
 import java.util.UUID;
 
 public enum Heads {
@@ -46,48 +49,22 @@ public enum Heads {
 
     public static ItemStack createSkull(String base64, String name) {
         ItemStack head = CCTVMenu.getItem(Material.PLAYER_HEAD,name);
-        SkullMeta meta = (SkullMeta) head.getItemMeta();
-        assert meta != null;
-        GameProfile gameProfile = new GameProfile(UUID.randomUUID(), "");
-        (gameProfile).getProperties().put("textures", new Property("textures", base64));
-
-        Object profile = gameProfile;
-        Field profileField;
-        try {
-            profileField = meta.getClass().getDeclaredField("profile");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        try { // 1.21.1+
-            Class<?> resolvableProfile = Class.forName("net.minecraft.world.item.component.ResolvableProfile");
-            if (resolvableProfile.equals(profileField.getType())) {
-                profile = resolvableProfile.getConstructor(GameProfile.class).newInstance(gameProfile);
+        if (head.getItemMeta() instanceof SkullMeta meta) {
+            PlayerProfile profile = Bukkit.createPlayerProfile(UUID.randomUUID());
+            try {
+                String decoded = new String(Base64.getDecoder().decode(base64));
+                String url = new Gson().fromJson(decoded, JsonObject.class)
+                        .getAsJsonObject("textures")
+                        .getAsJsonObject("SKIN")
+                        .get("url").getAsString();
+                profile.getTextures().setSkin(URI.create(url).toURL());
+            } catch (MalformedURLException e) {
+                CCTV.getInstance().getLogger().warning("Invalid base64 for head \"" + name + "\"");
+                return head;
             }
-        } catch (Exception ignored) {}
-
-        Method setProfileMethod = null;
-        try {
-            setProfileMethod = meta.getClass().getDeclaredMethod("setProfile");
-        } catch (Exception ignored) {}
-        try {
-            // if available, we use setProfile(GameProfile) so that it sets both the profile field and the
-            // serialized profile field for us. If the serialized profile field isn't set
-            // ItemStack#isSimilar() and ItemStack#equals() throw an error.
-            //
-            // credit to https://github.com/iSach/UltraCosmetics/commit/89ef1b85fad28cfe8f6471c779c815456e52906f
-            // thank you, I wouldn't have figured it out ;-;
-            if (setProfileMethod == null) {
-                profileField.setAccessible(true);
-                profileField.set(meta, profile);
-            } else {
-                setProfileMethod.setAccessible(true);
-                setProfileMethod.invoke(meta, profile);
-            }
-        } catch (Exception e1) {
-            e1.printStackTrace();
+            meta.setOwnerProfile(profile);
+            head.setItemMeta(meta);
         }
-
-        head.setItemMeta(meta);
         return head;
     }
 }

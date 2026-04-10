@@ -32,11 +32,6 @@ public class CameraManager extends Manager<Camera> {
     public void load() {
         EXPERIMENTAL_VIEW = cctv.getConfiguration().getBoolean("camera.experimental_view",false);
 
-        if (EXPERIMENTAL_VIEW && !cctv.getNms().isNmsSupported()) {
-            EXPERIMENTAL_VIEW = false;
-            cctv.getLogger().severe("Experimental View is enabled but your server doesn't support it! Switching back to normal view.");
-        }
-
         file.getValues().keySet().forEach(name->{
             String w = file.getString(name+".world");
             World world = Bukkit.getServer().getWorld(w);

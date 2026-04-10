@@ -1,0 +1,9 @@
+[versions]
+spigot = "26.1.2-R0.1-SNAPSHOT"
+itemsadder = "3.5.0b"
+papi = "2.11.6"
+
+[libraries]
+spigot = { group = "org.spigotmc", name = "spigot-api", version.ref = "spigot" }
+itemsadder = { group = "com.github.LoneDev6", name = "api-itemsadder", version.ref = "itemsadder" }
+papi = { group = "me.clip", name = "placeholderapi", version.ref = "papi" }

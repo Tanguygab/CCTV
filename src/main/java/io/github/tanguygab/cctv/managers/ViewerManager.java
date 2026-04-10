@@ -49,7 +49,7 @@ public class ViewerManager extends Manager<Viewer> {
         ZOOM_ITEM = config.getBoolean("viewers.zoom_item",true);
         SHOW_IN_TABLIST = config.getBoolean("viewers.show-in-tablist",true);
 
-        if (SHOW_IN_TABLIST && !cctv.getNms().showInTablist) {
+        if (SHOW_IN_TABLIST) {
             cctv.getLogger().warning("This server version doesn't support the show-in-tablist setting. Players will be hidden when viewing a camera");
             SHOW_IN_TABLIST = false;
         }
@@ -133,7 +133,7 @@ public class ViewerManager extends Manager<Viewer> {
             for (Player online : Bukkit.getOnlinePlayers())
                 online.showPlayer(cctv,p);
 
-        p.removePotionEffect(NMSUtils.SLOWNESS);
+        p.removePotionEffect(PotionEffectType.SLOWNESS);
         p.removePotionEffect(PotionEffectType.NIGHT_VISION);
         p.setCanPickupItems(true);
         p.showEntity(cctv, viewer.getCamera().getArmorStand());
