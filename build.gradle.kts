@@ -1,10 +1,15 @@
 plugins {
     id("java")
     id("maven-publish")
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.21"
 }
 
 group = "io.github.tanguygab"
-version = "9.2.0"
+version = "9.3.0"
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(26))
+}
 
 tasks.compileJava.configure {
     options.encoding = "UTF-8"
@@ -20,12 +25,8 @@ repositories {
 }
 
 dependencies {
-    compileOnly(libs.spigot)
-    compileOnly(libs.itemsadder)
+    paperweight.paperDevBundle("26.2.build.+")
     compileOnly(libs.papi)
-    compileOnly("io.netty:netty-all:5.0.0.Alpha2")
-    compileOnly("it.unimi.dsi:fastutil:8.5.18")
-    compileOnly(files("../../dependencies/nms/nms-26.1.jar"))
     compileOnly("org.projectlombok:lombok:1.18.44")
     annotationProcessor("org.projectlombok:lombok:1.18.44")
 }

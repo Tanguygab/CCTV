@@ -1,10 +1,8 @@
 package io.github.tanguygab.cctv.managers;
 
-import dev.lone.itemsadder.api.CustomStack;
 import io.github.tanguygab.cctv.entities.CameraGroup;
 import io.github.tanguygab.cctv.entities.Computable;
 import io.github.tanguygab.cctv.entities.Computer;
-import io.github.tanguygab.cctv.listeners.ItemsAdderEvents;
 import io.github.tanguygab.cctv.menus.CCTVMenu;
 import io.github.tanguygab.cctv.menus.computers.ComputerMainMenu;
 import io.github.tanguygab.cctv.utils.Heads;
@@ -94,23 +92,6 @@ public class ComputerManager extends Manager<Computer> {
     }
     private ItemStack loadComputerMat0(String path, Material def, String lang, boolean admin) {
         String mat = cctv.getConfiguration().getString("computer."+path, def.toString());
-        if (mat.startsWith("itemsadder:")) {
-            if (!cctv.getServer().getPluginManager().isPluginEnabled("ItemsAdder"))
-                return null;
-
-            cctv.getServer().getPluginManager().registerEvents(new ItemsAdderEvents(this,mat.substring(11),admin),cctv);
-            CustomStack stack = CustomStack.getInstance(mat.substring(11));
-            if (stack != null) {
-                if (!stack.isBlock()) {
-                    cctv.getLogger().info("ItemsAdder item "+stack.getNamespace()+" is not a block! Defaulting to Nether Brick Stairs...");
-                    return null;
-                }
-                cctv.getLogger().info("ItemsAdder item "+stack.getNamespace()+" loaded!");
-                return stack.getItemStack();
-            }
-            cctv.getLogger().info("Using ItemsAdder item for computer, waiting for ItemsAdder to load.");
-            return null;
-        }
         if (mat.startsWith("head:"))
             return Heads.createSkull(mat.substring(5),lang);
 
