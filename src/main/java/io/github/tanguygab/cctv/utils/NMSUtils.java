@@ -68,6 +68,10 @@ public class NMSUtils {
     }
 
     public void showViewerInTablistFor(Player viewer, Player target) {
-        getHandle(target).connection.sendPacket(ClientboundPlayerInfoUpdatePacket.createPlayerInitializing(List.of(getHandle(viewer))));
+        getHandle(target).connection.send(
+            ClientboundPlayerInfoUpdatePacket.createPlayerInitializing(
+                List.of(getHandle(viewer))
+            )
+        );
     }
 }
