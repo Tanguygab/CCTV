@@ -79,6 +79,9 @@ public class ViewerManager extends Manager<Viewer> {
 
             ItemMeta meta = itemStack.getItemMeta();
             if (meta != null) {
+                int data = (int) item.getOrDefault("model-data", 0);
+                if (data != 0) meta.setCustomModelData(data);
+
                 meta.getPersistentDataContainer().set(VIEWER_ITEM, PersistentDataType.STRING, name);
                 itemStack.setItemMeta(meta);
             }
