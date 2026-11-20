@@ -60,6 +60,7 @@ viewers:
     disconnect: 3
     spot: 5
   bossbar: true
+  invert-blocked-commands: false
   blocked-commands:
     - "/tp"
     - "/tpa"

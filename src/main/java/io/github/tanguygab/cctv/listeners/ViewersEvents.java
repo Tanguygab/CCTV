@@ -106,7 +106,7 @@ public class ViewersEvents implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onCommand(PlayerCommandPreprocessEvent e) {
         Player p = e.getPlayer();
-        if (vm.exists(p) && vm.blockedCommands.contains(e.getMessage().split(" ")[0])) {
+        if (vm.exists(p) && vm.blockedCommands.contains(e.getMessage().split(" ")[0]) != vm.INVERT_BLOCKED_COMMANDS) {
             e.setCancelled(true);
             p.sendMessage(lang.COMMAND_BLOCKED);
         }

@@ -33,6 +33,7 @@ public class ViewerManager extends Manager<Viewer> {
     public int TIME_TO_CONNECT;
     public int TIME_TO_DISCONNECT;
     public int TIME_FOR_SPOT;
+    public boolean INVERT_BLOCKED_COMMANDS;
     public final List<String> blockedCommands = new ArrayList<>();
 
     private final CameraManager cm = cctv.getCameras();
@@ -98,6 +99,7 @@ public class ViewerManager extends Manager<Viewer> {
         TIME_TO_DISCONNECT = config.getInt("viewers.timed-actions.disconnect",3);
         TIME_FOR_SPOT = config.getInt("viewers.timed-actions.spot",5);
         BOSSBAR = config.getBoolean("viewers.bossbar",true);
+        INVERT_BLOCKED_COMMANDS = config.getBoolean("viewers.invert-blocked-commands", false);
         blockedCommands.addAll(config.getStringList("viewers.blocked-commands",List.of()));
 
         Map<String,Object> loggedOutViewers = file.getConfigurationSection("logged-out-viewers");
